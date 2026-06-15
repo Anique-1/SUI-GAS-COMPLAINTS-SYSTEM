@@ -3,7 +3,7 @@
 import { useEffect, useState, createContext, useContext } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { dbClient, Profile } from '@/lib/supabase';
+import { dbClient, Profile } from '@/lib/db';
 import { 
   Flame, 
   LayoutDashboard, 

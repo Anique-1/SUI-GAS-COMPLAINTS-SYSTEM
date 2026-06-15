@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useUser } from '../layout';
-import { dbClient, Profile } from '@/lib/supabase';
+import { dbClient, Profile } from '@/lib/db';
 import { Check, X, ShieldAlert, Loader2, Users } from 'lucide-react';
 
 export default function ApprovalsPage() {

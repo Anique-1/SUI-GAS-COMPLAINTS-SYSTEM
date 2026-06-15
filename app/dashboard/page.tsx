@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useUser } from './layout';
-import { dbClient, Complaint } from '@/lib/supabase';
+import { dbClient, Complaint } from '@/lib/db';
 import { ClipboardList, Users, Link as LinkIcon, FileText, CheckCircle, Scale, Shield } from 'lucide-react';
 
 export default function DashboardOverview() {

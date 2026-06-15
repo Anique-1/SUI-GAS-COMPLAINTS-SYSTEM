@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useUser } from '../layout';
-import { dbClient } from '@/lib/supabase';
+import { dbClient } from '@/lib/db';
 import { User, Phone, Lock, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function ProfilePage() {
@@ -61,16 +61,9 @@ export default function ProfilePage() {
         await new Promise((resolve) => setTimeout(resolve, 800));
         setPassMessage({ text: 'Password changed successfully (Mock Database Mode).', type: 'success' });
       } else {
-        // Real Supabase Auth Update
-        const { error } = await dbClient.updateProfile(user!.id, {}); // dummy trigger or invoke supabase.auth.updateUser
-        // Wait, for actual Supabase auth update password, we would call:
-        // const { error } = await supabase.auth.updateUser({ password: newPassword });
-        // Let's implement that in a helper or write it here:
-        const { supabase } = await import('@/lib/supabase');
-        if (supabase) {
-          const { error } = await supabase.auth.updateUser({ password: newPassword });
-          if (error) throw error;
-        }
+        // Real MongoDB Auth Update
+        const { error } = await dbClient.updateProfile(user!.id, { password: newPassword } as any);
+        if (error) throw new Error(error);
         setPassMessage({ text: 'Password changed successfully.', type: 'success' });
       }
       

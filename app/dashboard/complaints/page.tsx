@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useUser } from '../layout';
-import { dbClient, Complaint } from '@/lib/supabase';
+import { dbClient, Complaint } from '@/lib/db';
 import { uploadFileToCloudinary } from '@/lib/cloudinary';
 import { 
   Plus, 

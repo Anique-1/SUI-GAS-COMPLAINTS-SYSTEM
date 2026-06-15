@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { dbClient } from '@/lib/supabase';
+import { dbClient } from '@/lib/db';
 import { Flame, ArrowLeft } from 'lucide-react';
 
 export default function Login() {

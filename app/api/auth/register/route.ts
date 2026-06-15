@@ -5,21 +5,19 @@ import crypto from 'crypto';
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, phone, roleId, password, passkey } = await req.json();
+    const { name, email, phone, role, role_id, password } = await req.json();
 
-    if (!name || !email || !phone || !roleId || !password || !passkey) {
+    if (!name || !email || !phone || !role || !role_id || !password) {
       return NextResponse.json(
-        { error: 'All registration fields are required.' },
+        { error: 'All fields are required.' },
         { status: 400 }
       );
     }
 
-    // Verify secure passkey
-    const expectedPasskey = process.env.EXECUTIVE_REGISTRATION_PASSKEY;
-    if (!expectedPasskey || passkey !== expectedPasskey) {
+    if (role === 'executive') {
       return NextResponse.json(
-        { error: 'Invalid Executive Security Passkey. Registration denied.' },
-        { status: 403 }
+        { error: 'Executive registration must go through the dedicated executive registry.' },
+        { status: 400 }
       );
     }
 
@@ -38,25 +36,25 @@ export async function POST(req: NextRequest) {
     const passwordHash = hashPassword(password);
     const userId = crypto.randomUUID();
 
-    // Insert user profile document (Executive is pre-approved)
+    // Insert user profile document
     await db.collection('profiles').insertOne({
-      _id: userId as any,
-      id: userId,
+      _id: userId as any, // Store as string ID for compatibility
+      id: userId, // Duplicate for ease of client matching
       name,
       email: cleanEmail,
       phone,
-      role: 'executive',
-      role_id: roleId,
+      role,
+      role_id,
       password_hash: passwordHash,
-      status: 'approved', // Pre-approved
+      status: 'pending', // Employees and lawyers are locked by default
       created_at: new Date(),
     });
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error('Executive registration error:', error);
+    console.error('Registration API error:', error);
     return NextResponse.json(
-      { error: error.message || 'Server error occurred during executive registration.' },
+      { error: error.message || 'An error occurred during account registration.' },
       { status: 500 }
     );
   }

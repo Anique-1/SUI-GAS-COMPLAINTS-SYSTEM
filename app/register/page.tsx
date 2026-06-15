@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { dbClient } from '@/lib/supabase';
+import { dbClient } from '@/lib/db';
 import { Flame, CheckCircle, ArrowLeft } from 'lucide-react';
 
 export default function Register() {
