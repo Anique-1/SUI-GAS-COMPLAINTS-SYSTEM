@@ -320,22 +320,21 @@ export default function ComplaintsPage() {
                       <td>
                         <strong style={{ color: 'var(--text-primary)', display: 'block' }}>{c.name}</strong>
                         
-                        {/* Share status / public link control */}
-                        {c.public_link_active && c.public_link_token ? (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
-                            <span style={{ fontSize: '11px', color: 'var(--accent-blue)', background: 'rgba(0, 242, 254, 0.08)', padding: '2px 6px', borderRadius: '4px', border: '1px solid rgba(0, 242, 254, 0.15)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <Link2 className="w-3 h-3" /> Shared
-                            </span>
-                            <button 
-                              className="btn btn-secondary" 
-                              style={{ padding: '2px 6px', fontSize: '10px', height: '20px' }}
-                              onClick={() => handleCopyLink(c.public_link_token!, c.id)}
-                            >
-                              {copiedId === c.id ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                              Copy Link
-                            </button>
-                            {/* Revoke option (Lawyer cannot revoke) */}
-                            {user?.role !== 'lawyer' && (
+                        {/* Share status / public link control (Only visible to employees and executives) */}
+                        {user?.role !== 'lawyer' && (
+                          c.public_link_active && c.public_link_token ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
+                              <span style={{ fontSize: '11px', color: 'var(--accent-blue)', background: 'rgba(0, 242, 254, 0.08)', padding: '2px 6px', borderRadius: '4px', border: '1px solid rgba(0, 242, 254, 0.15)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <Link2 className="w-3 h-3" /> Shared
+                              </span>
+                              <button 
+                                className="btn btn-secondary" 
+                                style={{ padding: '2px 6px', fontSize: '10px', height: '20px' }}
+                                onClick={() => handleCopyLink(c.public_link_token!, c.id)}
+                              >
+                                {copiedId === c.id ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                                Copy Link
+                              </button>
                               <button 
                                 className="btn btn-danger" 
                                 style={{ padding: '2px 6px', fontSize: '10px', height: '20px', background: 'none', border: 'none' }}
@@ -344,11 +343,8 @@ export default function ComplaintsPage() {
                               >
                                 <Link2Off className="w-3 h-3" /> Revoke
                               </button>
-                            )}
-                          </div>
-                        ) : (
-                          // Allow sharing if not lawyer
-                          user?.role !== 'lawyer' && (
+                            </div>
+                          ) : (
                             <button 
                               className="btn btn-secondary" 
                               style={{ padding: '2px 6px', fontSize: '10px', height: '20px', marginTop: '6px', color: 'var(--text-secondary)' }}
