@@ -200,8 +200,12 @@ export default function Register() {
             </button>
           </form>
 
-          <div style={{ textShadow: 'none', textAlign: 'center', fontSize: '13px', color: 'var(--text-secondary)' }}>
+          <div style={{ textShadow: 'none', textAlign: 'center', fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>
             Already have an account? <Link href="/login" style={{ color: 'var(--accent-blue)', textDecoration: 'none', fontWeight: '600' }}>Login Here</Link>
+          </div>
+          
+          <div style={{ textShadow: 'none', textAlign: 'center', fontSize: '12px', color: 'var(--text-secondary)' }}>
+            Executive Register <Link href="/register/executive" style={{ color: 'red', textDecoration: 'none', fontWeight: '500' }}>Register Here</Link>
           </div>
         </div>
       )}
