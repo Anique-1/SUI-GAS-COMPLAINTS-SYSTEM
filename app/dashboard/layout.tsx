@@ -11,7 +11,8 @@ import {
   UserCheck, 
   Settings, 
   LogOut, 
-  Loader2 
+  Loader2,
+  Users
 } from 'lucide-react';
 
 // User context for dashboard pages
@@ -107,6 +108,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               >
                 <UserCheck className="w-4 h-4" />
                 <span>Approvals</span>
+              </Link>
+            )}
+
+            {/* Admin/Executive Only User Accounts View */}
+            {user.role === 'executive' && (
+              <Link 
+                href="/dashboard/users" 
+                className={`sidebar-link ${isLinkActive('/dashboard/users') ? 'active' : ''}`}
+              >
+                <Users className="w-4 h-4" />
+                <span>User Accounts</span>
               </Link>
             )}
 

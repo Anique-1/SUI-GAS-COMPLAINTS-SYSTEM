@@ -280,5 +280,51 @@ export const dbClient = {
       console.error('getPublicComplaint error:', e);
       return null;
     }
+  },
+
+  // GET: Fetch all profiles (Executives only)
+  async getAllUsers(): Promise<Profile[]> {
+    try {
+      const res = await fetch('/api/profiles');
+      if (!res.ok) return [];
+      return await res.json();
+    } catch (e) {
+      console.error('getAllUsers error:', e);
+      return [];
+    }
+  },
+
+  // PATCH: Admin update user details (Executives only)
+  async adminUpdateUser(userId: string, updates: Partial<Profile>): Promise<{ error: string | null }> {
+    try {
+      const res = await fetch('/api/profiles', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, updates }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { error: data.error || 'Failed to update user profile.' };
+      }
+      return { error: null };
+    } catch (e: any) {
+      return { error: e.message || 'Network connection failed.' };
+    }
+  },
+
+  // DELETE: Admin delete user account (Executives only)
+  async adminDeleteUser(userId: string): Promise<{ error: string | null }> {
+    try {
+      const res = await fetch(`/api/profiles?userId=${encodeURIComponent(userId)}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { error: data.error || 'Failed to delete user account.' };
+      }
+      return { error: null };
+    } catch (e: any) {
+      return { error: e.message || 'Network connection failed.' };
+    }
   }
 };

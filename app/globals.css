@@ -380,11 +380,14 @@ h1, h2, h3, h4, h5, h6 {
 
 .main-content {
   margin-left: var(--sidebar-width);
+  width: calc(100% - var(--sidebar-width));
+  max-width: calc(100% - var(--sidebar-width));
   flex-grow: 1;
   padding: 40px;
   min-height: 100vh;
   position: relative;
   z-index: 10;
+  min-width: 0;
 }
 
 /* Page Header */
@@ -638,8 +641,10 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
+  :root {
+    --sidebar-width: 64px;
+  }
   .sidebar {
-    width: 64px;
     padding: 24px 8px;
     align-items: center;
   }
@@ -650,7 +655,6 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 24px;
   }
   .main-content {
-    margin-left: 64px;
     padding: 24px;
   }
   .page-header {
