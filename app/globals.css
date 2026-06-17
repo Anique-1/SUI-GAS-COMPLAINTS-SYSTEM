@@ -409,6 +409,12 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 4px;
 }
 
+.responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+}
+
 /* KPI Metrics Grid */
 .metrics-grid {
   display: grid;
@@ -654,6 +660,16 @@ h1, h2, h3, h4, h5, h6 {
   .sidebar-logo {
     margin-bottom: 24px;
   }
+  .sidebar-footer button span {
+    display: none;
+  }
+  .sidebar-footer button {
+    padding: 10px !important;
+    justify-content: center !important;
+  }
+  .sidebar-user {
+    justify-content: center;
+  }
   .main-content {
     padding: 24px;
   }
@@ -661,5 +677,62 @@ h1, h2, h3, h4, h5, h6 {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
+  }
+  .metrics-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .metric-card {
+    padding: 16px;
+  }
+  .data-table th, .data-table td {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+  .responsive-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .auth-card {
+    padding: 24px 20px !important;
+  }
+  .auth-buttons-container {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .auth-buttons-container a, .auth-buttons-container button {
+    width: 100%;
+    min-width: 0 !important;
+  }
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .filter-bar > div {
+    width: 100% !important;
+  }
+  .filter-bar select, .filter-bar input {
+    width: 100% !important;
+  }
+  .modal-content {
+    padding: 20px;
+    max-height: 95vh;
+  }
+  .modal-footer {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+  .modal-footer button {
+    width: 100%;
+  }
+  .public-view-container {
+    padding: 24px 16px;
+    margin: 20px auto;
   }
 }

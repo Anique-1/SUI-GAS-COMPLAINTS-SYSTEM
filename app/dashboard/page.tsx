@@ -97,7 +97,7 @@ export default function DashboardOverview() {
         )}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px', marginTop: '40px' }}>
+      <div className="responsive-grid" style={{ marginTop: '40px' }}>
         {/* PRIVILEGES SUMMARY CARD */}
         <div className="glass-panel" style={{ padding: '32px' }}>
           <h2 style={{ fontSize: '20px', marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'center' }}>

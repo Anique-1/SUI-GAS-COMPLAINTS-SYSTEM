@@ -86,7 +86,7 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px' }}>
+      <div className="responsive-grid">
         
         {/* EDIT PROFILE DETAILS SECTION */}
         <section className="glass-panel" style={{ padding: '32px' }}>

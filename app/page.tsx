@@ -44,7 +44,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+        <div className="auth-buttons-container">
           <Link href="/login" className="btn btn-primary" style={{ minWidth: '140px' }}>
             Access Portal
           </Link>
