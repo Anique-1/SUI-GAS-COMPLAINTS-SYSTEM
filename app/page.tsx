@@ -29,13 +29,13 @@ export default function Home() {
               <h3 style={{ fontSize: '14px', marginBottom: '4px' }}>Employees</h3>
               <p style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Log issues & generate public links</p>
             </div>
-            
+
             <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', background: 'rgba(255,255,255,0.02)' }}>
               <ShieldCheck style={{ color: 'var(--accent-teal)', margin: '0 auto 8px auto', width: '24px', height: '24px' }} />
               <h3 style={{ fontSize: '14px', marginBottom: '4px' }}>Executives</h3>
               <p style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Approve staff & complete authority control</p>
             </div>
-            
+
             <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', background: 'rgba(255,255,255,0.02)' }}>
               <Scale style={{ color: '#a78bfa', margin: '0 auto 8px auto', width: '24px', height: '24px' }} />
               <h3 style={{ fontSize: '14px', marginBottom: '4px' }}>Lawyers</h3>
@@ -52,7 +52,7 @@ export default function Home() {
             Register Profile
           </Link>
         </div>
-        
+
         <div style={{ textAlign: 'center', marginTop: '32px', borderTop: '1px solid var(--border-color)', paddingTop: '20px' }}>
           <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
             Sui Northern Gas Pipelines Limited (SNGPL) & Sui Southern Gas Company (SSGC)

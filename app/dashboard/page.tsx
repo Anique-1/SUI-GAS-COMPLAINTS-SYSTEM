@@ -19,7 +19,7 @@ export default function DashboardOverview() {
 
         if (user?.role === 'executive') {
           const pending = await dbClient.getPendingUsers();
-          setPendingCount(pending.length);
+          setPendingCount(pending.length);  
         }
       } catch (err) {
         console.error('Failed to load overview data', err);
@@ -104,7 +104,7 @@ export default function DashboardOverview() {
             <Shield className="w-5 h-5 text-cyan-400" style={{ color: 'var(--accent-blue)' }} />
             Role & Security Credentials
           </h2>
-          
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
               <span style={{ color: 'var(--text-secondary)' }}>Full Name:</span>
@@ -135,7 +135,7 @@ export default function DashboardOverview() {
             <FileText className="w-5 h-5 text-cyan-400" style={{ color: 'var(--accent-teal)' }} />
             Operations Directive
           </h2>
-          
+        
           {user?.role === 'executive' && (
             <div>
               <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.6', marginBottom: '16px' }}>
