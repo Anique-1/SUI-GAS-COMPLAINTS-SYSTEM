@@ -385,7 +385,21 @@ export default function ComplaintsPage() {
                     <tr key={c.id}>
                       <td>
                         <strong style={{ color: 'var(--text-primary)', display: 'block' }}>{c.name}</strong>
-                        
+
+                        {/* Police Station + Mode of Theft chips */}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '5px' }}>
+                          {c.police_station && (
+                            <span style={{ fontSize: '10px', color: '#94a3b8', background: 'rgba(148,163,184,0.08)', border: '1px solid rgba(148,163,184,0.18)', padding: '1px 6px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                              🏛 {c.police_station}
+                            </span>
+                          )}
+                          {c.mode_of_theft && (
+                            <span style={{ fontSize: '10px', fontWeight: '700', color: '#fb923c', background: 'rgba(251,146,60,0.10)', border: '1px solid rgba(251,146,60,0.25)', padding: '1px 6px', borderRadius: '4px' }}>
+                              ⚡ {c.mode_of_theft}
+                            </span>
+                          )}
+                        </div>
+
                         {/* Share status / public link control (Only visible to employees and executives) */}
                         {user?.role !== 'lawyer' && (
                           c.public_link_active && c.public_link_token ? (
@@ -431,6 +445,31 @@ export default function ComplaintsPage() {
                         <span style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', display: '-webkit-box', WebkitLineClamp: '2', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {c.description || <em style={{ color: 'var(--text-muted)' }}>No description provided.</em>}
                         </span>
+                        {/* Volume / Amount / Plaintiff mini-chips */}
+                        {(c.volume_booked_hm3 || c.volume_booked_mmcf || c.amount_booked || c.plaintiff) && (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '6px' }}>
+                            {c.volume_booked_hm3 && (
+                              <span style={{ fontSize: '10px', color: '#67e8f9', background: 'rgba(103,232,249,0.08)', border: '1px solid rgba(103,232,249,0.2)', padding: '1px 6px', borderRadius: '4px' }}>
+                                HM³: {c.volume_booked_hm3}
+                              </span>
+                            )}
+                            {c.volume_booked_mmcf && (
+                              <span style={{ fontSize: '10px', color: '#67e8f9', background: 'rgba(103,232,249,0.08)', border: '1px solid rgba(103,232,249,0.2)', padding: '1px 6px', borderRadius: '4px' }}>
+                                MMCF: {c.volume_booked_mmcf}
+                              </span>
+                            )}
+                            {c.amount_booked && (
+                              <span style={{ fontSize: '10px', color: '#86efac', background: 'rgba(134,239,172,0.08)', border: '1px solid rgba(134,239,172,0.2)', padding: '1px 6px', borderRadius: '4px' }}>
+                                PKR: {c.amount_booked}
+                              </span>
+                            )}
+                            {c.plaintiff && (
+                              <span style={{ fontSize: '10px', color: '#c4b5fd', background: 'rgba(196,181,253,0.08)', border: '1px solid rgba(196,181,253,0.2)', padding: '1px 6px', borderRadius: '4px' }}>
+                                👤 {c.plaintiff}
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </td>
                       <td>
                         <span style={{ fontSize: '13px', color: 'var(--text-primary)' }}>{c.creator_name}</span>
@@ -462,9 +501,9 @@ export default function ComplaintsPage() {
                               color: '#c084fc',
                               border: '1px solid rgba(168,85,247,0.25)',
                             } : {
-                              background: 'rgba(99,102,241,0.12)',
-                              color: '#818cf8',
-                              border: '1px solid rgba(99,102,241,0.25)',
+                              background: 'rgba(16,185,129,0.12)',
+                              color: '#34d399',
+                              border: '1px solid rgba(16,185,129,0.25)',
                             })
                           }}>
                             {c.status_of_accused}
