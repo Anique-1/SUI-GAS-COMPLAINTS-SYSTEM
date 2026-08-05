@@ -98,7 +98,7 @@ export default function PublicComplaintView() {
         {/* Technical Description */}
         <section style={{ marginBottom: '40px' }}>
           <h2 style={{ fontSize: '18px', marginBottom: '12px', color: 'var(--text-primary)' }}>Technical Description</h2>
-          <div className="glass-panel" style={{ padding: '20px', background: 'rgba(15, 23, 42, 0.5)', lineHeight: '1.6', color: 'var(--text-secondary)', fontSize: '15px' }}>
+          <div className="glass-panel" style={{ padding: '20px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-color)', lineHeight: '1.6', color: 'var(--text-secondary)', fontSize: '15px' }}>
             {complaint.description || <em>No technical descriptions were submitted for this complaint entry.</em>}
           </div>
         </section>
@@ -107,7 +107,7 @@ export default function PublicComplaintView() {
         {(complaint.police_station || complaint.mode_of_theft || complaint.volume_booked_hm3 || complaint.volume_booked_mmcf || complaint.amount_booked || complaint.plaintiff || complaint.status_of_accused) && (
           <section style={{ marginBottom: '40px' }}>
             <h2 style={{ fontSize: '18px', marginBottom: '16px', color: 'var(--text-primary)' }}>FIR Investigation Details</h2>
-            <div className="glass-panel" style={{ padding: '20px', background: 'rgba(15, 23, 42, 0.5)' }}>
+            <div className="glass-panel" style={{ padding: '20px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-color)' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
                 {complaint.police_station && (
                   <div>
@@ -157,15 +157,15 @@ export default function PublicComplaintView() {
                       padding: '3px 10px',
                       borderRadius: '5px',
                       ...(complaint.status_of_accused.toLowerCase().includes('arrest') ? {
-                        background: 'rgba(239,68,68,0.12)', color: '#f87171', border: '1px solid rgba(239,68,68,0.25)',
+                        background: '#dc2626', color: '#fff', border: '1px solid #b91c1c',
                       } : complaint.status_of_accused.toLowerCase().includes('bail') ? {
-                        background: 'rgba(234,179,8,0.12)', color: '#facc15', border: '1px solid rgba(234,179,8,0.25)',
+                        background: '#ca8a04', color: '#fff', border: '1px solid #a16207',
                       } : complaint.status_of_accused.toLowerCase().includes('acquit') || complaint.status_of_accused.toLowerCase().includes('release') ? {
-                        background: 'rgba(16,185,129,0.12)', color: '#34d399', border: '1px solid rgba(16,185,129,0.25)',
+                        background: '#16a34a', color: '#fff', border: '1px solid #15803d',
                       } : complaint.status_of_accused.toLowerCase().includes('convict') ? {
-                        background: 'rgba(168,85,247,0.12)', color: '#c084fc', border: '1px solid rgba(168,85,247,0.25)',
+                        background: '#7c3aed', color: '#fff', border: '1px solid #6d28d9',
                       } : {
-                        background: 'rgba(99,102,241,0.12)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.25)',
+                        background: '#16a34a', color: '#fff', border: '1px solid #15803d',
                       })
                     }}>
                       {complaint.status_of_accused}
