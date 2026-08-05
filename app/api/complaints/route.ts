@@ -33,6 +33,13 @@ export async function GET(req: NextRequest) {
       pdfs: c.pdfs || [],
       xlsxs: c.xlsxs || [],
       csvs: c.csvs || [],
+      police_station: c.police_station || '',
+      mode_of_theft: c.mode_of_theft || '',
+      volume_booked_hm3: c.volume_booked_hm3 || '',
+      volume_booked_mmcf: c.volume_booked_mmcf || '',
+      amount_booked: c.amount_booked || '',
+      plaintiff: c.plaintiff || '',
+      status_of_accused: c.status_of_accused || '',
       public_link_token: c.public_link_token || null,
       public_link_active: !!c.public_link_active,
       created_at: c.created_at,
@@ -52,7 +59,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Access denied. Operator role is required.' }, { status: 403 });
     }
 
-    const { name, register_date, description, images, pdfs, xlsxs, csvs } = await req.json();
+    const { name, register_date, description, images, pdfs, xlsxs, csvs, police_station, mode_of_theft, volume_booked_hm3, volume_booked_mmcf, amount_booked, plaintiff, status_of_accused } = await req.json();
     if (!name || !register_date) {
       return NextResponse.json({ error: 'Subject name and register date are required.' }, { status: 400 });
     }
@@ -71,6 +78,13 @@ export async function POST(req: NextRequest) {
       pdfs: pdfs || [],
       xlsxs: xlsxs || [],
       csvs: csvs || [],
+      police_station: police_station || '',
+      mode_of_theft: mode_of_theft || '',
+      volume_booked_hm3: volume_booked_hm3 || '',
+      volume_booked_mmcf: volume_booked_mmcf || '',
+      amount_booked: amount_booked || '',
+      plaintiff: plaintiff || '',
+      status_of_accused: status_of_accused || '',
       public_link_token: null,
       public_link_active: false,
       created_at: new Date(),

@@ -103,6 +103,81 @@ export default function PublicComplaintView() {
           </div>
         </section>
 
+        {/* FIR Investigation Details */}
+        {(complaint.police_station || complaint.mode_of_theft || complaint.volume_booked_hm3 || complaint.volume_booked_mmcf || complaint.amount_booked || complaint.plaintiff || complaint.status_of_accused) && (
+          <section style={{ marginBottom: '40px' }}>
+            <h2 style={{ fontSize: '18px', marginBottom: '16px', color: 'var(--text-primary)' }}>FIR Investigation Details</h2>
+            <div className="glass-panel" style={{ padding: '20px', background: 'rgba(15, 23, 42, 0.5)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
+                {complaint.police_station && (
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>Police Station</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-primary)' }}>{complaint.police_station}</div>
+                  </div>
+                )}
+                {complaint.mode_of_theft && (
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>Mode of Theft</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-primary)' }}>{complaint.mode_of_theft}</div>
+                  </div>
+                )}
+                {complaint.volume_booked_hm3 && (
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>Volume Booked (HM³)</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-primary)' }}>{complaint.volume_booked_hm3}</div>
+                  </div>
+                )}
+                {complaint.volume_booked_mmcf && (
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>Volume Booked (MMCF)</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-primary)' }}>{complaint.volume_booked_mmcf}</div>
+                  </div>
+                )}
+                {complaint.amount_booked && (
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>Amount Booked (PKR)</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-primary)' }}>{complaint.amount_booked}</div>
+                  </div>
+                )}
+                {complaint.plaintiff && (
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>Plaintiff</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-primary)' }}>{complaint.plaintiff}</div>
+                  </div>
+                )}
+                {complaint.status_of_accused && (
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>Status of Accused</div>
+                    <span style={{
+                      display: 'inline-block',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      letterSpacing: '0.04em',
+                      textTransform: 'uppercase',
+                      padding: '3px 10px',
+                      borderRadius: '5px',
+                      ...(complaint.status_of_accused.toLowerCase().includes('arrest') ? {
+                        background: 'rgba(239,68,68,0.12)', color: '#f87171', border: '1px solid rgba(239,68,68,0.25)',
+                      } : complaint.status_of_accused.toLowerCase().includes('bail') ? {
+                        background: 'rgba(234,179,8,0.12)', color: '#facc15', border: '1px solid rgba(234,179,8,0.25)',
+                      } : complaint.status_of_accused.toLowerCase().includes('acquit') || complaint.status_of_accused.toLowerCase().includes('release') ? {
+                        background: 'rgba(16,185,129,0.12)', color: '#34d399', border: '1px solid rgba(16,185,129,0.25)',
+                      } : complaint.status_of_accused.toLowerCase().includes('convict') ? {
+                        background: 'rgba(168,85,247,0.12)', color: '#c084fc', border: '1px solid rgba(168,85,247,0.25)',
+                      } : {
+                        background: 'rgba(99,102,241,0.12)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.25)',
+                      })
+                    }}>
+                      {complaint.status_of_accused}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
+
         {/* Attachments Section */}
         <section>
           <h2 style={{ fontSize: '18px', marginBottom: '16px', color: 'var(--text-primary)' }}>Pipeline Case Attachments</h2>

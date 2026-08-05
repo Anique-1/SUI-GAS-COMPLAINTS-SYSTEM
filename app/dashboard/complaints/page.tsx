@@ -44,6 +44,14 @@ export default function ComplaintsPage() {
   const [pdfs, setPdfs] = useState<string[]>([]);
   const [xlsxs, setXlsxs] = useState<string[]>([]);
   const [csvs, setCsvs] = useState<string[]>([]);
+  // Optional FIR detail fields
+  const [policeStation, setPoliceStation] = useState('');
+  const [modeOfTheft, setModeOfTheft] = useState('');
+  const [volumeHm3, setVolumeHm3] = useState('');
+  const [volumeMmcf, setVolumeMmcf] = useState('');
+  const [amountBooked, setAmountBooked] = useState('');
+  const [plaintiff, setPlaintiff] = useState('');
+  const [statusOfAccused, setStatusOfAccused] = useState('');
   const [uploadingFiles, setUploadingFiles] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -94,6 +102,13 @@ export default function ComplaintsPage() {
     setPdfs([]);
     setXlsxs([]);
     setCsvs([]);
+    setPoliceStation('');
+    setModeOfTheft('');
+    setVolumeHm3('');
+    setVolumeMmcf('');
+    setAmountBooked('');
+    setPlaintiff('');
+    setStatusOfAccused('');
     setIsModalOpen(true);
   };
 
@@ -113,6 +128,13 @@ export default function ComplaintsPage() {
     setPdfs(complaint.pdfs);
     setXlsxs(complaint.xlsxs || []);
     setCsvs(complaint.csvs || []);
+    setPoliceStation(complaint.police_station || '');
+    setModeOfTheft(complaint.mode_of_theft || '');
+    setVolumeHm3(complaint.volume_booked_hm3 || '');
+    setVolumeMmcf(complaint.volume_booked_mmcf || '');
+    setAmountBooked(complaint.amount_booked || '');
+    setPlaintiff(complaint.plaintiff || '');
+    setStatusOfAccused(complaint.status_of_accused || '');
     setIsModalOpen(true);
   };
 
@@ -189,7 +211,14 @@ export default function ComplaintsPage() {
           images,
           pdfs,
           xlsxs,
-          csvs
+          csvs,
+          police_station: policeStation,
+          mode_of_theft: modeOfTheft,
+          volume_booked_hm3: volumeHm3,
+          volume_booked_mmcf: volumeMmcf,
+          amount_booked: amountBooked,
+          plaintiff,
+          status_of_accused: statusOfAccused,
         });
         if (error) alert(error);
       } else {
@@ -201,7 +230,14 @@ export default function ComplaintsPage() {
           images,
           pdfs,
           xlsxs,
-          csvs
+          csvs,
+          police_station: policeStation,
+          mode_of_theft: modeOfTheft,
+          volume_booked_hm3: volumeHm3,
+          volume_booked_mmcf: volumeMmcf,
+          amount_booked: amountBooked,
+          plaintiff,
+          status_of_accused: statusOfAccused,
         });
         if (error) alert(error);
       }
@@ -398,6 +434,42 @@ export default function ComplaintsPage() {
                       </td>
                       <td>
                         <span style={{ fontSize: '13px', color: 'var(--text-primary)' }}>{c.creator_name}</span>
+                        {c.status_of_accused && (
+                          <span style={{
+                            display: 'block',
+                            marginTop: '4px',
+                            fontSize: '10px',
+                            fontWeight: '700',
+                            letterSpacing: '0.04em',
+                            textTransform: 'uppercase',
+                            padding: '2px 7px',
+                            borderRadius: '4px',
+                            width: 'fit-content',
+                            ...(c.status_of_accused.toLowerCase().includes('arrest') ? {
+                              background: 'rgba(239,68,68,0.12)',
+                              color: '#f87171',
+                              border: '1px solid rgba(239,68,68,0.25)',
+                            } : c.status_of_accused.toLowerCase().includes('bail') ? {
+                              background: 'rgba(234,179,8,0.12)',
+                              color: '#facc15',
+                              border: '1px solid rgba(234,179,8,0.25)',
+                            } : c.status_of_accused.toLowerCase().includes('acquit') || c.status_of_accused.toLowerCase().includes('release') ? {
+                              background: 'rgba(16,185,129,0.12)',
+                              color: '#34d399',
+                              border: '1px solid rgba(16,185,129,0.25)',
+                            } : c.status_of_accused.toLowerCase().includes('convict') ? {
+                              background: 'rgba(168,85,247,0.12)',
+                              color: '#c084fc',
+                              border: '1px solid rgba(168,85,247,0.25)',
+                            } : {
+                              background: 'rgba(99,102,241,0.12)',
+                              color: '#818cf8',
+                              border: '1px solid rgba(99,102,241,0.25)',
+                            })
+                          }}>
+                            {c.status_of_accused}
+                          </span>
+                        )}
                       </td>
                       <td>
                         <div style={{ display: 'flex', gap: '8px', color: 'var(--text-secondary)' }}>
@@ -460,6 +532,13 @@ export default function ComplaintsPage() {
                                 setPdfs(c.pdfs);
                                 setXlsxs(c.xlsxs || []);
                                 setCsvs(c.csvs || []);
+                                setPoliceStation(c.police_station || '');
+                                setModeOfTheft(c.mode_of_theft || '');
+                                setVolumeHm3(c.volume_booked_hm3 || '');
+                                setVolumeMmcf(c.volume_booked_mmcf || '');
+                                setAmountBooked(c.amount_booked || '');
+                                setPlaintiff(c.plaintiff || '');
+                                setStatusOfAccused(c.status_of_accused || '');
                                 setIsModalOpen(true);
                               }}
                               className="btn btn-secondary" 
@@ -539,6 +618,101 @@ export default function ComplaintsPage() {
                   onChange={(e) => setCompDesc(e.target.value)}
                   disabled={user?.role === 'lawyer'}
                 />
+              </div>
+
+              {/* FIR INVESTIGATION DETAILS */}
+              <div style={{ marginBottom: '24px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.08em', paddingBottom: '8px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: '4px', height: '14px', background: 'var(--accent-blue)', borderRadius: '2px', display: 'inline-block' }}></span>
+                  FIR Investigation Details <span style={{ fontSize: '10px', fontWeight: '400', color: 'var(--text-muted)', textTransform: 'none', letterSpacing: '0' }}>(All fields optional)</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                  
+                  <div>
+                    <label className="form-label" style={{ fontSize: '12px' }}>Police Station</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g. PS Sector I-10"
+                      value={policeStation}
+                      onChange={(e) => setPoliceStation(e.target.value)}
+                      disabled={user?.role === 'lawyer'}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="form-label" style={{ fontSize: '12px' }}>Mode of Theft</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g. Direct Bypass, Meter Tampering"
+                      value={modeOfTheft}
+                      onChange={(e) => setModeOfTheft(e.target.value)}
+                      disabled={user?.role === 'lawyer'}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="form-label" style={{ fontSize: '12px' }}>Volume Booked (HM³)</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g. 1250"
+                      value={volumeHm3}
+                      onChange={(e) => setVolumeHm3(e.target.value)}
+                      disabled={user?.role === 'lawyer'}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="form-label" style={{ fontSize: '12px' }}>Volume Booked (MMCF)</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g. 0.044"
+                      value={volumeMmcf}
+                      onChange={(e) => setVolumeMmcf(e.target.value)}
+                      disabled={user?.role === 'lawyer'}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="form-label" style={{ fontSize: '12px' }}>Amount Booked (PKR)</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g. 485,000"
+                      value={amountBooked}
+                      onChange={(e) => setAmountBooked(e.target.value)}
+                      disabled={user?.role === 'lawyer'}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="form-label" style={{ fontSize: '12px' }}>Plaintiff</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g. SUI Gas Company / Complainant Name"
+                      value={plaintiff}
+                      onChange={(e) => setPlaintiff(e.target.value)}
+                      disabled={user?.role === 'lawyer'}
+                    />
+                  </div>
+
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label className="form-label" style={{ fontSize: '12px' }}>Status of Accused</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g. Arrested, On Bail, Under Investigation, Absconding..."
+                      value={statusOfAccused}
+                      onChange={(e) => setStatusOfAccused(e.target.value)}
+                      disabled={user?.role === 'lawyer'}
+                    />
+                  </div>
+
+                </div>
               </div>
 
               {/* ATTACHMENT MANAGER */}

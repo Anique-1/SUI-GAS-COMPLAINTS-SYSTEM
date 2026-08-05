@@ -21,6 +21,14 @@ export interface Complaint {
   pdfs: string[];
   xlsxs: string[];
   csvs: string[];
+  // Optional FIR detail fields
+  police_station?: string;
+  mode_of_theft?: string;
+  volume_booked_hm3?: string;
+  volume_booked_mmcf?: string;
+  amount_booked?: string;
+  plaintiff?: string;
+  status_of_accused?: string;
   public_link_token: string | null;
   public_link_active: boolean;
   created_at: string;
