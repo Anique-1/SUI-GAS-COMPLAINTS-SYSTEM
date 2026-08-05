@@ -389,12 +389,12 @@ export default function ComplaintsPage() {
                         {/* Police Station + Mode of Theft chips */}
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '5px' }}>
                           {c.police_station && (
-                            <span style={{ fontSize: '10px', color: '#94a3b8', background: 'rgba(148,163,184,0.08)', border: '1px solid rgba(148,163,184,0.18)', padding: '1px 6px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                            <span style={{ fontSize: '10px', fontWeight: '600', color: '#e2e8f0', background: '#334155', border: '1px solid #475569', padding: '2px 7px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '3px' }}>
                               🏛 {c.police_station}
                             </span>
                           )}
                           {c.mode_of_theft && (
-                            <span style={{ fontSize: '10px', fontWeight: '700', color: '#fb923c', background: 'rgba(251,146,60,0.10)', border: '1px solid rgba(251,146,60,0.25)', padding: '1px 6px', borderRadius: '4px' }}>
+                            <span style={{ fontSize: '10px', fontWeight: '700', color: '#fff7ed', background: '#c2410c', border: '1px solid #ea580c', padding: '2px 7px', borderRadius: '4px' }}>
                               ⚡ {c.mode_of_theft}
                             </span>
                           )}
@@ -449,22 +449,22 @@ export default function ComplaintsPage() {
                         {(c.volume_booked_hm3 || c.volume_booked_mmcf || c.amount_booked || c.plaintiff) && (
                           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '6px' }}>
                             {c.volume_booked_hm3 && (
-                              <span style={{ fontSize: '10px', color: '#67e8f9', background: 'rgba(103,232,249,0.08)', border: '1px solid rgba(103,232,249,0.2)', padding: '1px 6px', borderRadius: '4px' }}>
+                              <span style={{ fontSize: '10px', fontWeight: '600', color: '#ecfeff', background: '#0e7490', border: '1px solid #0891b2', padding: '2px 7px', borderRadius: '4px' }}>
                                 HM³: {c.volume_booked_hm3}
                               </span>
                             )}
                             {c.volume_booked_mmcf && (
-                              <span style={{ fontSize: '10px', color: '#67e8f9', background: 'rgba(103,232,249,0.08)', border: '1px solid rgba(103,232,249,0.2)', padding: '1px 6px', borderRadius: '4px' }}>
+                              <span style={{ fontSize: '10px', fontWeight: '600', color: '#ecfeff', background: '#0e7490', border: '1px solid #0891b2', padding: '2px 7px', borderRadius: '4px' }}>
                                 MMCF: {c.volume_booked_mmcf}
                               </span>
                             )}
                             {c.amount_booked && (
-                              <span style={{ fontSize: '10px', color: '#86efac', background: 'rgba(134,239,172,0.08)', border: '1px solid rgba(134,239,172,0.2)', padding: '1px 6px', borderRadius: '4px' }}>
+                              <span style={{ fontSize: '10px', fontWeight: '600', color: '#f0fdf4', background: '#15803d', border: '1px solid #16a34a', padding: '2px 7px', borderRadius: '4px' }}>
                                 PKR: {c.amount_booked}
                               </span>
                             )}
                             {c.plaintiff && (
-                              <span style={{ fontSize: '10px', color: '#c4b5fd', background: 'rgba(196,181,253,0.08)', border: '1px solid rgba(196,181,253,0.2)', padding: '1px 6px', borderRadius: '4px' }}>
+                              <span style={{ fontSize: '10px', fontWeight: '600', color: '#faf5ff', background: '#7e22ce', border: '1px solid #9333ea', padding: '2px 7px', borderRadius: '4px' }}>
                                 👤 {c.plaintiff}
                               </span>
                             )}
