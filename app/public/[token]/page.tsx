@@ -13,7 +13,8 @@ import {
   ShieldAlert, 
   Loader2,
   Lock,
-  Eye
+  Eye,
+  Sheet
 } from 'lucide-react';
 
 export default function PublicComplaintView() {
@@ -106,7 +107,7 @@ export default function PublicComplaintView() {
         <section>
           <h2 style={{ fontSize: '18px', marginBottom: '16px', color: 'var(--text-primary)' }}>Pipeline Case Attachments</h2>
           
-          {complaint.images.length === 0 && complaint.pdfs.length === 0 ? (
+          {complaint.images.length === 0 && complaint.pdfs.length === 0 && (complaint.xlsxs?.length ?? 0) === 0 && (complaint.csvs?.length ?? 0) === 0 ? (
             <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>No document or diagnostic image attachments are associated with this file.</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -178,6 +179,68 @@ export default function PublicComplaintView() {
                             style={{ padding: '6px 16px', fontSize: '12px', display: 'flex', gap: '6px' }}
                           >
                             <Download className="w-4 h-4" /> Download PDF
+                          </a>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* XLSX List */}
+              {(complaint.xlsxs?.length ?? 0) > 0 && (
+                <div>
+                  <h3 style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Sheet className="w-4 h-4" style={{ color: '#10b981' }} /> Excel Spreadsheets ({complaint.xlsxs?.length})
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {complaint.xlsxs?.map((xlsxUrl, idx) => {
+                      let filename = `spreadsheet-${idx + 1}.xlsx`;
+                      try {
+                        const parts = xlsxUrl.split('/');
+                        filename = decodeURIComponent(parts[parts.length - 1]);
+                      } catch (e) {}
+                      return (
+                        <div key={idx} className="glass-panel" style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(16,185,129,0.04)', border: '1px solid rgba(16,185,129,0.15)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', overflow: 'hidden' }}>
+                            <Sheet className="w-5 h-5" style={{ color: '#10b981', flexShrink: 0 }} />
+                            <span style={{ fontSize: '14px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {filename}
+                            </span>
+                          </div>
+                          <a href={`/api/download?url=${encodeURIComponent(xlsxUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '6px 16px', fontSize: '12px', display: 'flex', gap: '6px' }}>
+                            <Download className="w-4 h-4" /> Download XLSX
+                          </a>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* CSV List */}
+              {(complaint.csvs?.length ?? 0) > 0 && (
+                <div>
+                  <h3 style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Sheet className="w-4 h-4" style={{ color: '#eab308' }} /> CSV Data Files ({complaint.csvs?.length})
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {complaint.csvs?.map((csvUrl, idx) => {
+                      let filename = `data-${idx + 1}.csv`;
+                      try {
+                        const parts = csvUrl.split('/');
+                        filename = decodeURIComponent(parts[parts.length - 1]);
+                      } catch (e) {}
+                      return (
+                        <div key={idx} className="glass-panel" style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(234,179,8,0.04)', border: '1px solid rgba(234,179,8,0.15)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', overflow: 'hidden' }}>
+                            <Sheet className="w-5 h-5" style={{ color: '#eab308', flexShrink: 0 }} />
+                            <span style={{ fontSize: '14px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {filename}
+                            </span>
+                          </div>
+                          <a href={`/api/download?url=${encodeURIComponent(csvUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '6px 16px', fontSize: '12px', display: 'flex', gap: '6px' }}>
+                            <Download className="w-4 h-4" /> Download CSV
                           </a>
                         </div>
                       );

@@ -38,6 +38,8 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     if (updates.description !== undefined) allowedUpdates.description = updates.description;
     if (updates.images !== undefined) allowedUpdates.images = updates.images;
     if (updates.pdfs !== undefined) allowedUpdates.pdfs = updates.pdfs;
+    if (updates.xlsxs !== undefined) allowedUpdates.xlsxs = updates.xlsxs;
+    if (updates.csvs !== undefined) allowedUpdates.csvs = updates.csvs;
 
     await db.collection('complaints').updateOne(
       { id },

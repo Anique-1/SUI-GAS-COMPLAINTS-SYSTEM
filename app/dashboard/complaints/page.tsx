@@ -19,7 +19,8 @@ import {
   Loader2, 
   Download,
   Copy,
-  Check
+  Check,
+  Sheet
 } from 'lucide-react';
 
 export default function ComplaintsPage() {
@@ -41,6 +42,8 @@ export default function ComplaintsPage() {
   const [compDesc, setCompDesc] = useState('');
   const [images, setImages] = useState<string[]>([]);
   const [pdfs, setPdfs] = useState<string[]>([]);
+  const [xlsxs, setXlsxs] = useState<string[]>([]);
+  const [csvs, setCsvs] = useState<string[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -89,6 +92,8 @@ export default function ComplaintsPage() {
     setCompDesc('');
     setImages([]);
     setPdfs([]);
+    setXlsxs([]);
+    setCsvs([]);
     setIsModalOpen(true);
   };
 
@@ -106,6 +111,8 @@ export default function ComplaintsPage() {
     setCompDesc(complaint.description);
     setImages(complaint.images);
     setPdfs(complaint.pdfs);
+    setXlsxs(complaint.xlsxs || []);
+    setCsvs(complaint.csvs || []);
     setIsModalOpen(true);
   };
 
@@ -117,6 +124,8 @@ export default function ComplaintsPage() {
     
     const newImages: string[] = [];
     const newPdfs: string[] = [];
+    const newXlsxs: string[] = [];
+    const newCsvs: string[] = [];
 
     for (const file of filesArray) {
       try {
@@ -125,6 +134,17 @@ export default function ComplaintsPage() {
           newImages.push(uploadResult.url);
         } else if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
           newPdfs.push(uploadResult.url);
+        } else if (
+          file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+          file.name.toLowerCase().endsWith('.xlsx')
+        ) {
+          newXlsxs.push(uploadResult.url);
+        } else if (
+          file.type === 'text/csv' ||
+          file.type === 'application/csv' ||
+          file.name.toLowerCase().endsWith('.csv')
+        ) {
+          newCsvs.push(uploadResult.url);
         }
       } catch (err) {
         console.error('File upload failed', err);
@@ -133,6 +153,8 @@ export default function ComplaintsPage() {
 
     setImages(prev => [...prev, ...newImages]);
     setPdfs(prev => [...prev, ...newPdfs]);
+    setXlsxs(prev => [...prev, ...newXlsxs]);
+    setCsvs(prev => [...prev, ...newCsvs]);
     setUploadingFiles(false);
     
     // Clear input
@@ -140,11 +162,15 @@ export default function ComplaintsPage() {
   };
 
   // Remove uploaded attachment
-  const handleRemoveAttachment = (type: 'image' | 'pdf', index: number) => {
+  const handleRemoveAttachment = (type: 'image' | 'pdf' | 'xlsx' | 'csv', index: number) => {
     if (type === 'image') {
       setImages(prev => prev.filter((_, i) => i !== index));
-    } else {
+    } else if (type === 'pdf') {
       setPdfs(prev => prev.filter((_, i) => i !== index));
+    } else if (type === 'xlsx') {
+      setXlsxs(prev => prev.filter((_, i) => i !== index));
+    } else {
+      setCsvs(prev => prev.filter((_, i) => i !== index));
     }
   };
 
@@ -161,7 +187,9 @@ export default function ComplaintsPage() {
           register_date: compDate,
           description: compDesc,
           images,
-          pdfs
+          pdfs,
+          xlsxs,
+          csvs
         });
         if (error) alert(error);
       } else {
@@ -171,7 +199,9 @@ export default function ComplaintsPage() {
           register_date: compDate,
           description: compDesc,
           images,
-          pdfs
+          pdfs,
+          xlsxs,
+          csvs
         });
         if (error) alert(error);
       }
@@ -381,7 +411,17 @@ export default function ComplaintsPage() {
                               <FileText className="w-4 h-4 text-red-400" /> {c.pdfs.length}
                             </span>
                           )}
-                          {c.images.length === 0 && c.pdfs.length === 0 && (
+                          {(c.xlsxs?.length ?? 0) > 0 && (
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }} title={`${c.xlsxs?.length} XLSX`}>
+                              <Sheet className="w-4 h-4 text-emerald-400" /> {c.xlsxs?.length}
+                            </span>
+                          )}
+                          {(c.csvs?.length ?? 0) > 0 && (
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }} title={`${c.csvs?.length} CSV`}>
+                              <Sheet className="w-4 h-4 text-yellow-400" /> {c.csvs?.length}
+                            </span>
+                          )}
+                          {c.images.length === 0 && c.pdfs.length === 0 && (c.xlsxs?.length ?? 0) === 0 && (c.csvs?.length ?? 0) === 0 && (
                             <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>None</span>
                           )}
                         </div>
@@ -418,6 +458,8 @@ export default function ComplaintsPage() {
                                 setCompDesc(c.description);
                                 setImages(c.images);
                                 setPdfs(c.pdfs);
+                                setXlsxs(c.xlsxs || []);
+                                setCsvs(c.csvs || []);
                                 setIsModalOpen(true);
                               }}
                               className="btn btn-secondary" 
@@ -512,7 +554,7 @@ export default function ComplaintsPage() {
                       className="form-input" 
                       style={{ display: 'none' }}
                       multiple
-                      accept="image/*,application/pdf"
+                      accept="image/*,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.xlsx,text/csv,.csv"
                       onChange={handleFileUpload}
                       disabled={uploadingFiles}
                     />
@@ -533,12 +575,12 @@ export default function ComplaintsPage() {
                         </>
                       )}
                     </button>
-                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Supported: PNG, JPG, PDF</span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Supported: PNG, JPG, PDF, XLSX, CSV</span>
                   </div>
                 )}
 
                 {/* ATTACHMENTS LISTING */}
-                {(images.length > 0 || pdfs.length > 0) && (
+                {(images.length > 0 || pdfs.length > 0 || xlsxs.length > 0 || csvs.length > 0) && (
                   <div style={{ marginTop: '16px' }}>
                     
                     {/* Images list */}
@@ -571,11 +613,10 @@ export default function ComplaintsPage() {
 
                     {/* PDFs list */}
                     {pdfs.length > 0 && (
-                      <div>
+                      <div style={{ marginBottom: '14px' }}>
                         <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '8px' }}>PDF Documents:</div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                           {pdfs.map((pdfUrl, idx) => {
-                            // Try to get clean file name
                             let filename = `document-${idx + 1}.pdf`;
                             if (pdfUrl.startsWith('data:')) {
                               const match = pdfUrl.match(/;name=([^;]+);/);
@@ -610,6 +651,82 @@ export default function ComplaintsPage() {
                                       style={{ padding: '4px 8px', fontSize: '10px', height: '24px', background: 'none' }}
                                       onClick={() => handleRemoveAttachment('pdf', idx)}
                                     >
+                                      × Remove
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* XLSX files list */}
+                    {xlsxs.length > 0 && (
+                      <div style={{ marginBottom: '14px' }}>
+                        <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Sheet className="w-3.5 h-3.5 text-emerald-400" /> Excel Spreadsheets (.xlsx):
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {xlsxs.map((xlsxUrl, idx) => {
+                            let filename = `spreadsheet-${idx + 1}.xlsx`;
+                            try {
+                              const urlParts = xlsxUrl.split('/');
+                              filename = decodeURIComponent(urlParts[urlParts.length - 1]);
+                            } catch (e) {}
+                            return (
+                              <div key={idx} className="glass-panel" style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(16,185,129,0.04)', borderRadius: '8px', border: '1px solid rgba(16,185,129,0.15)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
+                                  <Sheet className="w-4 h-4" style={{ color: '#10b981', flexShrink: 0 }} />
+                                  <span style={{ fontSize: '12px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {filename}
+                                  </span>
+                                </div>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                  <a href={`/api/download?url=${encodeURIComponent(xlsxUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '10px', height: '24px', borderColor: 'rgba(16,185,129,0.3)' }}>
+                                    <Download className="w-3.5 h-3.5" /> Download XLSX
+                                  </a>
+                                  {user?.role !== 'lawyer' && (
+                                    <button type="button" className="btn btn-danger" style={{ padding: '4px 8px', fontSize: '10px', height: '24px', background: 'none' }} onClick={() => handleRemoveAttachment('xlsx', idx)}>
+                                      × Remove
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* CSV files list */}
+                    {csvs.length > 0 && (
+                      <div>
+                        <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Sheet className="w-3.5 h-3.5 text-yellow-400" /> CSV Data Files:
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {csvs.map((csvUrl, idx) => {
+                            let filename = `data-${idx + 1}.csv`;
+                            try {
+                              const urlParts = csvUrl.split('/');
+                              filename = decodeURIComponent(urlParts[urlParts.length - 1]);
+                            } catch (e) {}
+                            return (
+                              <div key={idx} className="glass-panel" style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(234,179,8,0.04)', borderRadius: '8px', border: '1px solid rgba(234,179,8,0.15)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
+                                  <Sheet className="w-4 h-4" style={{ color: '#eab308', flexShrink: 0 }} />
+                                  <span style={{ fontSize: '12px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {filename}
+                                  </span>
+                                </div>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                  <a href={`/api/download?url=${encodeURIComponent(csvUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '10px', height: '24px', borderColor: 'rgba(234,179,8,0.3)' }}>
+                                    <Download className="w-3.5 h-3.5" /> Download CSV
+                                  </a>
+                                  {user?.role !== 'lawyer' && (
+                                    <button type="button" className="btn btn-danger" style={{ padding: '4px 8px', fontSize: '10px', height: '24px', background: 'none' }} onClick={() => handleRemoveAttachment('csv', idx)}>
                                       × Remove
                                     </button>
                                   )}

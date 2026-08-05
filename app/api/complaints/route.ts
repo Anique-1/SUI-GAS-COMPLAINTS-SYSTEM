@@ -31,6 +31,8 @@ export async function GET(req: NextRequest) {
       creator_name: profileMap.get(c.created_by) || 'Unknown Operator',
       images: c.images || [],
       pdfs: c.pdfs || [],
+      xlsxs: c.xlsxs || [],
+      csvs: c.csvs || [],
       public_link_token: c.public_link_token || null,
       public_link_active: !!c.public_link_active,
       created_at: c.created_at,
@@ -50,7 +52,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Access denied. Operator role is required.' }, { status: 403 });
     }
 
-    const { name, register_date, description, images, pdfs } = await req.json();
+    const { name, register_date, description, images, pdfs, xlsxs, csvs } = await req.json();
     if (!name || !register_date) {
       return NextResponse.json({ error: 'Subject name and register date are required.' }, { status: 400 });
     }
@@ -67,6 +69,8 @@ export async function POST(req: NextRequest) {
       created_by: sessionUser.id,
       images: images || [],
       pdfs: pdfs || [],
+      xlsxs: xlsxs || [],
+      csvs: csvs || [],
       public_link_token: null,
       public_link_active: false,
       created_at: new Date(),

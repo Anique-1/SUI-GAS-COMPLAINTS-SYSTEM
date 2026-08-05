@@ -19,6 +19,8 @@ export interface Complaint {
   creator_name: string;
   images: string[];
   pdfs: string[];
+  xlsxs: string[];
+  csvs: string[];
   public_link_token: string | null;
   public_link_active: boolean;
   created_at: string;

@@ -35,6 +35,16 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(bytes);
 
     const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    const isXlsx = 
+      file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      file.name.toLowerCase().endsWith('.xlsx');
+    const isCsv = 
+      file.type === 'text/csv' ||
+      file.type === 'application/csv' ||
+      file.name.toLowerCase().endsWith('.csv');
+
+    const isRawFile = isPdf || isXlsx || isCsv;
+    const ext = isPdf ? '.pdf' : isXlsx ? '.xlsx' : isCsv ? '.csv' : '';
 
     // Parse and sanitize the original file name to preserve it in the URL
     const originalName = file.name;
@@ -42,16 +52,16 @@ export async function POST(req: NextRequest) {
     const nameWithoutExt = lastDot !== -1 ? originalName.substring(0, lastDot) : originalName;
     const cleanName = nameWithoutExt.replace(/[^a-zA-Z0-9-_]/g, '_');
 
-    // Build public_id. For resource_type: 'raw' (PDFs), Cloudinary requires the extension inside the public_id!
-    const uniquePublicId = isPdf 
-      ? `${cleanName}_${Date.now()}.pdf` 
+    // Build public_id. For resource_type: 'raw' (PDFs, XLSX, CSV), Cloudinary requires the extension inside the public_id!
+    const uniquePublicId = isRawFile
+      ? `${cleanName}_${Date.now()}${ext}`
       : `${cleanName}_${Date.now()}`;
 
     // Upload using standard stream helper (restores binary stream integrity for raw files)
     const uploadResult = await new Promise<any>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
-          resource_type: isPdf ? 'raw' : 'auto',
+          resource_type: isRawFile ? 'raw' : 'auto',
           folder: 'sui_gas_complaints_registry',
           public_id: uniquePublicId,
         },
