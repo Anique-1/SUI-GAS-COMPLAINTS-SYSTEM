@@ -145,6 +145,12 @@ export default function PublicComplaintView() {
                     <div style={{ fontSize: '14px', color: 'var(--text-primary)' }}>{complaint.plaintiff}</div>
                   </div>
                 )}
+                {complaint.lawyer_name && (
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>Lawyer Name</div>
+                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#818cf8' }}>⚖️ {complaint.lawyer_name}</div>
+                  </div>
+                )}
                 {complaint.status_of_accused && (
                   <div>
                     <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>Status of Accused</div>

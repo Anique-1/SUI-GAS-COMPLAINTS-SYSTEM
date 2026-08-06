@@ -29,6 +29,7 @@ export interface Complaint {
   amount_booked?: string;
   plaintiff?: string;
   status_of_accused?: string;
+  lawyer_name?: string;
   public_link_token: string | null;
   public_link_active: boolean;
   created_at: string;
