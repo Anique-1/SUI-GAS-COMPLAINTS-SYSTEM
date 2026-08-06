@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     const complaints = await db
       .collection('complaints')
       .find({})
-      .sort({ created_at: -1 })
+      .sort({ register_date: -1 })
       .toArray();
 
     // Map creator names by fetching corresponding profiles (fast in-memory mapping)
