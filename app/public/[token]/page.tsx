@@ -104,7 +104,7 @@ export default function PublicComplaintView() {
         </section>
 
         {/* FIR Investigation Details */}
-        {(complaint.police_station || complaint.mode_of_theft || complaint.volume_booked_hm3 || complaint.volume_booked_mmcf || complaint.amount_booked || complaint.plaintiff || complaint.status_of_accused) && (
+        {(complaint.police_station || complaint.mode_of_theft || complaint.volume_booked_hm3 || complaint.volume_booked_mmcf || complaint.amount_booked || complaint.plaintiff || complaint.status_of_accused || complaint.lawyer_name || complaint.court_name) && (
           <section style={{ marginBottom: '40px' }}>
             <h2 style={{ fontSize: '18px', marginBottom: '16px', color: 'var(--text-primary)' }}>FIR Investigation Details</h2>
             <div className="glass-panel" style={{ padding: '20px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-color)' }}>
@@ -149,6 +149,12 @@ export default function PublicComplaintView() {
                   <div>
                     <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>Lawyer Name</div>
                     <div style={{ fontSize: '14px', fontWeight: '600', color: '#818cf8' }}>⚖️ {complaint.lawyer_name}</div>
+                  </div>
+                )}
+                {complaint.court_name && (
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>Court Name</div>
+                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#2dd4bf' }}>🏛️ {complaint.court_name}</div>
                   </div>
                 )}
                 {complaint.status_of_accused && (

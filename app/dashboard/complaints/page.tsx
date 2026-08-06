@@ -53,6 +53,7 @@ export default function ComplaintsPage() {
   const [plaintiff, setPlaintiff] = useState('');
   const [statusOfAccused, setStatusOfAccused] = useState('');
   const [lawyerName, setLawyerName] = useState('');
+  const [courtName, setCourtName] = useState('');
   const [uploadingFiles, setUploadingFiles] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -111,6 +112,7 @@ export default function ComplaintsPage() {
     setPlaintiff('');
     setStatusOfAccused('');
     setLawyerName('');
+    setCourtName('');
     setIsModalOpen(true);
   };
 
@@ -138,6 +140,7 @@ export default function ComplaintsPage() {
     setPlaintiff(complaint.plaintiff || '');
     setStatusOfAccused(complaint.status_of_accused || '');
     setLawyerName(complaint.lawyer_name || '');
+    setCourtName(complaint.court_name || '');
     setIsModalOpen(true);
   };
 
@@ -223,6 +226,7 @@ export default function ComplaintsPage() {
           plaintiff,
           status_of_accused: statusOfAccused,
           lawyer_name: lawyerName,
+          court_name: courtName,
         });
         if (error) alert(error);
       } else {
@@ -243,6 +247,7 @@ export default function ComplaintsPage() {
           plaintiff,
           status_of_accused: statusOfAccused,
           lawyer_name: lawyerName,
+          court_name: courtName,
         });
         if (error) alert(error);
       }
@@ -406,6 +411,11 @@ export default function ComplaintsPage() {
                           {c.lawyer_name && (
                             <span style={{ fontSize: '10px', fontWeight: '600', color: '#f5f3ff', background: '#4f46e5', border: '1px solid #6366f1', padding: '2px 7px', borderRadius: '4px' }}>
                               ⚖️ {c.lawyer_name}
+                            </span>
+                          )}
+                          {c.court_name && (
+                            <span style={{ fontSize: '10px', fontWeight: '600', color: '#f0fdfa', background: '#0f766e', border: '1px solid #14b8a6', padding: '2px 7px', borderRadius: '4px' }}>
+                              🏛️ {c.court_name}
                             </span>
                           )}
                         </div>
@@ -589,6 +599,7 @@ export default function ComplaintsPage() {
                                 setPlaintiff(c.plaintiff || '');
                                 setStatusOfAccused(c.status_of_accused || '');
                                 setLawyerName(c.lawyer_name || '');
+                                setCourtName(c.court_name || '');
                                 setIsModalOpen(true);
                               }}
                               className="btn btn-secondary" 
@@ -770,6 +781,18 @@ export default function ComplaintsPage() {
                       placeholder="e.g. Barrister Ahmed Raza, Adv. Muhammad Ali"
                       value={lawyerName}
                       onChange={(e) => setLawyerName(e.target.value)}
+                      disabled={user?.role === 'lawyer'}
+                    />
+                  </div>
+
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label className="form-label" style={{ fontSize: '12px' }}>Court Name</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g. Sessions Court Lahore, Anti-Corruption Court Islamabad"
+                      value={courtName}
+                      onChange={(e) => setCourtName(e.target.value)}
                       disabled={user?.role === 'lawyer'}
                     />
                   </div>

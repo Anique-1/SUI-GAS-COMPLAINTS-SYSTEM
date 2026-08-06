@@ -52,6 +52,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
       plaintiff: complaint.plaintiff || '',
       status_of_accused: complaint.status_of_accused || '',
       lawyer_name: complaint.lawyer_name || '',
+      court_name: complaint.court_name || '',
       public_link_token: complaint.public_link_token,
       public_link_active: complaint.public_link_active,
       created_at: complaint.created_at,
