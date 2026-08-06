@@ -30,7 +30,8 @@ export default function ComplaintsPage() {
 
   // Filters State
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedYear, setSelectedYear] = useState('All');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -76,23 +77,27 @@ export default function ComplaintsPage() {
     fetchComplaints();
   }, []);
 
-  // Filter complaints based on search query and year
+  // Filter complaints based on search query and date range (From Date -> To Date)
   const filteredComplaints = complaints.filter(c => {
     const matchesSearch = 
       c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.creator_name.toLowerCase().includes(searchQuery.toLowerCase());
+      c.creator_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (c.police_station && c.police_station.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (c.mode_of_theft && c.mode_of_theft.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (c.lawyer_name && c.lawyer_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (c.court_name && c.court_name.toLowerCase().includes(searchQuery.toLowerCase()));
       
-    const complaintYear = new Date(c.register_date).getFullYear().toString();
-    const matchesYear = selectedYear === 'All' || complaintYear === selectedYear;
+    let matchesDateRange = true;
+    if (fromDate) {
+      matchesDateRange = matchesDateRange && c.register_date >= fromDate;
+    }
+    if (toDate) {
+      matchesDateRange = matchesDateRange && c.register_date <= toDate;
+    }
     
-    return matchesSearch && matchesYear;
+    return matchesSearch && matchesDateRange;
   });
-
-  // Extract unique years for filtering
-  const availableYears = ['All', ...Array.from(new Set(
-    complaints.map(c => new Date(c.register_date).getFullYear().toString())
-  ))].sort((a, b) => b.localeCompare(a));
 
   // Handle opening modal for adding new
   const handleOpenAddModal = () => {
@@ -332,31 +337,53 @@ export default function ComplaintsPage() {
       </div>
 
       {/* FILTER AND SEARCH BAR */}
-      <div className="glass-panel filter-bar" style={{ padding: '16px', marginBottom: '32px' }}>
-        <div style={{ display: 'flex', flexGrow: 1, position: 'relative' }}>
+      <div className="glass-panel filter-bar" style={{ padding: '16px', marginBottom: '32px', display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexGrow: 1, minWidth: '240px', position: 'relative' }}>
           <Search className="w-4 h-4 text-slate-400" style={{ position: 'absolute', left: '14px', top: '15px' }} />
           <input 
             type="text" 
             className="form-input filter-input" 
-            placeholder="Search by name, description, or creator..."
+            placeholder="Search by name, description, creator, police station..."
             style={{ paddingLeft: '42px' }}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '600' }}>Year Filter:</span>
-          <select 
-            className="form-select" 
-            style={{ width: '120px', padding: '10px 16px' }}
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-          >
-            {availableYears.map(year => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
+        {/* CUSTOM DATE RANGE FILTER (FROM - TO) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>From:</span>
+            <input 
+              type="date" 
+              className="form-input" 
+              style={{ width: '145px', padding: '8px 12px', fontSize: '12px', height: '38px' }}
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+            />
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>To:</span>
+            <input 
+              type="date" 
+              className="form-input" 
+              style={{ width: '145px', padding: '8px 12px', fontSize: '12px', height: '38px' }}
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+            />
+          </div>
+
+          {(fromDate || toDate) && (
+            <button 
+              type="button" 
+              className="btn btn-secondary" 
+              style={{ padding: '6px 12px', fontSize: '12px', height: '38px', whiteSpace: 'nowrap' }}
+              onClick={() => { setFromDate(''); setToDate(''); }}
+            >
+              <X className="w-3.5 h-3.5" /> Clear Range
+            </button>
+          )}
         </div>
       </div>
 
