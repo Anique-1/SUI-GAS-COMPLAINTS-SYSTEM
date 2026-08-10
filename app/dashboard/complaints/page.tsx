@@ -80,6 +80,7 @@ export default function ComplaintsPage() {
   // Filter complaints based on search query and date range (From Date -> To Date)
   const filteredComplaints = complaints.filter(c => {
     const matchesSearch = 
+      c.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.creator_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -343,7 +344,7 @@ export default function ComplaintsPage() {
           <input 
             type="text" 
             className="form-input filter-input" 
-            placeholder="Search by name, description, creator, police station..."
+            placeholder="Search by ID, name, description, creator, police station..."
             style={{ paddingLeft: '42px' }}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -422,6 +423,27 @@ export default function ComplaintsPage() {
                     <tr key={c.id}>
                       <td>
                         <strong style={{ color: 'var(--text-primary)', display: 'block' }}>{c.name}</strong>
+
+                        {/* Complaint ID with copy button */}
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'monospace', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span>ID: {c.id}</span>
+                          <button 
+                            type="button" 
+                            style={{ background: 'none', border: 'none', padding: '0', cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'var(--text-muted)' }}
+                            onClick={() => {
+                              navigator.clipboard.writeText(c.id);
+                              setCopiedId(`id-${c.id}`);
+                              setTimeout(() => setCopiedId(null), 1500);
+                            }}
+                            title="Copy Complaint ID"
+                          >
+                            {copiedId === `id-${c.id}` ? (
+                              <Check className="w-3 h-3 text-emerald-400" />
+                            ) : (
+                              <Copy className="w-3 h-3 hover:text-cyan-400" style={{ cursor: 'pointer' }} />
+                            )}
+                          </button>
+                        </div>
 
                         {/* Police Station + Mode of Theft chips */}
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '5px' }}>
@@ -663,6 +685,27 @@ export default function ComplaintsPage() {
                     ? 'Edit Complaint Record' 
                     : 'Register Pipeline Complaint'}
               </h2>
+              {editingComplaint && (
+                <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'monospace', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>ID: {editingComplaint.id}</span>
+                  <button 
+                    type="button" 
+                    style={{ background: 'none', border: 'none', padding: '0', cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'var(--text-muted)' }}
+                    onClick={() => {
+                      navigator.clipboard.writeText(editingComplaint.id);
+                      setCopiedId(`modal-id-${editingComplaint.id}`);
+                      setTimeout(() => setCopiedId(null), 1500);
+                    }}
+                    title="Copy Complaint ID"
+                  >
+                    {copiedId === `modal-id-${editingComplaint.id}` ? (
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    ) : (
+                      <Copy className="w-3.5 h-3.5 hover:text-cyan-400" style={{ cursor: 'pointer' }} />
+                    )}
+                  </button>
+                </div>
+              )}
               <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '4px' }}>
                 {user?.role === 'lawyer' 
                   ? 'Compliance audit view of attachments and logs'
