@@ -23,6 +23,15 @@ import {
   Sheet
 } from 'lucide-react';
 
+const normalizeText = (str: string | undefined | null) => {
+  if (!str) return '';
+  return str
+    .toLowerCase()
+    .replace(/[\u2013\u2014-]/g, '-')
+    .replace(/\s+/g, ' ')
+    .trim();
+};
+
 export default function ComplaintsPage() {
   const { user } = useUser();
   const [complaints, setComplaints] = useState<Complaint[]>([]);
@@ -79,15 +88,16 @@ export default function ComplaintsPage() {
 
   // Filter complaints based on search query and date range (From Date -> To Date)
   const filteredComplaints = complaints.filter(c => {
+    const query = normalizeText(searchQuery);
     const matchesSearch = 
-      c.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.creator_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (c.police_station && c.police_station.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (c.mode_of_theft && c.mode_of_theft.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (c.lawyer_name && c.lawyer_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (c.court_name && c.court_name.toLowerCase().includes(searchQuery.toLowerCase()));
+      normalizeText(c.id).includes(query) ||
+      normalizeText(c.name).includes(query) ||
+      normalizeText(c.description).includes(query) ||
+      normalizeText(c.creator_name).includes(query) ||
+      normalizeText(c.police_station).includes(query) ||
+      normalizeText(c.mode_of_theft).includes(query) ||
+      normalizeText(c.lawyer_name).includes(query) ||
+      normalizeText(c.court_name).includes(query);
       
     let matchesDateRange = true;
     if (fromDate) {
