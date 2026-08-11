@@ -333,7 +333,7 @@ export default function ComplaintsPage() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Pipeline Complaints FIR Registry</h1>
+          <h1 className="page-title">Pipeline FIR Complaints Registry</h1>
           <p className="page-description">Maintain regulatory logs, upload engineering documents, and manage public compliance files</p>
         </div>
         
@@ -341,7 +341,7 @@ export default function ComplaintsPage() {
         {user?.role !== 'lawyer' && (
           <button onClick={handleOpenAddModal} className="btn btn-primary">
             <Plus className="w-4 h-4" />
-            Add New Complaint
+            Add New FIR Complaint
           </button>
         )}
       </div>
@@ -353,7 +353,7 @@ export default function ComplaintsPage() {
           <input 
             type="text" 
             className="form-input filter-input" 
-            placeholder="Search by name, description, creator, police station..."
+            placeholder="Search by FIR name, description, creator, police station..."
             style={{ paddingLeft: '42px' }}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -407,15 +407,15 @@ export default function ComplaintsPage() {
         ) : filteredComplaints.length === 0 ? (
           <div style={{ padding: '80px 40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
             <FileText className="w-12 h-12 text-slate-500" style={{ color: 'var(--text-muted)', margin: '0 auto 16px auto', opacity: 0.5 }} />
-            <h3>No Complaints Found</h3>
-            <p style={{ fontSize: '13px', marginTop: '4px' }}>Try modifying search keywords or adding a new complaint record.</p>
+            <h3>No FIR Complaints Found</h3>
+            <p style={{ fontSize: '13px', marginTop: '4px' }}>Try modifying search keywords or adding a new FIR complaint record.</p>
           </div>
         ) : (
           <div className="data-table-container">
             <table className="data-table">
               <thead>
                 <tr>
-                  <th style={{ width: '22%' }}>Complaint Subject</th>
+                  <th style={{ width: '22%' }}>FIR Subject</th>
                   <th style={{ width: '13%' }}>Register Date</th>
                   <th style={{ width: '30%' }}>Description</th>
                   <th style={{ width: '15%' }}>Registered By</th>
@@ -668,15 +668,15 @@ export default function ComplaintsPage() {
             <div className="modal-header">
               <h2>
                 {user?.role === 'lawyer' 
-                  ? 'View Complaint FIR Details' 
+                  ? 'View FIR Complaint Details' 
                   : editingComplaint 
-                    ? 'Edit Complaint Record' 
-                    : 'Register Pipeline Complaint'}
+                    ? 'Edit FIR Complaint Record' 
+                    : 'Register Pipeline FIR Complaint'}
               </h2>
               <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '4px' }}>
                 {user?.role === 'lawyer' 
                   ? 'Compliance audit view of attachments and logs'
-                  : 'Specify complaint metadata and upload diagnostic documents'}
+                  : 'Specify FIR complaint metadata and upload diagnostic documents'}
               </p>
             </div>
 
@@ -1044,7 +1044,7 @@ export default function ComplaintsPage() {
                 </button>
                 {user?.role !== 'lawyer' && (
                   <button type="submit" className="btn btn-primary" disabled={uploadingFiles}>
-                    {editingComplaint ? 'Save Changes' : 'Register Complaint'}
+                    {editingComplaint ? 'Save Changes' : 'Register FIR Complaint'}
                   </button>
                 )}
               </div>

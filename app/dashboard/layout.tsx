@@ -12,7 +12,8 @@ import {
   Settings, 
   LogOut, 
   Loader2,
-  Users
+  Users,
+  DollarSign
 } from 'lucide-react';
 
 // User context for dashboard pages
@@ -97,7 +98,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               className={`sidebar-link ${isLinkActive('/dashboard/complaints') ? 'active' : ''}`}
             >
               <ClipboardList className="w-4 h-4" />
-              <span>Complaints</span>
+              <span>FIR Complaints</span>
+            </Link>
+
+            <Link 
+              href="/dashboard/sales-complaints" 
+              className={`sidebar-link ${isLinkActive('/dashboard/sales-complaints') ? 'active' : ''}`}
+            >
+              <DollarSign className="w-4 h-4" />
+              <span>Sales Complaints</span>
             </Link>
 
             {/* Admin/Executive Only Approvals View */}

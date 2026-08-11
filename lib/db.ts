@@ -36,6 +36,30 @@ export interface Complaint {
   created_at: string;
 }
 
+export interface SalesComplaintReply {
+  id: string;
+  reply_text: string;
+  reply_date: string;
+  replied_by: string;
+  replier_name: string;
+  created_at: string;
+}
+
+export interface SalesComplaint {
+  id: string;
+  serial_id: string; // SC-XXXXXX
+  attended_data: string; // Attended Data/Date
+  consumer_no: string;
+  meter_no: string;
+  customer_name: string;
+  customer_address: string;
+  replies: SalesComplaintReply[];
+  created_by: string;
+  creator_name: string;
+  created_at: string;
+  status: 'pending' | 'resolved';
+}
+
 export const dbClient = {
   isMock: false,
 
@@ -195,6 +219,70 @@ export const dbClient = {
     } catch (e) {
       console.error('getComplaints error:', e);
       return [];
+    }
+  },
+
+  // Fetch Sales Complaints
+  async getSalesComplaints(): Promise<SalesComplaint[]> {
+    try {
+      const res = await fetch('/api/sales-complaints');
+      if (!res.ok) return [];
+      return await res.json();
+    } catch (e) {
+      console.error('getSalesComplaints error:', e);
+      return [];
+    }
+  },
+
+  // Create Sales Complaint
+  async createSalesComplaint(complaint: Omit<SalesComplaint, 'id' | 'serial_id' | 'created_by' | 'creator_name' | 'created_at' | 'status' | 'replies'>): Promise<{ data: SalesComplaint | null; error: string | null }> {
+    try {
+      const res = await fetch('/api/sales-complaints', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(complaint),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { data: null, error: data.error || 'Failed to record sales complaint.' };
+      }
+      return { data: data.data, error: null };
+    } catch (e: any) {
+      return { data: null, error: e.message || 'Network connection failed.' };
+    }
+  },
+
+  // Update Sales Complaint Details (e.g., adding reply)
+  async updateSalesComplaint(complaintId: string, updates: Partial<SalesComplaint> & { reply_text?: string; reply_date?: string }): Promise<{ error: string | null }> {
+    try {
+      const res = await fetch(`/api/sales-complaints/${complaintId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { error: data.error || 'Failed to update sales complaint.' };
+      }
+      return { error: null };
+    } catch (e: any) {
+      return { error: e.message || 'Network connection failed.' };
+    }
+  },
+
+  // Delete Sales Complaint
+  async deleteSalesComplaint(complaintId: string): Promise<{ error: string | null }> {
+    try {
+      const res = await fetch(`/api/sales-complaints/${complaintId}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { error: data.error || 'Failed to delete sales complaint.' };
+      }
+      return { error: null };
+    } catch (e: any) {
+      return { error: e.message || 'Network connection failed.' };
     }
   },
 

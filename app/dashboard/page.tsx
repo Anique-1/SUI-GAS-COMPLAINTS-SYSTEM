@@ -54,7 +54,7 @@ export default function DashboardOverview() {
       <div className="metrics-grid">
         <div className="glass-panel metric-card glass-panel-hover">
           <div>
-            <div className="metric-label">Total Complaints</div>
+            <div className="metric-label">Total FIR Complaints</div>
             <div className="metric-value">{complaints.length}</div>
           </div>
           <div className="metric-icon">
@@ -148,7 +148,7 @@ export default function DashboardOverview() {
                 </li>
                 <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <CheckCircle className="w-4 h-4 text-emerald-400" style={{ flexShrink: 0, color: 'var(--status-approved)' }} />
-                  Add, edit, delete, and view all complaints in the database
+                  Add, edit, delete, and view all FIR complaints in the database
                 </li>
                 <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <CheckCircle className="w-4 h-4 text-emerald-400" style={{ flexShrink: 0, color: 'var(--status-approved)' }} />
@@ -166,15 +166,15 @@ export default function DashboardOverview() {
               <ul style={{ listStyleType: 'none', paddingLeft: '0', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px', color: 'var(--text-secondary)' }}>
                 <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <CheckCircle className="w-4 h-4 text-emerald-400" style={{ flexShrink: 0, color: 'var(--status-approved)' }} />
-                  Add new pipeline complaints with multi-file and PDF attachments
+                  Add new pipeline FIR complaints with multi-file and PDF attachments
                 </li>
                 <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <CheckCircle className="w-4 h-4 text-emerald-400" style={{ flexShrink: 0, color: 'var(--status-approved)' }} />
-                  Modify and delete complaints that you created
+                  Modify and delete FIR complaints that you created
                 </li>
                 <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <CheckCircle className="w-4 h-4 text-emerald-400" style={{ flexShrink: 0, color: 'var(--status-approved)' }} />
-                  Generate public links to share complaints with legal or external teams
+                  Generate public links to share FIR complaints with legal or external teams
                 </li>
               </ul>
             </div>
@@ -188,14 +188,14 @@ export default function DashboardOverview() {
               <ul style={{ listStyleType: 'none', paddingLeft: '0', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px', color: 'var(--text-secondary)' }}>
                 <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <Scale className="w-4 h-4 text-purple-400" style={{ flexShrink: 0, color: '#a78bfa' }} />
-                  View all complaints registered on the pipeline system
+                  View all FIR complaints registered on the pipeline system
                 </li>
                 <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <Scale className="w-4 h-4 text-purple-400" style={{ flexShrink: 0, color: '#a78bfa' }} />
                   Conduct audits and legal verification on pipeline attachments
                 </li>
                 <li style={{ display: 'none', gap: '8px', alignItems: 'center' }}>
-                  Blocked from: Add/Edit/Delete complaints & Public links
+                  Blocked from: Add/Edit/Delete FIR complaints & Public links
                 </li>
               </ul>
               <div style={{ marginTop: '16px', padding: '12px', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', fontSize: '12px', border: '1px dashed var(--border-color)' }}>
