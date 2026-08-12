@@ -14,14 +14,14 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     }
 
     const { id } = await context.params;
-    const { 
-      attended_data, 
-      consumer_no, 
-      meter_no, 
-      customer_name, 
-      customer_address, 
-      reply_text, 
-      reply_date 
+    const {
+      attended_data,
+      consumer_no,
+      meter_no,
+      customer_name,
+      customer_address,
+      reply_text,
+      reply_date
     } = await req.json();
 
     const db = await getDb();
@@ -48,7 +48,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
 
       await db.collection('sales_complaints').updateOne(
         { id },
-        { 
+        {
           $push: { replies: newReply as any },
           $set: { status: 'resolved' }
         }

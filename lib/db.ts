@@ -106,23 +106,23 @@ export const dbClient = {
     try {
       // If registering as executive, hit the executive route, otherwise user registration
       const url = params.role === 'executive' ? '/api/register/executive' : '/api/auth/register';
-      const bodyPayload = params.role === 'executive' 
+      const bodyPayload = params.role === 'executive'
         ? {
-            name: params.name,
-            email: params.email,
-            phone: params.phone,
-            roleId: params.role_id,
-            password: params.password,
-            passkey: (params as any).passkey || '',
-          }
+          name: params.name,
+          email: params.email,
+          phone: params.phone,
+          roleId: params.role_id,
+          password: params.password,
+          passkey: (params as any).passkey || '',
+        }
         : {
-            name: params.name,
-            email: params.email,
-            phone: params.phone,
-            role: params.role,
-            role_id: params.role_id,
-            password: params.password,
-          };
+          name: params.name,
+          email: params.email,
+          phone: params.phone,
+          role: params.role,
+          role_id: params.role_id,
+          password: params.password,
+        };
 
       const res = await fetch(url, {
         method: 'POST',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, createContext, useContext } from 'react';
+import { useEffect, useState, createContext, useContext, Suspense } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { dbClient, Profile } from '@/lib/db';
@@ -13,7 +13,10 @@ import {
   LogOut, 
   Loader2,
   Users,
-  DollarSign
+  ChevronDown,
+  ChevronRight,
+  DollarSign,
+  Layers
 } from 'lucide-react';
 
 // User context for dashboard pages
@@ -29,9 +32,101 @@ const UserContext = createContext<UserContextType>({
 
 export const useUser = () => useContext(UserContext);
 
+function SidebarLinks({ user }: { user: Profile }) {
+  const pathname = usePathname();
+  const [salesOpen, setSalesOpen] = useState(pathname.startsWith('/dashboard/sales-complaints'));
+
+  useEffect(() => {
+    if (pathname.startsWith('/dashboard/sales-complaints')) {
+      setSalesOpen(true);
+    }
+  }, [pathname]);
+
+  const isLinkActive = (path: string) => pathname === path;
+
+  return (
+    <nav className="sidebar-nav">
+      <Link 
+        href="/dashboard" 
+        className={`sidebar-link ${isLinkActive('/dashboard') ? 'active' : ''}`}
+      >
+        <LayoutDashboard className="w-4 h-4" />
+        <span>Overview</span>
+      </Link>
+
+      <Link 
+        href="/dashboard/complaints" 
+        className={`sidebar-link ${isLinkActive('/dashboard/complaints') ? 'active' : ''}`}
+      >
+        <ClipboardList className="w-4 h-4" />
+        <span>FIR Complaints</span>
+      </Link>
+
+      <div className="sidebar-group">
+        <button 
+          onClick={() => setSalesOpen(!salesOpen)}
+          className={`sidebar-link ${pathname.startsWith('/dashboard/sales-complaints') ? 'active' : ''}`}
+          style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Layers className="w-4 h-4" />
+            <span>Department</span>
+          </div>
+          {salesOpen ? (
+            <ChevronDown className="w-4 h-4 text-slate-400" />
+          ) : (
+            <ChevronRight className="w-4 h-4 text-slate-400" />
+          )}
+        </button>
+
+        {salesOpen && (
+          <div className="sidebar-subnav">
+            <Link 
+              href="/dashboard/sales-complaints" 
+              className={`sidebar-link sub-link ${isLinkActive('/dashboard/sales-complaints') ? 'active' : ''}`}
+            >
+              <DollarSign className="w-3.5 h-3.5" />
+              <span>Sales Complaints</span>
+            </Link>
+          </div>
+        )}
+      </div>
+
+      {/* Admin/Executive Only Approvals View */}
+      {user.role === 'executive' && (
+        <Link 
+          href="/dashboard/approvals" 
+          className={`sidebar-link ${isLinkActive('/dashboard/approvals') ? 'active' : ''}`}
+        >
+          <UserCheck className="w-4 h-4" />
+          <span>Approvals</span>
+        </Link>
+      )}
+
+      {/* Admin/Executive Only User Accounts View */}
+      {user.role === 'executive' && (
+        <Link 
+          href="/dashboard/users" 
+          className={`sidebar-link ${isLinkActive('/dashboard/users') ? 'active' : ''}`}
+        >
+          <Users className="w-4 h-4" />
+          <span>User Accounts</span>
+        </Link>
+      )}
+
+      <Link 
+        href="/dashboard/profile" 
+        className={`sidebar-link ${isLinkActive('/dashboard/profile') ? 'active' : ''}`}
+      >
+        <Settings className="w-4 h-4" />
+        <span>Profile Settings</span>
+      </Link>
+    </nav>
+  );
+}
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const pathname = usePathname();
   const [user, setUser] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -71,9 +166,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (!user) return null;
 
-  // Paths list
-  const isLinkActive = (path: string) => pathname === path;
-
   return (
     <UserContext.Provider value={{ user, refreshUser: checkUser }}>
       <div className="dashboard-container">
@@ -84,61 +176,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <span>SUI GAS</span>
           </Link>
 
-          <nav className="sidebar-nav">
-            <Link 
-              href="/dashboard" 
-              className={`sidebar-link ${isLinkActive('/dashboard') ? 'active' : ''}`}
-            >
-              <LayoutDashboard className="w-4 h-4" />
-              <span>Overview</span>
-            </Link>
-
-            <Link 
-              href="/dashboard/complaints" 
-              className={`sidebar-link ${isLinkActive('/dashboard/complaints') ? 'active' : ''}`}
-            >
-              <ClipboardList className="w-4 h-4" />
-              <span>FIR Complaints</span>
-            </Link>
-
-            <Link 
-              href="/dashboard/sales-complaints" 
-              className={`sidebar-link ${isLinkActive('/dashboard/sales-complaints') ? 'active' : ''}`}
-            >
-              <DollarSign className="w-4 h-4" />
-              <span>Sales Complaints</span>
-            </Link>
-
-            {/* Admin/Executive Only Approvals View */}
-            {user.role === 'executive' && (
-              <Link 
-                href="/dashboard/approvals" 
-                className={`sidebar-link ${isLinkActive('/dashboard/approvals') ? 'active' : ''}`}
-              >
-                <UserCheck className="w-4 h-4" />
-                <span>Approvals</span>
-              </Link>
-            )}
-
-            {/* Admin/Executive Only User Accounts View */}
-            {user.role === 'executive' && (
-              <Link 
-                href="/dashboard/users" 
-                className={`sidebar-link ${isLinkActive('/dashboard/users') ? 'active' : ''}`}
-              >
-                <Users className="w-4 h-4" />
-                <span>User Accounts</span>
-              </Link>
-            )}
-
-            <Link 
-              href="/dashboard/profile" 
-              className={`sidebar-link ${isLinkActive('/dashboard/profile') ? 'active' : ''}`}
-            >
-              <Settings className="w-4 h-4" />
-              <span>Profile Settings</span>
-            </Link>
-          </nav>
+          <Suspense fallback={
+            <nav className="sidebar-nav">
+              <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                Loading navigation...
+              </div>
+            </nav>
+          }>
+            <SidebarLinks user={user} />
+          </Suspense>
 
           <div className="sidebar-footer">
             <div className="sidebar-user">

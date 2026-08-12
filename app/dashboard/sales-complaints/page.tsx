@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '../layout';
 import { dbClient, SalesComplaint } from '@/lib/db';
-import { 
-  Plus, 
-  Search, 
-  Trash2, 
-  X, 
+import {
+  Plus,
+  Search,
+  Trash2,
+  X,
   Eye,
   Loader2,
   Check,
@@ -198,7 +198,7 @@ export default function SalesComplaintsPage() {
         normalizeText(c.customer_address).includes(query) ||
         normalizeText(c.attended_data).includes(query) ||
         normalizeText(c.creator_name).includes(query) ||
-        (c.replies && c.replies.some(r => 
+        (c.replies && c.replies.some(r =>
           normalizeText(r.reply_text).includes(query) ||
           normalizeText(r.replier_name).includes(query) ||
           normalizeText(r.reply_date).includes(query)
@@ -212,7 +212,7 @@ export default function SalesComplaintsPage() {
       const dateMatch = c.attended_data.match(/(\d{4}-\d{2}-\d{2})/);
       if (dateMatch) {
         const attendedTime = new Date(dateMatch[1] + 'T00:00:00').getTime();
-        
+
         if (fromDate) {
           const fromTime = new Date(fromDate + 'T00:00:00').getTime();
           if (attendedTime < fromTime) {
@@ -267,7 +267,7 @@ export default function SalesComplaintsPage() {
       const repliesStr = (c.replies || [])
         .map(r => `${r.reply_text} (By ${r.replier_name} on ${r.reply_date})`)
         .join('; ');
-      
+
       return [
         c.serial_id,
         c.status.toUpperCase(),
@@ -323,9 +323,9 @@ export default function SalesComplaintsPage() {
       <div className="glass-panel filter-bar" style={{ padding: '16px', marginBottom: '32px', display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ display: 'flex', flexGrow: 1, minWidth: '240px', position: 'relative' }}>
           <Search className="w-4 h-4 text-slate-400" style={{ position: 'absolute', left: '14px', top: '15px' }} />
-          <input 
-            type="text" 
-            className="form-input filter-input" 
+          <input
+            type="text"
+            className="form-input filter-input"
             placeholder="Search by serial ID, customer, consumer number, meter number..."
             style={{ paddingLeft: '42px' }}
             value={searchQuery}
@@ -337,9 +337,9 @@ export default function SalesComplaintsPage() {
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>From:</span>
-            <input 
-              type="date" 
-              className="form-input" 
+            <input
+              type="date"
+              className="form-input"
               style={{ width: '135px', padding: '6px 10px', fontSize: '13px', height: '38px' }}
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
@@ -347,18 +347,18 @@ export default function SalesComplaintsPage() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>To:</span>
-            <input 
-              type="date" 
-              className="form-input" 
+            <input
+              type="date"
+              className="form-input"
               style={{ width: '135px', padding: '6px 10px', fontSize: '13px', height: '38px' }}
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
             />
           </div>
-          
+
           {(fromDate || toDate) && (
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => { setFromDate(''); setToDate(''); }}
               style={{
                 background: 'none',
@@ -375,9 +375,9 @@ export default function SalesComplaintsPage() {
         </div>
 
         {/* Download CSV button */}
-        <button 
-          onClick={downloadCSV} 
-          className="btn btn-secondary" 
+        <button
+          onClick={downloadCSV}
+          className="btn btn-secondary"
           style={{ height: '38px', display: 'flex', alignItems: 'center', gap: '8px' }}
           title="Download all filtered data as CSV"
         >
@@ -415,7 +415,7 @@ export default function SalesComplaintsPage() {
                 {filteredComplaints.map((c) => {
                   const isCreator = c.created_by === user?.id;
                   const canEdit = user?.role === 'executive' || (user?.role === 'employee' && isCreator);
-                  
+
                   return (
                     <tr key={c.id}>
                       <td>
@@ -479,9 +479,9 @@ export default function SalesComplaintsPage() {
                       </td>
                       <td>
                         <div style={{ display: 'flex', gap: '8px' }}>
-                          <button 
+                          <button
                             onClick={() => handleOpenReplyModal(c)}
-                            className="btn btn-secondary" 
+                            className="btn btn-secondary"
                             style={{ padding: '6px 12px', fontSize: '12px', height: '32px', display: 'flex', alignItems: 'center', gap: '4px' }}
                             title="View / Reply"
                           >
@@ -490,17 +490,17 @@ export default function SalesComplaintsPage() {
                           </button>
                           {canEdit && (
                             <>
-                              <button 
+                              <button
                                 onClick={() => handleOpenEditModal(c)}
-                                className="btn btn-secondary" 
+                                className="btn btn-secondary"
                                 style={{ padding: '6px', height: '32px', width: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 title="Edit Sales Complaint Details"
                               >
                                 <Edit3 className="w-4 h-4" />
                               </button>
-                              <button 
+                              <button
                                 onClick={() => handleDeleteComplaint(c.id, c.created_by)}
-                                className="btn btn-danger" 
+                                className="btn btn-danger"
                                 style={{ padding: '6px', height: '32px', width: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 title="Delete Sales Complaint"
                               >
@@ -526,7 +526,7 @@ export default function SalesComplaintsPage() {
             <button className="modal-close" onClick={() => setIsInModalOpen(false)}>
               <X className="w-5 h-5" />
             </button>
-            
+
             <div className="modal-header">
               <h2>{editingComplaint ? 'Edit Sales Complaint Details (In portion)' : 'Register Sales Complaint (In portion)'}</h2>
               <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '4px' }}>
@@ -538,12 +538,12 @@ export default function SalesComplaintsPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
                 <div className="form-group">
                   <label className="form-label">Attended Date / Data</label>
-                  <input 
-                    type="text" 
-                    className="form-input" 
+                  <input
+                    type="text"
+                    className="form-input"
                     placeholder="e.g. Attended on 2026-08-11 by Technician Imran"
-                    value={attendedData} 
-                    onChange={(e) => setAttendedData(e.target.value)} 
+                    value={attendedData}
+                    onChange={(e) => setAttendedData(e.target.value)}
                     required
                   />
                 </div>
@@ -551,24 +551,24 @@ export default function SalesComplaintsPage() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <div className="form-group">
                     <label className="form-label">Consumer Number</label>
-                    <input 
-                      type="text" 
-                      className="form-input" 
+                    <input
+                      type="text"
+                      className="form-input"
                       placeholder="e.g. 182749502"
-                      value={consumerNo} 
-                      onChange={(e) => setConsumerNo(e.target.value)} 
+                      value={consumerNo}
+                      onChange={(e) => setConsumerNo(e.target.value)}
                       required
                     />
                   </div>
 
                   <div className="form-group">
                     <label className="form-label">Meter Number</label>
-                    <input 
-                      type="text" 
-                      className="form-input" 
+                    <input
+                      type="text"
+                      className="form-input"
                       placeholder="e.g. SG-993848"
-                      value={meterNo} 
-                      onChange={(e) => setMeterNo(e.target.value)} 
+                      value={meterNo}
+                      onChange={(e) => setMeterNo(e.target.value)}
                       required
                     />
                   </div>
@@ -576,23 +576,23 @@ export default function SalesComplaintsPage() {
 
                 <div className="form-group">
                   <label className="form-label">Customer Name</label>
-                  <input 
-                    type="text" 
-                    className="form-input" 
+                  <input
+                    type="text"
+                    className="form-input"
                     placeholder="e.g. Muhammad Amjad"
-                    value={customerName} 
-                    onChange={(e) => setCustomerName(e.target.value)} 
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
                     required
                   />
                 </div>
 
                 <div className="form-group">
                   <label className="form-label">Customer Address</label>
-                  <textarea 
-                    className="form-textarea" 
+                  <textarea
+                    className="form-textarea"
                     placeholder="Provide full residential/commercial address details..."
                     rows={3}
-                    value={customerAddress} 
+                    value={customerAddress}
                     onChange={(e) => setCustomerAddress(e.target.value)}
                     required
                   />
@@ -619,7 +619,7 @@ export default function SalesComplaintsPage() {
             <button className="modal-close" onClick={() => setIsOutModalOpen(false)}>
               <X className="w-5 h-5" />
             </button>
-            
+
             <div className="modal-header">
               <h2>Resolve Sales Complaint (Out portion)</h2>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
@@ -631,7 +631,7 @@ export default function SalesComplaintsPage() {
 
             <form onSubmit={handleSaveReply}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
-                
+
                 {/* READ ONLY IN PORTION DETAILS */}
                 <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
                   <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--accent-blue)', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.04em' }}>
@@ -688,11 +688,11 @@ export default function SalesComplaintsPage() {
                   <>
                     <div className="form-group" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px', marginTop: '8px' }}>
                       <label className="form-label">Add New Reply (Out portion)</label>
-                      <textarea 
-                        className="form-textarea" 
+                      <textarea
+                        className="form-textarea"
                         placeholder="Enter resolution notes, refund confirmation, or adjustment details to append a reply..."
                         rows={4}
-                        value={replyText} 
+                        value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
                         required
                       />
@@ -700,10 +700,10 @@ export default function SalesComplaintsPage() {
 
                     <div className="form-group">
                       <label className="form-label">Date of the Reply</label>
-                      <input 
-                        type="date" 
-                        className="form-input" 
-                        value={replyDate} 
+                      <input
+                        type="date"
+                        className="form-input"
+                        value={replyDate}
                         onChange={(e) => setReplyDate(e.target.value)}
                         required
                       />
