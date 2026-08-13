@@ -15,13 +15,13 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
 
     const { id } = await context.params;
     const {
-      attended_data,
-      consumer_no,
-      meter_no,
-      customer_name,
-      customer_address,
+      reference,
+      complaint_date,
+      complaint_type,
+      customers,
       reply_text,
-      reply_date
+      reply_date,
+      reply_consumer_no, // which customer the action is for
     } = await req.json();
 
     const db = await getDb();
@@ -31,14 +31,16 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: 'Sales complaint not found.' }, { status: 404 });
     }
 
-    // CASE 1: Appending a new reply
+    // CASE 1: Appending a new reply/action for a specific customer
     if (reply_text !== undefined && reply_text.trim() !== '') {
       if (sessionUser.role === 'lawyer') {
         return NextResponse.json({ error: 'Access denied. Lawyers have read-only privileges.' }, { status: 403 });
       }
 
+      const crypto = await import('crypto');
       const newReply = {
         id: crypto.randomUUID(),
+        consumer_no: reply_consumer_no || '',
         reply_text,
         reply_date: reply_date || new Date().toISOString().split('T')[0],
         replied_by: sessionUser.id,
@@ -57,8 +59,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       return NextResponse.json({ success: true });
     }
 
-    // CASE 3: Updating basic details (In portion)
-    // Permission check: Only the creator of the complaint or an executive can update basic details
+    // CASE 2: Updating basic details (In portion)
     if (sessionUser.role === 'lawyer') {
       return NextResponse.json({ error: 'Access denied. Lawyers have read-only privileges.' }, { status: 403 });
     }
@@ -67,17 +68,13 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     }
 
     const allowedUpdates: any = {};
-    if (attended_data !== undefined) allowedUpdates.attended_data = attended_data;
-    if (consumer_no !== undefined) allowedUpdates.consumer_no = consumer_no;
-    if (meter_no !== undefined) allowedUpdates.meter_no = meter_no;
-    if (customer_name !== undefined) allowedUpdates.customer_name = customer_name;
-    if (customer_address !== undefined) allowedUpdates.customer_address = customer_address;
+    if (reference !== undefined) allowedUpdates.reference = reference;
+    if (complaint_date !== undefined) allowedUpdates.complaint_date = complaint_date;
+    if (complaint_type !== undefined) allowedUpdates.complaint_type = complaint_type;
+    if (customers !== undefined && Array.isArray(customers)) allowedUpdates.customers = customers;
 
     if (Object.keys(allowedUpdates).length > 0) {
-      await db.collection('sales_complaints').updateOne(
-        { id },
-        { $set: allowedUpdates }
-      );
+      await db.collection('sales_complaints').updateOne({ id }, { $set: allowedUpdates });
     }
 
     return NextResponse.json({ success: true });
@@ -86,6 +83,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     return NextResponse.json({ error: error.message || 'An error occurred while updating the sales complaint.' }, { status: 500 });
   }
 }
+
 
 export async function DELETE(req: NextRequest, context: RouteContext) {
   try {

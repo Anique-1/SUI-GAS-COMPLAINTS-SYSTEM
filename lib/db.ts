@@ -36,8 +36,15 @@ export interface Complaint {
   created_at: string;
 }
 
+export interface CustomerEntry {
+  consumer_no: string;
+  customer_details: string; // name + address combined
+  anomalies?: string;
+}
+
 export interface SalesComplaintReply {
   id: string;
+  consumer_no?: string; // which customer this action/reply is for
   reply_text: string;
   reply_date: string;
   replied_by: string;
@@ -45,20 +52,37 @@ export interface SalesComplaintReply {
   created_at: string;
 }
 
+export type ComplaintType =
+  | 'own_request_disconnection'
+  | 'free_gas_disconnection'
+  | 'violation_of_contract';
+
 export interface SalesComplaint {
   id: string;
-  serial_id: string; // SC-XXXXXX
-  attended_data: string; // Attended Data/Date
-  consumer_no: string;
-  meter_no: string;
-  customer_name: string;
-  customer_address: string;
+  serial_id: string;             // SC-XXXXXX
+  reference: string;             // REF field, e.g. FS/DOM-DIS
+  complaint_date: string;        // Dated field, e.g. 2026-07-15
+  complaint_type: ComplaintType; // One of 3 disconnection categories
+  customers: CustomerEntry[];    // Multiple customers per complaint
   replies: SalesComplaintReply[];
   created_by: string;
   creator_name: string;
   created_at: string;
   status: 'pending' | 'resolved';
+  // Legacy fields for backward compat
+  department?: string;
+  memo_ref?: string;
+  attended_data?: string;
+  consumer_no?: string;
+  customer_details?: string;
+  anomalies?: string;
+  meter_no?: string;
+  customer_name?: string;
+  customer_address?: string;
 }
+
+
+
 
 export const dbClient = {
   isMock: false,
@@ -235,7 +259,7 @@ export const dbClient = {
   },
 
   // Create Sales Complaint
-  async createSalesComplaint(complaint: Omit<SalesComplaint, 'id' | 'serial_id' | 'created_by' | 'creator_name' | 'created_at' | 'status' | 'replies'>): Promise<{ data: SalesComplaint | null; error: string | null }> {
+  async createSalesComplaint(complaint: Omit<SalesComplaint, 'id' | 'serial_id' | 'created_by' | 'creator_name' | 'created_at' | 'status' | 'replies' | 'attended_data' | 'meter_no' | 'customer_name' | 'customer_address'>): Promise<{ data: SalesComplaint | null; error: string | null }> {
     try {
       const res = await fetch('/api/sales-complaints', {
         method: 'POST',

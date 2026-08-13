@@ -7,40 +7,56 @@ export async function GET(req: NextRequest) {
   try {
     const sessionUser = getSessionUser(req);
     if (!sessionUser || sessionUser.status !== 'approved') {
-      return NextResponse.json({ error: 'Access denied. Active session required.' }, { status: 401 });
+      return NextResponse.json({ error: 'Access denied.' }, { status: 401 });
     }
 
     const db = await getDb();
-    const salesComplaints = await db
-      .collection('sales_complaints')
-      .find({})
-      .sort({ created_at: -1 })
-      .toArray();
+    const records = await db.collection('sales_complaints').find({}).sort({ created_at: -1 }).toArray();
 
-    // Map creator names by fetching corresponding profiles
-    const creatorIds = Array.from(new Set(salesComplaints.map(c => c.created_by).filter(Boolean)));
+    const creatorIds = Array.from(new Set(records.map((c: any) => c.created_by).filter(Boolean)));
     const profiles = await db.collection('profiles').find({ id: { $in: creatorIds } }).toArray();
-    const profileMap = new Map(profiles.map(p => [p.id, p.name]));
+    const profileMap = new Map(profiles.map((p: any) => [p.id, p.name]));
 
-    const formattedSalesComplaints = salesComplaints.map(c => ({
-      id: c.id || c._id.toString(),
-      serial_id: c.serial_id,
-      attended_data: c.attended_data,
-      consumer_no: c.consumer_no,
-      meter_no: c.meter_no,
-      customer_name: c.customer_name,
-      customer_address: c.customer_address,
-      replies: c.replies || [],
-      created_by: c.created_by,
-      creator_name: profileMap.get(c.created_by) || 'Unknown Operator',
-      created_at: c.created_at,
-      status: c.status || 'pending',
-    }));
+    const formatted = records.map((c: any) => {
+      // Build customers array: use new field if present, else fall back to legacy single fields
+      let customers = c.customers;
+      if (!customers || !Array.isArray(customers) || customers.length === 0) {
+        customers = [{
+          consumer_no: c.consumer_no || '',
+          customer_details: c.customer_details || `${c.customer_name || ''}\n${c.customer_address || ''}`.trim(),
+          anomalies: c.anomalies || '',
+        }];
+      }
 
-    return NextResponse.json(formattedSalesComplaints);
+      return {
+        id: c.id || c._id.toString(),
+        serial_id: c.serial_id,
+        reference: c.reference || c.memo_ref || c.attended_data || '',
+        complaint_date: c.complaint_date || '',
+        complaint_type: c.complaint_type || 'violation_of_contract',
+        customers,
+        replies: c.replies || [],
+        created_by: c.created_by,
+        creator_name: profileMap.get(c.created_by) || 'Unknown Operator',
+        created_at: c.created_at,
+        status: c.status || 'pending',
+        // Legacy passthrough
+        department: c.department || '',
+        memo_ref: c.memo_ref || '',
+        attended_data: c.attended_data || '',
+        consumer_no: c.consumer_no || '',
+        customer_details: c.customer_details || '',
+        anomalies: c.anomalies || '',
+        meter_no: c.meter_no || '',
+        customer_name: c.customer_name || '',
+        customer_address: c.customer_address || '',
+      };
+    });
+
+    return NextResponse.json(formatted);
   } catch (error: any) {
     console.error('Fetch sales complaints error:', error);
-    return NextResponse.json({ error: error.message || 'Failed to query database sales complaints.' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Failed to fetch.' }, { status: 500 });
   }
 }
 
@@ -48,61 +64,56 @@ export async function POST(req: NextRequest) {
   try {
     const sessionUser = getSessionUser(req);
     if (!sessionUser || sessionUser.role === 'lawyer' || sessionUser.status !== 'approved') {
-      return NextResponse.json({ error: 'Access denied. Operator role is required.' }, { status: 403 });
+      return NextResponse.json({ error: 'Access denied.' }, { status: 403 });
     }
 
-    const { attended_data, consumer_no, meter_no, customer_name, customer_address } = await req.json();
-    if (!attended_data || !consumer_no || !meter_no || !customer_name || !customer_address) {
-      return NextResponse.json({ error: 'All fields for In portion are required.' }, { status: 400 });
+    const { reference, complaint_date, complaint_type, customers } = await req.json();
+
+    if (!reference || !complaint_date || !complaint_type) {
+      return NextResponse.json({ error: 'Reference, Date, and Complaint Type are required.' }, { status: 400 });
+    }
+    if (!customers || !Array.isArray(customers) || customers.length === 0) {
+      return NextResponse.json({ error: 'At least one customer entry is required.' }, { status: 400 });
+    }
+    for (const cust of customers) {
+      if (!cust.consumer_no || !cust.customer_details) {
+        return NextResponse.json({ error: 'Each customer must have a Consumer No. and Name & Address.' }, { status: 400 });
+      }
     }
 
     const db = await getDb();
 
-    // Generate unique 6-digit Serial ID: SC-XXXXXX
+    // Generate unique SC-XXXXXX serial ID
     let serialId = '';
     let isUnique = false;
     let attempts = 0;
     while (!isUnique && attempts < 100) {
-      const randNum = Math.floor(100000 + Math.random() * 900000); // 6-digit number
-      serialId = `SC-${randNum}`;
+      serialId = `SC-${Math.floor(100000 + Math.random() * 900000)}`;
       const existing = await db.collection('sales_complaints').findOne({ serial_id: serialId });
-      if (!existing) {
-        isUnique = true;
-      }
+      if (!existing) isUnique = true;
       attempts++;
     }
-
-    if (!isUnique) {
-      return NextResponse.json({ error: 'Failed to generate a unique Serial ID.' }, { status: 500 });
-    }
+    if (!isUnique) return NextResponse.json({ error: 'Failed to generate unique Serial ID.' }, { status: 500 });
 
     const id = crypto.randomUUID();
-    const newSalesComplaint = {
+    const newRecord = {
       _id: id as any,
       id,
       serial_id: serialId,
-      attended_data,
-      consumer_no,
-      meter_no,
-      customer_name,
-      customer_address,
+      reference,
+      complaint_date,
+      complaint_type,
+      customers,
       replies: [],
       created_by: sessionUser.id,
       created_at: new Date(),
       status: 'pending',
     };
 
-    await db.collection('sales_complaints').insertOne(newSalesComplaint);
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        ...newSalesComplaint,
-        creator_name: sessionUser.name,
-      },
-    });
+    await db.collection('sales_complaints').insertOne(newRecord);
+    return NextResponse.json({ success: true, data: { ...newRecord, creator_name: sessionUser.name } });
   } catch (error: any) {
     console.error('Create sales complaint error:', error);
-    return NextResponse.json({ error: error.message || 'Failed to save sales complaint record.' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Failed to save.' }, { status: 500 });
   }
 }
