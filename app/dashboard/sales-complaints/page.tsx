@@ -327,8 +327,7 @@ export default function SalesComplaintsPage() {
               </thead>
               <tbody>
                 {filteredComplaints.map(c => {
-                  const isCreator = c.created_by === user?.id;
-                  const canEdit = user?.role === 'executive' || (user?.role === 'employee' && isCreator);
+                  const canEdit = user?.role === 'executive' || user?.role === 'employee';
                   const typeColors = COMPLAINT_TYPE_COLORS[c.complaint_type as ComplaintType] || COMPLAINT_TYPE_COLORS.violation_of_contract;
                   const typeLabel = COMPLAINT_TYPE_LABELS[c.complaint_type as ComplaintType] || c.complaint_type;
                   const custs = c.customers || [];

@@ -1,4 +1,12 @@
 import { MongoClient } from 'mongodb';
+import dns from 'dns';
+
+// Fix for Node.js querySrv ECONNREFUSED on local ISP / Windows DNS
+try {
+  dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+} catch {
+  // Ignore in environments where setServers is not available
+}
 
 const uri = process.env.MONGODB_URI || '';
 const options = {};
@@ -13,7 +21,7 @@ if (!process.env.MONGODB_URI) {
 if (process.env.NODE_ENV === 'development') {
   // In development mode, use a global variable so that the value
   // is preserved across module reloads caused by HMR (Hot Module Replacement).
-  let globalWithMongo = global as typeof globalThis & {
+  const globalWithMongo = global as typeof globalThis & {
     _mongoClientPromise?: Promise<MongoClient>;
   };
   

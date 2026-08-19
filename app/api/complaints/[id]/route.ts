@@ -23,12 +23,9 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: 'Complaint not found.' }, { status: 404 });
     }
 
-    // Role permission verification (Employee can only update own; Executive can update any; Lawyer read-only)
+    // Role permission verification (Employees and Executives can update; Lawyers have read-only privileges)
     if (sessionUser.role === 'lawyer') {
       return NextResponse.json({ error: 'Access denied. Lawyers have read-only privileges.' }, { status: 403 });
-    }
-    if (sessionUser.role === 'employee' && complaint.created_by !== sessionUser.id) {
-      return NextResponse.json({ error: 'Permission denied. Employees can only modify their own entries.' }, { status: 403 });
     }
 
     // Clean and validate update fields
@@ -45,7 +42,18 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     if (updates.volume_booked_hm3 !== undefined) allowedUpdates.volume_booked_hm3 = updates.volume_booked_hm3;
     if (updates.volume_booked_mmcf !== undefined) allowedUpdates.volume_booked_mmcf = updates.volume_booked_mmcf;
     if (updates.amount_booked !== undefined) allowedUpdates.amount_booked = updates.amount_booked;
-    if (updates.plaintiff !== undefined) allowedUpdates.plaintiff = updates.plaintiff;
+    if (updates.complainant !== undefined) {
+      allowedUpdates.complainant = updates.complainant;
+      allowedUpdates.plaintiff = updates.complainant;
+    } else if (updates.plaintiff !== undefined) {
+      allowedUpdates.complainant = updates.plaintiff;
+      allowedUpdates.plaintiff = updates.plaintiff;
+    }
+    if (updates.witnesses !== undefined) {
+      allowedUpdates.witnesses = Array.isArray(updates.witnesses)
+        ? updates.witnesses.map((w: any) => (typeof w === 'string' ? w.trim() : '')).filter(Boolean)
+        : [];
+    }
     if (updates.status_of_accused !== undefined) allowedUpdates.status_of_accused = updates.status_of_accused;
     if (updates.lawyer_name !== undefined) allowedUpdates.lawyer_name = updates.lawyer_name;
     if (updates.court_name !== undefined) allowedUpdates.court_name = updates.court_name;

@@ -104,7 +104,7 @@ export default function PublicComplaintView() {
         </section>
 
         {/* FIR Investigation Details */}
-        {(complaint.police_station || complaint.mode_of_theft || complaint.volume_booked_hm3 || complaint.volume_booked_mmcf || complaint.amount_booked || complaint.plaintiff || complaint.status_of_accused || complaint.lawyer_name || complaint.court_name) && (
+        {(complaint.police_station || complaint.mode_of_theft || complaint.volume_booked_hm3 || complaint.volume_booked_mmcf || complaint.amount_booked || complaint.complainant || complaint.plaintiff || (complaint.witnesses && complaint.witnesses.length > 0) || complaint.status_of_accused || complaint.lawyer_name || complaint.court_name) && (
           <section style={{ marginBottom: '40px' }}>
             <h2 style={{ fontSize: '18px', marginBottom: '16px', color: 'var(--text-primary)' }}>FIR Investigation Details</h2>
             <div className="glass-panel" style={{ padding: '20px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-color)' }}>
@@ -139,10 +139,22 @@ export default function PublicComplaintView() {
                     <div style={{ fontSize: '14px', color: 'var(--text-primary)' }}>{complaint.amount_booked}</div>
                   </div>
                 )}
-                {complaint.plaintiff && (
+                {(complaint.complainant || complaint.plaintiff) && (
                   <div>
-                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>Plaintiff</div>
-                    <div style={{ fontSize: '14px', color: 'var(--text-primary)' }}>{complaint.plaintiff}</div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>Complainant</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-primary)' }}>{complaint.complainant || complaint.plaintiff}</div>
+                  </div>
+                )}
+                {complaint.witnesses && complaint.witnesses.length > 0 && (
+                  <div style={{ gridColumn: '1 / -1', marginTop: '6px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>Witnesses ({complaint.witnesses.length})</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                      {complaint.witnesses.map((w: string, idx: number) => (
+                        <span key={idx} style={{ fontSize: '13px', background: 'rgba(255,255,255,0.06)', border: '1px solid var(--border-color)', padding: '5px 12px', borderRadius: '6px', color: 'var(--text-primary)' }}>
+                          👤 {idx + 1}. {w}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
                 {complaint.lawyer_name && (

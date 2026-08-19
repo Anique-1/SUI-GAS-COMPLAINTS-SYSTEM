@@ -27,7 +27,9 @@ export interface Complaint {
   volume_booked_hm3?: string;
   volume_booked_mmcf?: string;
   amount_booked?: string;
-  plaintiff?: string;
+  complainant?: string;
+  plaintiff?: string; // backwards compatibility
+  witnesses?: string[];
   status_of_accused?: string;
   lawyer_name?: string;
   court_name?: string;

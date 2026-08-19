@@ -45,6 +45,15 @@ export default function ComplaintsPage() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingComplaint, setEditingComplaint] = useState<Complaint | null>(null);
+
+  // Dedicated Preview Modal State
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewComplaint, setPreviewComplaint] = useState<Complaint | null>(null);
+
+  const handleOpenPreviewModal = (complaint: Complaint) => {
+    setPreviewComplaint(complaint);
+    setIsPreviewOpen(true);
+  };
   
   // Form State
   const [compName, setCompName] = useState('');
@@ -60,12 +69,29 @@ export default function ComplaintsPage() {
   const [volumeHm3, setVolumeHm3] = useState('');
   const [volumeMmcf, setVolumeMmcf] = useState('');
   const [amountBooked, setAmountBooked] = useState('');
-  const [plaintiff, setPlaintiff] = useState('');
+  const [complainant, setComplainant] = useState('');
+  const [witnesses, setWitnesses] = useState<string[]>([]);
   const [statusOfAccused, setStatusOfAccused] = useState('');
   const [lawyerName, setLawyerName] = useState('');
   const [courtName, setCourtName] = useState('');
   const [uploadingFiles, setUploadingFiles] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAddWitness = () => {
+    setWitnesses(prev => [...prev, '']);
+  };
+
+  const handleUpdateWitness = (index: number, val: string) => {
+    setWitnesses(prev => {
+      const next = [...prev];
+      next[index] = val;
+      return next;
+    });
+  };
+
+  const handleRemoveWitness = (index: number) => {
+    setWitnesses(prev => prev.filter((_, i) => i !== index));
+  };
 
   // Copy to clipboard notification state
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -89,12 +115,16 @@ export default function ComplaintsPage() {
   // Filter complaints based on search query and date range (From Date -> To Date)
   const filteredComplaints = complaints.filter(c => {
     const query = normalizeText(searchQuery);
+    const complainantText = normalizeText(c.complainant || c.plaintiff);
+    const witnessesText = Array.isArray(c.witnesses) ? c.witnesses.map(w => normalizeText(w)).join(' ') : '';
     const matchesSearch = 
       normalizeText(c.name).includes(query) ||
       normalizeText(c.description).includes(query) ||
       normalizeText(c.creator_name).includes(query) ||
       normalizeText(c.police_station).includes(query) ||
       normalizeText(c.mode_of_theft).includes(query) ||
+      complainantText.includes(query) ||
+      witnessesText.includes(query) ||
       normalizeText(c.lawyer_name).includes(query) ||
       normalizeText(c.court_name).includes(query);
       
@@ -124,7 +154,8 @@ export default function ComplaintsPage() {
     setVolumeHm3('');
     setVolumeMmcf('');
     setAmountBooked('');
-    setPlaintiff('');
+    setComplainant('');
+    setWitnesses([]);
     setStatusOfAccused('');
     setLawyerName('');
     setCourtName('');
@@ -133,9 +164,9 @@ export default function ComplaintsPage() {
 
   // Handle opening modal for editing
   const handleOpenEditModal = (complaint: Complaint) => {
-    // Check permission: Employees can only edit their own complaints. Executives can edit any.
-    if (user?.role === 'employee' && complaint.created_by !== user.id) {
-      alert("You do not have permission to edit complaints created by other users.");
+    // Check permission: Lawyers have read-only permissions; Employees and Executives can edit
+    if (user?.role === 'lawyer') {
+      alert("Lawyers have read-only permissions.");
       return;
     }
     
@@ -152,7 +183,8 @@ export default function ComplaintsPage() {
     setVolumeHm3(complaint.volume_booked_hm3 || '');
     setVolumeMmcf(complaint.volume_booked_mmcf || '');
     setAmountBooked(complaint.amount_booked || '');
-    setPlaintiff(complaint.plaintiff || '');
+    setComplainant(complaint.complainant || complaint.plaintiff || '');
+    setWitnesses(complaint.witnesses ? [...complaint.witnesses] : []);
     setStatusOfAccused(complaint.status_of_accused || '');
     setLawyerName(complaint.lawyer_name || '');
     setCourtName(complaint.court_name || '');
@@ -223,6 +255,8 @@ export default function ComplaintsPage() {
     if (!compName || !compDate) return;
 
     try {
+      const activeWitnesses = witnesses.map(w => w.trim()).filter(Boolean);
+
       if (editingComplaint) {
         // Update
         const { error } = await dbClient.updateComplaint(editingComplaint.id, {
@@ -238,7 +272,9 @@ export default function ComplaintsPage() {
           volume_booked_hm3: volumeHm3,
           volume_booked_mmcf: volumeMmcf,
           amount_booked: amountBooked,
-          plaintiff,
+          complainant,
+          plaintiff: complainant,
+          witnesses: activeWitnesses,
           status_of_accused: statusOfAccused,
           lawyer_name: lawyerName,
           court_name: courtName,
@@ -259,7 +295,9 @@ export default function ComplaintsPage() {
           volume_booked_hm3: volumeHm3,
           volume_booked_mmcf: volumeMmcf,
           amount_booked: amountBooked,
-          plaintiff,
+          complainant,
+          plaintiff: complainant,
+          witnesses: activeWitnesses,
           status_of_accused: statusOfAccused,
           lawyer_name: lawyerName,
           court_name: courtName,
@@ -425,13 +463,37 @@ export default function ComplaintsPage() {
               </thead>
               <tbody>
                 {filteredComplaints.map((c) => {
-                  const isCreator = c.created_by === user?.id;
-                  const canEdit = user?.role === 'executive' || (user?.role === 'employee' && isCreator);
+                  const canEdit = user?.role === 'executive' || user?.role === 'employee';
                   
                   return (
                     <tr key={c.id}>
                       <td>
-                        <strong style={{ color: 'var(--text-primary)', display: 'block' }}>{c.name}</strong>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenPreviewModal(c)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            padding: 0,
+                            margin: 0,
+                            textAlign: 'left',
+                            cursor: 'pointer',
+                            color: 'var(--text-primary)',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            fontSize: '14px',
+                            fontWeight: '700',
+                            lineHeight: '1.4',
+                            transition: 'color 0.15s ease'
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-blue)')}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-primary)')}
+                          title="Click to preview FIR complaint details"
+                        >
+                          <span>{c.name}</span>
+                          <Eye className="w-3.5 h-3.5 opacity-60 hover:opacity-100" />
+                        </button>
 
                         {/* Police Station + Mode of Theft chips */}
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '5px' }}>
@@ -502,8 +564,8 @@ export default function ComplaintsPage() {
                         <span style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', display: '-webkit-box', WebkitLineClamp: '2', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {c.description || <em style={{ color: 'var(--text-muted)' }}>No description provided.</em>}
                         </span>
-                        {/* Volume / Amount / Plaintiff mini-chips */}
-                        {(c.volume_booked_hm3 || c.volume_booked_mmcf || c.amount_booked || c.plaintiff) && (
+                        {/* Volume / Amount / Complainant / Witnesses mini-chips */}
+                        {(c.volume_booked_hm3 || c.volume_booked_mmcf || c.amount_booked || c.complainant || c.plaintiff || (c.witnesses && c.witnesses.length > 0)) && (
                           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '6px' }}>
                             {c.volume_booked_hm3 && (
                               <span style={{ fontSize: '10px', fontWeight: '600', color: '#ecfeff', background: '#0e7490', border: '1px solid #0891b2', padding: '2px 7px', borderRadius: '4px' }}>
@@ -520,9 +582,14 @@ export default function ComplaintsPage() {
                                 PKR: {c.amount_booked}
                               </span>
                             )}
-                            {c.plaintiff && (
+                            {(c.complainant || c.plaintiff) && (
                               <span style={{ fontSize: '10px', fontWeight: '600', color: '#faf5ff', background: '#7e22ce', border: '1px solid #9333ea', padding: '2px 7px', borderRadius: '4px' }}>
-                                👤 {c.plaintiff}
+                                👤 Complainant: {c.complainant || c.plaintiff}
+                              </span>
+                            )}
+                            {c.witnesses && c.witnesses.length > 0 && (
+                              <span style={{ fontSize: '10px', fontWeight: '600', color: '#fdf4ff', background: '#86198f', border: '1px solid #a21caf', padding: '2px 7px', borderRadius: '4px' }}>
+                                👥 {c.witnesses.length} {c.witnesses.length === 1 ? 'Witness' : 'Witnesses'}
                               </span>
                             )}
                           </div>
@@ -595,56 +662,37 @@ export default function ComplaintsPage() {
                         </div>
                       </td>
                       <td>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          {/* All roles can View details. Employees/Execs can edit or delete based on ownership */}
-                          {canEdit ? (
+                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                          {/* Preview Details Button (Available to all users) */}
+                          <button 
+                            onClick={() => handleOpenPreviewModal(c)}
+                            className="btn btn-secondary" 
+                            style={{ padding: '6px', height: '32px', width: '32px' }}
+                            title="Preview Complaint Details"
+                          >
+                            <Eye className="w-4 h-4 text-cyan-400" />
+                          </button>
+
+                          {/* Edit & Delete buttons (Only for authorized users) */}
+                          {canEdit && (
                             <>
                               <button 
                                 onClick={() => handleOpenEditModal(c)}
                                 className="btn btn-secondary" 
                                 style={{ padding: '6px', height: '32px', width: '32px' }}
-                                title="Edit complaint details"
+                                title="Update Complaint Details"
                               >
-                                <Edit3 className="w-4 h-4" />
+                                <Edit3 className="w-4 h-4 text-amber-400" />
                               </button>
                               <button 
                                 onClick={() => handleDeleteComplaint(c.id, c.created_by)}
                                 className="btn btn-danger" 
                                 style={{ padding: '6px', height: '32px', width: '32px' }}
-                                title="Delete complaint"
+                                title="Delete Complaint"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
                             </>
-                          ) : (
-                            // Read-only view modal for lawyers
-                            <button 
-                              onClick={() => {
-                                setEditingComplaint(c);
-                                setCompName(c.name);
-                                setCompDate(c.register_date);
-                                setCompDesc(c.description);
-                                setImages(c.images);
-                                setPdfs(c.pdfs);
-                                setXlsxs(c.xlsxs || []);
-                                setCsvs(c.csvs || []);
-                                setPoliceStation(c.police_station || '');
-                                setModeOfTheft(c.mode_of_theft || '');
-                                setVolumeHm3(c.volume_booked_hm3 || '');
-                                setVolumeMmcf(c.volume_booked_mmcf || '');
-                                setAmountBooked(c.amount_booked || '');
-                                setPlaintiff(c.plaintiff || '');
-                                setStatusOfAccused(c.status_of_accused || '');
-                                setLawyerName(c.lawyer_name || '');
-                                setCourtName(c.court_name || '');
-                                setIsModalOpen(true);
-                              }}
-                              className="btn btn-secondary" 
-                              style={{ padding: '6px 12px', fontSize: '12px', height: '32px' }}
-                            >
-                              <Eye className="w-4 h-4" />
-                              View
-                            </button>
                           )}
                         </div>
                       </td>
@@ -787,15 +835,85 @@ export default function ComplaintsPage() {
                   </div>
 
                   <div>
-                    <label className="form-label" style={{ fontSize: '12px' }}>Plaintiff</label>
+                    <label className="form-label" style={{ fontSize: '12px' }}>Complainant</label>
                     <input
                       type="text"
                       className="form-input"
                       placeholder="e.g. SUI Gas Company / Complainant Name"
-                      value={plaintiff}
-                      onChange={(e) => setPlaintiff(e.target.value)}
+                      value={complainant}
+                      onChange={(e) => setComplainant(e.target.value)}
                       disabled={user?.role === 'lawyer'}
                     />
+                  </div>
+
+                  {/* WITNESSES SECTION */}
+                  <div style={{ gridColumn: '1 / -1', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: witnesses.length > 0 ? '12px' : '0' }}>
+                      <div>
+                        <label className="form-label" style={{ fontSize: '12px', marginBottom: '2px' }}>Witnesses (Optional)</label>
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Add names of case witnesses or inspecting officers</span>
+                      </div>
+                      {user?.role !== 'lawyer' && (
+                        <button
+                          type="button"
+                          onClick={handleAddWitness}
+                          className="btn btn-secondary"
+                          style={{ padding: '4px 10px', fontSize: '12px', height: '28px', display: 'flex', alignItems: 'center', gap: '5px' }}
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          Add Witness
+                        </button>
+                      )}
+                    </div>
+
+                    {witnesses.length > 0 && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {witnesses.map((w, index) => (
+                          <div key={index} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '12px', color: 'var(--text-muted)', width: '22px', textAlign: 'center', flexShrink: 0 }}>
+                              {index + 1}.
+                            </span>
+                            <input
+                              type="text"
+                              className="form-input"
+                              placeholder={`Witness #${index + 1} Name (e.g. Inspector Tariq Khan, Engineer Bilal)`}
+                              value={w}
+                              onChange={(e) => handleUpdateWitness(index, e.target.value)}
+                              disabled={user?.role === 'lawyer'}
+                              style={{ height: '36px', fontSize: '13px' }}
+                            />
+                            {user?.role !== 'lawyer' && (
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveWitness(index)}
+                                title="Remove Witness"
+                                style={{
+                                  background: 'rgba(239, 68, 68, 0.1)',
+                                  border: '1px solid rgba(239, 68, 68, 0.2)',
+                                  color: '#f87171',
+                                  borderRadius: '6px',
+                                  width: '36px',
+                                  height: '36px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  cursor: 'pointer',
+                                  flexShrink: 0
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {witnesses.length === 0 && (
+                      <div style={{ textAlign: 'center', padding: '8px 0', color: 'var(--text-muted)', fontSize: '12px' }}>
+                        No witnesses added yet. Click <strong>+ Add Witness</strong> to add witness names.
+                      </div>
+                    )}
                   </div>
 
                   <div style={{ gridColumn: '1 / -1' }}>
@@ -1040,15 +1158,285 @@ export default function ComplaintsPage() {
 
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setIsModalOpen(false)}>
-                  {user?.role === 'lawyer' ? 'Close Panel' : 'Cancel'}
+                  Cancel
                 </button>
-                {user?.role !== 'lawyer' && (
-                  <button type="submit" className="btn btn-primary" disabled={uploadingFiles}>
-                    {editingComplaint ? 'Save Changes' : 'Register FIR Complaint'}
+                <button type="submit" className="btn btn-primary" disabled={uploadingFiles}>
+                  {editingComplaint ? 'Update Details' : 'Register FIR Complaint'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* DEDICATED PREVIEW COMPLAINT MODAL */}
+      {isPreviewOpen && previewComplaint && (
+        <div className="modal-overlay animate-fade-in">
+          <div className="glass-panel modal-content" style={{ maxWidth: '780px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <button className="modal-close" onClick={() => setIsPreviewOpen(false)}>
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="modal-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '11px', fontWeight: '800', background: 'rgba(0, 242, 254, 0.1)', color: 'var(--accent-blue)', border: '1px solid rgba(0, 242, 254, 0.25)', padding: '2px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  FIR Preview
+                </span>
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                  Registered on <strong>{previewComplaint.register_date}</strong> by <strong>{previewComplaint.creator_name}</strong>
+                </span>
+              </div>
+              <h2 style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)', marginTop: '8px' }}>
+                {previewComplaint.name}
+              </h2>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '20px 0' }}>
+              {/* Technical Description */}
+              <div>
+                <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
+                  Technical Description
+                </div>
+                <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '14px 16px', color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.6' }}>
+                  {previewComplaint.description || <em style={{ color: 'var(--text-muted)' }}>No technical description provided.</em>}
+                </div>
+              </div>
+
+              {/* FIR Investigation Details Grid */}
+              <div>
+                <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ width: '4px', height: '14px', background: 'var(--accent-blue)', borderRadius: '2px', display: 'inline-block' }}></span>
+                  FIR Investigation Details
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '16px' }}>
+                  <div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Police Station</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-primary)', marginTop: '3px', fontWeight: '500' }}>{previewComplaint.police_station || '—'}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Mode of Theft</div>
+                    <div style={{ fontSize: '14px', color: '#fb923c', marginTop: '3px', fontWeight: '600' }}>{previewComplaint.mode_of_theft || '—'}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Volume Booked (HM³)</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-primary)', marginTop: '3px', fontWeight: '500' }}>{previewComplaint.volume_booked_hm3 || '—'}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Volume Booked (MMCF)</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-primary)', marginTop: '3px', fontWeight: '500' }}>{previewComplaint.volume_booked_mmcf || '—'}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Amount Booked (PKR)</div>
+                    <div style={{ fontSize: '14px', color: '#4ade80', marginTop: '3px', fontWeight: '700' }}>{previewComplaint.amount_booked ? `PKR ${previewComplaint.amount_booked}` : '—'}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Complainant</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-primary)', marginTop: '3px', fontWeight: '500' }}>{previewComplaint.complainant || previewComplaint.plaintiff || '—'}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Status of Accused</div>
+                    <div style={{ marginTop: '4px' }}>
+                      {previewComplaint.status_of_accused ? (
+                        <span style={{
+                          fontSize: '11px',
+                          fontWeight: '700',
+                          letterSpacing: '0.04em',
+                          textTransform: 'uppercase',
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          display: 'inline-block',
+                          ...(previewComplaint.status_of_accused.toLowerCase().includes('arrest') ? {
+                            background: 'rgba(239,68,68,0.15)', color: '#f87171', border: '1px solid rgba(239,68,68,0.3)',
+                          } : previewComplaint.status_of_accused.toLowerCase().includes('bail') ? {
+                            background: 'rgba(234,179,8,0.15)', color: '#facc15', border: '1px solid rgba(234,179,8,0.3)',
+                          } : previewComplaint.status_of_accused.toLowerCase().includes('acquit') || previewComplaint.status_of_accused.toLowerCase().includes('release') ? {
+                            background: 'rgba(16,185,129,0.15)', color: '#34d399', border: '1px solid rgba(16,185,129,0.3)',
+                          } : {
+                            background: 'rgba(16,185,129,0.15)', color: '#34d399', border: '1px solid rgba(16,185,129,0.3)',
+                          })
+                        }}>
+                          {previewComplaint.status_of_accused}
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '14px', color: 'var(--text-primary)' }}>—</span>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Lawyer Name</div>
+                    <div style={{ fontSize: '14px', color: '#a5b4fc', marginTop: '3px', fontWeight: '600' }}>{previewComplaint.lawyer_name ? `⚖️ ${previewComplaint.lawyer_name}` : '—'}</div>
+                  </div>
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Court Name</div>
+                    <div style={{ fontSize: '14px', color: '#2dd4bf', marginTop: '3px', fontWeight: '600' }}>{previewComplaint.court_name ? `🏛️ ${previewComplaint.court_name}` : '—'}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Witnesses List */}
+              <div>
+                <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
+                  Witnesses {previewComplaint.witnesses && previewComplaint.witnesses.length > 0 ? `(${previewComplaint.witnesses.length})` : ''}
+                </div>
+                {previewComplaint.witnesses && previewComplaint.witnesses.length > 0 ? (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {previewComplaint.witnesses.map((w, idx) => (
+                      <span key={idx} style={{ fontSize: '13px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', padding: '6px 12px', borderRadius: '6px', color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ color: 'var(--accent-teal)', fontWeight: '700' }}>{idx + 1}.</span> {w}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontStyle: 'italic', padding: '10px 14px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px dashed var(--border-color)' }}>
+                    No witnesses recorded for this complaint.
+                  </div>
+                )}
+              </div>
+
+              {/* Attachments Section */}
+              <div>
+                <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
+                  Case Attachments
+                </div>
+                
+                {/* Images */}
+                {previewComplaint.images && previewComplaint.images.length > 0 && (
+                  <div style={{ marginBottom: '14px' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>Images ({previewComplaint.images.length})</div>
+                    <div className="attachment-grid">
+                      {previewComplaint.images.map((imgUrl, idx) => (
+                        <div key={idx} className="attachment-preview">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={imgUrl} alt={`Attachment ${idx}`} />
+                          <a href={imgUrl} target="_blank" rel="noopener noreferrer" style={{ position: 'absolute', bottom: '4px', left: '4px', background: 'rgba(0,0,0,0.7)', borderRadius: '4px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: '4px', color: 'white', fontSize: '10px' }} title="Open Image Fullscreen">
+                            <Eye className="w-3 h-3" /> View
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* PDFs */}
+                {previewComplaint.pdfs && previewComplaint.pdfs.length > 0 && (
+                  <div style={{ marginBottom: '14px' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>PDF Documents ({previewComplaint.pdfs.length})</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {previewComplaint.pdfs.map((pdfUrl, idx) => {
+                        let filename = `document-${idx + 1}.pdf`;
+                        try {
+                          const urlParts = pdfUrl.split('/');
+                          filename = decodeURIComponent(urlParts[urlParts.length - 1]);
+                        } catch (e) {}
+                        return (
+                          <div key={idx} className="glass-panel" style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.02)', borderRadius: '8px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
+                              <FileText className="w-4 h-4 text-red-400" style={{ flexShrink: 0 }} />
+                              <span style={{ fontSize: '12px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {filename}
+                              </span>
+                            </div>
+                            <a href={pdfUrl.startsWith('data:') ? pdfUrl : `/api/download?url=${encodeURIComponent(pdfUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '11px', height: '26px' }}>
+                              <Download className="w-3.5 h-3.5" /> Download
+                            </a>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* XLSX */}
+                {previewComplaint.xlsxs && previewComplaint.xlsxs.length > 0 && (
+                  <div style={{ marginBottom: '14px' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>Excel Sheets ({previewComplaint.xlsxs.length})</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {previewComplaint.xlsxs.map((xlsxUrl, idx) => {
+                        let filename = `spreadsheet-${idx + 1}.xlsx`;
+                        try {
+                          const urlParts = xlsxUrl.split('/');
+                          filename = decodeURIComponent(urlParts[urlParts.length - 1]);
+                        } catch (e) {}
+                        return (
+                          <div key={idx} className="glass-panel" style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(16,185,129,0.04)', borderRadius: '8px', border: '1px solid rgba(16,185,129,0.15)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
+                              <Sheet className="w-4 h-4 text-emerald-400" style={{ flexShrink: 0 }} />
+                              <span style={{ fontSize: '12px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {filename}
+                              </span>
+                            </div>
+                            <a href={`/api/download?url=${encodeURIComponent(xlsxUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '11px', height: '26px', borderColor: 'rgba(16,185,129,0.3)' }}>
+                              <Download className="w-3.5 h-3.5" /> Download
+                            </a>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* CSV */}
+                {previewComplaint.csvs && previewComplaint.csvs.length > 0 && (
+                  <div style={{ marginBottom: '14px' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>CSV Files ({previewComplaint.csvs.length})</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {previewComplaint.csvs.map((csvUrl, idx) => {
+                        let filename = `data-${idx + 1}.csv`;
+                        try {
+                          const urlParts = csvUrl.split('/');
+                          filename = decodeURIComponent(urlParts[urlParts.length - 1]);
+                        } catch (e) {}
+                        return (
+                          <div key={idx} className="glass-panel" style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(234,179,8,0.04)', borderRadius: '8px', border: '1px solid rgba(234,179,8,0.15)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
+                              <Sheet className="w-4 h-4 text-yellow-400" style={{ flexShrink: 0 }} />
+                              <span style={{ fontSize: '12px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {filename}
+                              </span>
+                            </div>
+                            <a href={`/api/download?url=${encodeURIComponent(csvUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '11px', height: '26px', borderColor: 'rgba(234,179,8,0.3)' }}>
+                              <Download className="w-3.5 h-3.5" /> Download
+                            </a>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {(!previewComplaint.images || previewComplaint.images.length === 0) &&
+                 (!previewComplaint.pdfs || previewComplaint.pdfs.length === 0) &&
+                 (!previewComplaint.xlsxs || previewComplaint.xlsxs.length === 0) &&
+                 (!previewComplaint.csvs || previewComplaint.csvs.length === 0) && (
+                  <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontStyle: 'italic', padding: '10px 14px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px dashed var(--border-color)' }}>
+                    No files or documents attached.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="modal-footer" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                {/* Edit button: Available to both Executives and Employees */}
+                {(user?.role === 'executive' || user?.role === 'employee') && (
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                    onClick={() => {
+                      setIsPreviewOpen(false);
+                      handleOpenEditModal(previewComplaint);
+                    }}
+                  >
+                    <Edit3 className="w-4 h-4 text-amber-400" />
+                    Update Details
                   </button>
                 )}
               </div>
-            </form>
+              <button type="button" className="btn btn-primary" onClick={() => setIsPreviewOpen(false)}>
+                Close Preview
+              </button>
+            </div>
           </div>
         </div>
       )}

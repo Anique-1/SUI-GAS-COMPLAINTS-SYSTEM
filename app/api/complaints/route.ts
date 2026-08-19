@@ -38,7 +38,9 @@ export async function GET(req: NextRequest) {
       volume_booked_hm3: c.volume_booked_hm3 || '',
       volume_booked_mmcf: c.volume_booked_mmcf || '',
       amount_booked: c.amount_booked || '',
-      plaintiff: c.plaintiff || '',
+      complainant: c.complainant || c.plaintiff || '',
+      plaintiff: c.complainant || c.plaintiff || '',
+      witnesses: Array.isArray(c.witnesses) ? c.witnesses : [],
       status_of_accused: c.status_of_accused || '',
       lawyer_name: c.lawyer_name || '',
       court_name: c.court_name || '',
@@ -61,13 +63,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Access denied. Operator role is required.' }, { status: 403 });
     }
 
-    const { name, register_date, description, images, pdfs, xlsxs, csvs, police_station, mode_of_theft, volume_booked_hm3, volume_booked_mmcf, amount_booked, plaintiff, status_of_accused, lawyer_name, court_name } = await req.json();
+    const { name, register_date, description, images, pdfs, xlsxs, csvs, police_station, mode_of_theft, volume_booked_hm3, volume_booked_mmcf, amount_booked, complainant, plaintiff, witnesses, status_of_accused, lawyer_name, court_name } = await req.json();
     if (!name || !register_date) {
       return NextResponse.json({ error: 'Subject name and register date are required.' }, { status: 400 });
     }
 
     const db = await getDb();
     const complaintId = crypto.randomUUID();
+
+    const complainantVal = (complainant || plaintiff || '').trim();
+    const witnessesList = Array.isArray(witnesses)
+      ? witnesses.map((w: any) => (typeof w === 'string' ? w.trim() : '')).filter(Boolean)
+      : [];
 
     const newComplaint = {
       _id: complaintId as any,
@@ -85,7 +92,9 @@ export async function POST(req: NextRequest) {
       volume_booked_hm3: volume_booked_hm3 || '',
       volume_booked_mmcf: volume_booked_mmcf || '',
       amount_booked: amount_booked || '',
-      plaintiff: plaintiff || '',
+      complainant: complainantVal,
+      plaintiff: complainantVal,
+      witnesses: witnessesList,
       status_of_accused: status_of_accused || '',
       lawyer_name: lawyer_name || '',
       court_name: court_name || '',

@@ -63,9 +63,6 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     if (sessionUser.role === 'lawyer') {
       return NextResponse.json({ error: 'Access denied. Lawyers have read-only privileges.' }, { status: 403 });
     }
-    if (sessionUser.role === 'employee' && complaint.created_by !== sessionUser.id) {
-      return NextResponse.json({ error: 'Permission denied. Employees can only modify their own entries.' }, { status: 403 });
-    }
 
     const allowedUpdates: any = {};
     if (reference !== undefined) allowedUpdates.reference = reference;
