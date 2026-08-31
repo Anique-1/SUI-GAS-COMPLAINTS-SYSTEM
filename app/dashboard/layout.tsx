@@ -16,6 +16,7 @@ import {
   ChevronDown,
   ChevronRight,
   DollarSign,
+  ReceiptText,
   Layers
 } from 'lucide-react';
 
@@ -34,13 +35,14 @@ export const useUser = () => useContext(UserContext);
 
 function SidebarLinks({ user }: { user: Profile }) {
   const pathname = usePathname();
-  const [salesOpen, setSalesOpen] = useState(pathname.startsWith('/dashboard/sales-complaints'));
+  const isDeptActive = pathname.startsWith('/dashboard/sales-complaints') || pathname.startsWith('/dashboard/billing-complaints');
+  const [deptOpen, setDeptOpen] = useState(isDeptActive);
 
   useEffect(() => {
-    if (pathname.startsWith('/dashboard/sales-complaints')) {
-      setSalesOpen(true);
+    if (isDeptActive) {
+      setDeptOpen(true);
     }
-  }, [pathname]);
+  }, [pathname, isDeptActive]);
 
   const isLinkActive = (path: string) => pathname === path;
 
@@ -64,22 +66,22 @@ function SidebarLinks({ user }: { user: Profile }) {
 
       <div className="sidebar-group">
         <button 
-          onClick={() => setSalesOpen(!salesOpen)}
-          className={`sidebar-link ${pathname.startsWith('/dashboard/sales-complaints') ? 'active' : ''}`}
+          onClick={() => setDeptOpen(!deptOpen)}
+          className={`sidebar-link ${isDeptActive ? 'active' : ''}`}
           style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <Layers className="w-4 h-4" />
             <span>Department</span>
           </div>
-          {salesOpen ? (
+          {deptOpen ? (
             <ChevronDown className="w-4 h-4 text-slate-400" />
           ) : (
             <ChevronRight className="w-4 h-4 text-slate-400" />
           )}
         </button>
 
-        {salesOpen && (
+        {deptOpen && (
           <div className="sidebar-subnav">
             <Link 
               href="/dashboard/sales-complaints" 
@@ -87,6 +89,13 @@ function SidebarLinks({ user }: { user: Profile }) {
             >
               <DollarSign className="w-3.5 h-3.5" />
               <span>Sales Complaints</span>
+            </Link>
+            <Link 
+              href="/dashboard/billing-complaints" 
+              className={`sidebar-link sub-link ${isLinkActive('/dashboard/billing-complaints') ? 'active' : ''}`}
+            >
+              <ReceiptText className="w-3.5 h-3.5" />
+              <span>Billing Complaints</span>
             </Link>
           </div>
         )}

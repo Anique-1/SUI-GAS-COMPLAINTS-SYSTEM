@@ -83,6 +83,34 @@ export interface SalesComplaint {
   customer_address?: string;
 }
 
+export type BillingComplaintType =
+  | 'violation_report'
+  | 'usage_verification_of_consumer';
+
+export interface BillingComplaintReply {
+  id: string;
+  consumer_no?: string; // which customer this action/reply is for
+  reply_text: string;
+  reply_date: string;
+  replied_by: string;
+  replier_name: string;
+  created_at: string;
+}
+
+export interface BillingComplaint {
+  id: string;
+  serial_id: string;                    // BC-XXXXXX
+  reference: string;                    // REF field
+  complaint_date: string;               // Dated field, e.g. 2026-08-31
+  complaint_type: BillingComplaintType; // Violation Report or Usage Verification of Consumer
+  customers: CustomerEntry[];           // Multiple customers per complaint
+  replies: BillingComplaintReply[];
+  created_by: string;
+  creator_name: string;
+  created_at: string;
+  status: 'pending' | 'resolved';
+}
+
 
 
 
@@ -305,6 +333,70 @@ export const dbClient = {
       const data = await res.json();
       if (!res.ok) {
         return { error: data.error || 'Failed to delete sales complaint.' };
+      }
+      return { error: null };
+    } catch (e: any) {
+      return { error: e.message || 'Network connection failed.' };
+    }
+  },
+
+  // Fetch Billing Complaints
+  async getBillingComplaints(): Promise<BillingComplaint[]> {
+    try {
+      const res = await fetch('/api/billing-complaints');
+      if (!res.ok) return [];
+      return await res.json();
+    } catch (e) {
+      console.error('getBillingComplaints error:', e);
+      return [];
+    }
+  },
+
+  // Create Billing Complaint
+  async createBillingComplaint(complaint: Omit<BillingComplaint, 'id' | 'serial_id' | 'created_by' | 'creator_name' | 'created_at' | 'status' | 'replies'>): Promise<{ data: BillingComplaint | null; error: string | null }> {
+    try {
+      const res = await fetch('/api/billing-complaints', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(complaint),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { data: null, error: data.error || 'Failed to record billing complaint.' };
+      }
+      return { data: data.data, error: null };
+    } catch (e: any) {
+      return { data: null, error: e.message || 'Network connection failed.' };
+    }
+  },
+
+  // Update Billing Complaint Details (e.g., adding reply)
+  async updateBillingComplaint(complaintId: string, updates: Partial<BillingComplaint> & { reply_text?: string; reply_date?: string; reply_consumer_no?: string }): Promise<{ error: string | null }> {
+    try {
+      const res = await fetch(`/api/billing-complaints/${complaintId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { error: data.error || 'Failed to update billing complaint.' };
+      }
+      return { error: null };
+    } catch (e: any) {
+      return { error: e.message || 'Network connection failed.' };
+    }
+  },
+
+  // Delete Billing Complaint
+  async deleteBillingComplaint(complaintId: string): Promise<{ error: string | null }> {
+    try {
+      const res = await fetch(`/api/billing-complaints/${complaintId}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { error: data.error || 'Failed to delete billing complaint.' };
       }
       return { error: null };
     } catch (e: any) {
