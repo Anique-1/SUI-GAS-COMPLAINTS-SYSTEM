@@ -27,9 +27,9 @@ const COMPLAINT_TYPE_LABELS: Record<ComplaintType, string> = {
 };
 
 const COMPLAINT_TYPE_COLORS: Record<ComplaintType, { bg: string; color: string; border: string }> = {
-  own_request_disconnection: { bg: 'rgba(59,130,246,0.1)', color: '#60a5fa', border: 'rgba(59,130,246,0.2)' },
-  free_gas_disconnection: { bg: 'rgba(16,185,129,0.1)', color: '#34d399', border: 'rgba(16,185,129,0.2)' },
-  violation_of_contract: { bg: 'rgba(239,68,68,0.1)', color: '#f87171', border: 'rgba(239,68,68,0.2)' },
+  own_request_disconnection: { bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
+  free_gas_disconnection: { bg: '#ecfdf5', color: '#047857', border: '#a7f3d0' },
+  violation_of_contract: { bg: '#fef2f2', color: '#b91c1c', border: '#fecaca' },
 };
 
 const emptyCustomer = (): CustomerEntry => ({ consumer_no: '', customer_details: '', anomalies: '' });
@@ -239,8 +239,10 @@ export default function SalesComplaintsPage() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Sales Complaints Registry</h1>
-          <p className="page-description">Manage disconnection complaints — own request, free gas, and contract violations</p>
+          <h1 className="page-title" style={{ color: '#0f172a', fontWeight: '800' }}>Sales Complaints Registry</h1>
+          <p className="page-description" style={{ color: '#334155', fontWeight: '500' }}>
+            Manage disconnection complaints — own request, free gas, and contract violations
+          </p>
         </div>
         {user?.role !== 'lawyer' && (
           <button onClick={handleOpenAddModal} className="btn btn-primary">
@@ -250,30 +252,55 @@ export default function SalesComplaintsPage() {
       </div>
 
       {/* FILTER BAR */}
-      <div className="glass-panel filter-bar" style={{ padding: '16px', marginBottom: '32px', display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
+      <div className="glass-panel filter-bar" style={{ padding: '16px', marginBottom: '32px', display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center', background: '#ffffff', border: '1px solid #cbd5e1' }}>
         <div style={{ display: 'flex', flexGrow: 1, minWidth: '240px', position: 'relative' }}>
-          <Search className="w-4 h-4" style={{ position: 'absolute', left: '14px', top: '15px', color: 'var(--text-muted)' }} />
-          <input type="text" className="form-input filter-input" placeholder="Search by serial ID, reference, consumer no, customer details..." style={{ paddingLeft: '42px' }} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+          <Search className="w-4 h-4" style={{ position: 'absolute', left: '14px', top: '15px', color: '#64748b' }} />
+          <input
+            type="text"
+            className="form-input filter-input"
+            placeholder="Search by serial ID, reference, consumer no, customer details..."
+            style={{ paddingLeft: '42px', color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+          />
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>From:</span>
-            <input type="date" className="form-input" style={{ width: '135px', padding: '6px 10px', fontSize: '13px', height: '38px' }} value={fromDate} onChange={e => setFromDate(e.target.value)} />
+            <span style={{ fontSize: '12.5px', color: '#1e293b', fontWeight: '600' }}>From:</span>
+            <input
+              type="date"
+              className="form-input"
+              style={{ width: '135px', padding: '6px 10px', fontSize: '13px', height: '38px', color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
+              value={fromDate}
+              onChange={e => setFromDate(e.target.value)}
+            />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>To:</span>
-            <input type="date" className="form-input" style={{ width: '135px', padding: '6px 10px', fontSize: '13px', height: '38px' }} value={toDate} onChange={e => setToDate(e.target.value)} />
+            <span style={{ fontSize: '12.5px', color: '#1e293b', fontWeight: '600' }}>To:</span>
+            <input
+              type="date"
+              className="form-input"
+              style={{ width: '135px', padding: '6px 10px', fontSize: '13px', height: '38px', color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
+              value={toDate}
+              onChange={e => setToDate(e.target.value)}
+            />
           </div>
           {(fromDate || toDate) && (
-            <button type="button" onClick={() => { setFromDate(''); setToDate(''); }} style={{ background: 'none', border: 'none', color: 'var(--accent-blue)', fontSize: '12px', cursor: 'pointer', padding: '4px 8px' }}>Clear</button>
+            <button
+              type="button"
+              onClick={() => { setFromDate(''); setToDate(''); }}
+              style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '6px', color: '#0284c7', fontSize: '12px', fontWeight: '700', cursor: 'pointer', padding: '6px 10px' }}
+            >
+              Clear
+            </button>
           )}
         </div>
         {/* Category filter */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '12px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>Category:</span>
+          <span style={{ fontSize: '12.5px', color: '#1e293b', fontWeight: '600', whiteSpace: 'nowrap' }}>Category:</span>
           <select
             className="form-select"
-            style={{ height: '38px', fontSize: '13px', minWidth: '230px', padding: '0 10px' }}
+            style={{ height: '38px', fontSize: '13px', minWidth: '230px', padding: '0 10px', color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
             value={categoryFilter}
             onChange={e => setCategoryFilter(e.target.value as ComplaintType | '')}
           >
@@ -286,7 +313,7 @@ export default function SalesComplaintsPage() {
             <button
               type="button"
               onClick={() => setCategoryFilter('')}
-              style={{ background: 'none', border: 'none', color: 'var(--accent-blue)', fontSize: '12px', cursor: 'pointer', padding: '4px 6px' }}
+              style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '6px', color: '#0284c7', fontSize: '12px', fontWeight: '700', cursor: 'pointer', padding: '6px 8px' }}
             >
               ✕
             </button>
@@ -299,17 +326,17 @@ export default function SalesComplaintsPage() {
       </div>
 
       {/* TABLE */}
-      <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
+      <div className="glass-panel" style={{ padding: '0', overflow: 'hidden', border: '1px solid #cbd5e1', background: '#ffffff' }}>
         {loading ? (
           <div style={{ padding: '80px 0', textAlign: 'center' }}>
-            <Loader2 className="w-10 h-10 animate-spin" style={{ color: 'var(--accent-blue)', margin: '0 auto 16px auto' }} />
-            <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Loading records...</p>
+            <Loader2 className="w-10 h-10 animate-spin" style={{ color: '#0284c7', margin: '0 auto 16px auto' }} />
+            <p style={{ color: '#334155', fontSize: '14px', fontWeight: '600' }}>Loading records...</p>
           </div>
         ) : filteredComplaints.length === 0 ? (
-          <div style={{ padding: '80px 40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-            <ClipboardList className="w-12 h-12" style={{ color: 'var(--text-muted)', margin: '0 auto 16px auto', opacity: 0.5 }} />
-            <h3>No Sales Complaints Found</h3>
-            <p style={{ fontSize: '13px', marginTop: '4px' }}>Add a new complaint or modify the search filters.</p>
+          <div style={{ padding: '80px 40px', textAlign: 'center', color: '#334155' }}>
+            <ClipboardList className="w-12 h-12" style={{ color: '#64748b', margin: '0 auto 16px auto', opacity: 0.6 }} />
+            <h3 style={{ color: '#0f172a', fontWeight: '700' }}>No Sales Complaints Found</h3>
+            <p style={{ fontSize: '13px', marginTop: '4px', color: '#475569' }}>Add a new complaint or modify the search filters.</p>
           </div>
         ) : (
           <div className="data-table-container">
@@ -336,22 +363,24 @@ export default function SalesComplaintsPage() {
                     <tr key={c.id} style={{ verticalAlign: 'top' }}>
                       {/* Serial */}
                       <td>
-                        <strong style={{ color: 'var(--accent-blue)', fontFamily: 'monospace', fontSize: '13px', display: 'block' }}>{c.serial_id}</strong>
-                        <span style={{ fontSize: '11px', display: 'block', color: 'var(--text-muted)', marginTop: '3px' }}>By: {c.creator_name}</span>
+                        <strong style={{ color: '#0369a1', fontFamily: 'monospace', fontSize: '13.5px', fontWeight: '800', display: 'block' }}>{c.serial_id}</strong>
+                        <span style={{ fontSize: '11px', display: 'block', color: '#475569', marginTop: '3px', fontWeight: '500' }}>
+                          By: <strong style={{ color: '#1e293b' }}>{c.creator_name}</strong>
+                        </span>
                       </td>
 
                       {/* Ref & Date */}
                       <td>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '3px' }}>
-                          <FileText className="w-3 h-3" style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
-                          <span style={{ fontFamily: 'monospace', fontSize: '12px', color: 'var(--text-primary)', fontWeight: '600' }}>{c.reference || '—'}</span>
+                          <FileText className="w-3.5 h-3.5" style={{ color: '#64748b', flexShrink: 0 }} />
+                          <span style={{ fontFamily: 'monospace', fontSize: '12px', color: '#0f172a', fontWeight: '700' }}>{c.reference || '—'}</span>
                         </div>
-                        <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{c.complaint_date || '—'}</span>
+                        <span style={{ fontSize: '11px', color: '#475569', fontWeight: '500' }}>{c.complaint_date || '—'}</span>
                       </td>
 
                       {/* Complaint Type */}
                       <td>
-                        <span style={{ display: 'inline-block', fontSize: '11px', fontWeight: '600', padding: '3px 8px', borderRadius: '5px', background: typeColors.bg, color: typeColors.color, border: `1px solid ${typeColors.border}`, lineHeight: '1.5' }}>
+                        <span style={{ display: 'inline-block', fontSize: '11.5px', fontWeight: '700', padding: '4px 10px', borderRadius: '6px', background: typeColors.bg, color: typeColors.color, border: `1px solid ${typeColors.border}`, lineHeight: '1.45' }}>
                           {typeLabel}
                         </span>
                       </td>
@@ -360,15 +389,15 @@ export default function SalesComplaintsPage() {
                       <td>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                           {custs.map((cu, idx) => (
-                            <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '8px 10px' }}>
+                            <div key={idx} style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '10px 12px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
-                                <span style={{ fontFamily: 'monospace', fontSize: '12px', fontWeight: '700', color: 'var(--accent-blue)' }}>{cu.consumer_no}</span>
+                                <span style={{ fontFamily: 'monospace', fontSize: '12.5px', fontWeight: '800', color: '#0369a1' }}>{cu.consumer_no}</span>
                               </div>
-                              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4', whiteSpace: 'pre-line' }}>{cu.customer_details}</div>
+                              <div style={{ fontSize: '12px', color: '#0f172a', lineHeight: '1.45', whiteSpace: 'pre-line', fontWeight: '500' }}>{cu.customer_details}</div>
                               {cu.anomalies && (
-                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '4px', marginTop: '4px' }}>
-                                  <AlertTriangle className="w-3 h-3" style={{ color: '#f59e0b', marginTop: '2px', flexShrink: 0 }} />
-                                  <span style={{ fontSize: '11px', color: '#f59e0b' }}>{cu.anomalies}</span>
+                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '5px', marginTop: '6px', background: '#fef3c7', border: '1px solid #fde68a', borderRadius: '4px', padding: '3px 7px' }}>
+                                  <AlertTriangle className="w-3.5 h-3.5" style={{ color: '#92400e', marginTop: '1px', flexShrink: 0 }} />
+                                  <span style={{ fontSize: '11px', color: '#92400e', fontWeight: '700' }}>{cu.anomalies}</span>
                                 </div>
                               )}
                             </div>
@@ -381,45 +410,70 @@ export default function SalesComplaintsPage() {
                         {c.replies && c.replies.length > 0 ? (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                             {c.replies.map((reply, idx) => (
-                              <div key={idx} style={{ background: 'rgba(2,132,199,0.05)', border: '1px solid rgba(2,132,199,0.12)', borderRadius: '5px', padding: '7px 9px' }}>
+                              <div key={idx} style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '6px', padding: '8px 10px' }}>
                                 {reply.consumer_no && (
-                                  <span style={{ fontFamily: 'monospace', fontSize: '10px', fontWeight: '700', color: 'var(--accent-blue)', display: 'block', marginBottom: '3px' }}>
+                                  <span style={{ fontFamily: 'monospace', fontSize: '11px', fontWeight: '800', color: '#0369a1', display: 'block', marginBottom: '3px' }}>
                                     #{reply.consumer_no}
                                   </span>
                                 )}
-                                <span style={{ fontSize: '12px', color: 'var(--text-primary)', lineHeight: '1.4', display: 'block' }}>{reply.reply_text}</span>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px' }}>
-                                  <span>{reply.replier_name}</span>
+                                <span style={{ fontSize: '12px', color: '#0f172a', lineHeight: '1.45', display: 'block', fontWeight: '500' }}>{reply.reply_text}</span>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#475569', marginTop: '5px', fontWeight: '500' }}>
+                                  <span style={{ fontWeight: '600', color: '#334155' }}>{reply.replier_name}</span>
                                   <span>{reply.reply_date}</span>
                                 </div>
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <em style={{ color: 'var(--text-muted)', fontSize: '12px' }}>No action taken</em>
+                          <em style={{ color: '#64748b', fontSize: '12px', fontWeight: '500' }}>No action taken</em>
                         )}
                       </td>
 
                       {/* Status */}
                       <td>
-                        <span style={{ display: 'inline-block', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', padding: '3px 8px', borderRadius: '4px', ...(c.status === 'resolved' ? { background: 'rgba(16,185,129,0.12)', color: '#34d399', border: '1px solid rgba(16,185,129,0.25)' } : { background: 'rgba(249,115,22,0.12)', color: '#fb923c', border: '1px solid rgba(249,115,22,0.25)' }) }}>
+                        <span style={{
+                          display: 'inline-block',
+                          fontSize: '11px',
+                          fontWeight: '800',
+                          textTransform: 'uppercase',
+                          padding: '4px 9px',
+                          borderRadius: '4px',
+                          letterSpacing: '0.04em',
+                          ...(c.status === 'resolved'
+                            ? { background: '#d1fae5', color: '#065f46', border: '1px solid #6ee7b7' }
+                            : { background: '#ffedd5', color: '#9a3412', border: '1px solid #fdba74' })
+                        }}>
                           {c.status === 'resolved' ? 'Resolved' : 'Pending'}
                         </span>
                       </td>
 
                       {/* Actions */}
                       <td>
-                        <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-                          <button onClick={() => handleOpenReplyModal(c)} className="btn btn-secondary" style={{ padding: '5px 9px', fontSize: '12px', height: '30px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            {user?.role === 'lawyer' ? <Eye className="w-3.5 h-3.5" /> : <MessageSquare className="w-3.5 h-3.5" />}
+                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                          <button
+                            onClick={() => handleOpenReplyModal(c)}
+                            className="btn btn-secondary"
+                            style={{ padding: '5px 10px', fontSize: '12px', height: '30px', display: 'flex', alignItems: 'center', gap: '4px', border: '1px solid #cbd5e1', color: '#0f172a', fontWeight: '600' }}
+                          >
+                            {user?.role === 'lawyer' ? <Eye className="w-3.5 h-3.5 text-blue-600" /> : <MessageSquare className="w-3.5 h-3.5 text-blue-600" />}
                             {user?.role === 'lawyer' ? 'View' : 'Reply'}
                           </button>
                           {canEdit && (
                             <>
-                              <button onClick={() => handleOpenEditModal(c)} className="btn btn-secondary" style={{ padding: '5px', height: '30px', width: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <button
+                                onClick={() => handleOpenEditModal(c)}
+                                className="btn btn-secondary"
+                                title="Edit complaint"
+                                style={{ padding: '5px', height: '30px', width: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #cbd5e1', color: '#0f172a' }}
+                              >
                                 <Edit3 className="w-3.5 h-3.5" />
                               </button>
-                              <button onClick={() => handleDeleteComplaint(c.id, c.created_by)} className="btn btn-danger" style={{ padding: '5px', height: '30px', width: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <button
+                                onClick={() => handleDeleteComplaint(c.id, c.created_by)}
+                                className="btn btn-danger"
+                                title="Delete entry"
+                                style={{ padding: '5px', height: '30px', width: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fee2e2', border: '1px solid #fca5a5', color: '#b91c1c' }}
+                              >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </>
@@ -438,11 +492,11 @@ export default function SalesComplaintsPage() {
       {/* ===================== IN PORTION MODAL ===================== */}
       {isInModalOpen && (
         <div className="modal-overlay animate-fade-in">
-          <div className="glass-panel modal-content" style={{ maxWidth: '700px', maxHeight: '90vh', overflowY: 'auto' }}>
-            <button className="modal-close" onClick={() => setIsInModalOpen(false)}><X className="w-5 h-5" /></button>
+          <div className="glass-panel modal-content" style={{ background: '#ffffff', border: '1px solid #cbd5e1' }}>
+            <button className="modal-close" onClick={() => setIsInModalOpen(false)} style={{ color: '#334155' }}><X className="w-5 h-5" /></button>
             <div className="modal-header">
-              <h2>{editingComplaint ? 'Edit Sales Complaint' : 'Register Sales Complaint (In Portion)'}</h2>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '4px' }}>
+              <h2 style={{ color: '#0f172a', fontWeight: '800' }}>{editingComplaint ? 'Edit Sales Complaint' : 'Register Sales Complaint (In Portion)'}</h2>
+              <p style={{ color: '#334155', fontSize: '13px', marginTop: '4px', fontWeight: '500' }}>
                 Fill in the memorandum reference, type, and customer details.
               </p>
             </div>
@@ -451,21 +505,42 @@ export default function SalesComplaintsPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
 
                 {/* Reference + Date */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="modal-grid-2">
                   <div className="form-group">
-                    <label className="form-label">Reference (REF)</label>
-                    <input type="text" className="form-input" placeholder="e.g. FS/DOM-DIS" value={reference} onChange={e => setReference(e.target.value)} required />
+                    <label className="form-label" style={{ color: '#0f172a', fontWeight: '700' }}>Reference (REF)</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g. FS/DOM-DIS"
+                      style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
+                      value={reference}
+                      onChange={e => setReference(e.target.value)}
+                      required
+                    />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Dated</label>
-                    <input type="date" className="form-input" value={complaintDate} onChange={e => setComplaintDate(e.target.value)} required />
+                    <label className="form-label" style={{ color: '#0f172a', fontWeight: '700' }}>Dated</label>
+                    <input
+                      type="date"
+                      className="form-input"
+                      style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
+                      value={complaintDate}
+                      onChange={e => setComplaintDate(e.target.value)}
+                      required
+                    />
                   </div>
                 </div>
 
                 {/* Complaint Type */}
                 <div className="form-group">
-                  <label className="form-label">Sales Complaint Type</label>
-                  <select className="form-select" value={complaintType} onChange={e => setComplaintType(e.target.value as ComplaintType)} required>
+                  <label className="form-label" style={{ color: '#0f172a', fontWeight: '700' }}>Sales Complaint Type</label>
+                  <select
+                    className="form-select"
+                    style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
+                    value={complaintType}
+                    onChange={e => setComplaintType(e.target.value as ComplaintType)}
+                    required
+                  >
                     <option value="own_request_disconnection">Own Request Disconnection</option>
                     <option value="free_gas_disconnection">Free Gas Disconnection</option>
                     <option value="violation_of_contract">Disconnection Due to Violation of Contract</option>
@@ -474,33 +549,34 @@ export default function SalesComplaintsPage() {
 
                 {/* Customers */}
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Users className="w-4 h-4" style={{ color: 'var(--accent-blue)' }} />
-                      <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>Customer Details</span>
-                      <span style={{ fontSize: '11px', background: 'rgba(2,132,199,0.1)', color: 'var(--accent-blue)', padding: '1px 8px', borderRadius: '10px', border: '1px solid rgba(2,132,199,0.2)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                      <Users className="w-4 h-4" style={{ color: '#0284c7' }} />
+                      <span style={{ fontSize: '13px', fontWeight: '700', color: '#0f172a' }}>Customer Details</span>
+                      <span style={{ fontSize: '11px', background: '#e0f2fe', color: '#0369a1', fontWeight: '700', padding: '2px 8px', borderRadius: '10px', border: '1px solid #bae6fd' }}>
                         {customers.length} {customers.length === 1 ? 'customer' : 'customers'}
                       </span>
                     </div>
-                    <button type="button" onClick={addCustomerRow} className="btn btn-secondary" style={{ height: '30px', padding: '0 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                      <UserPlus className="w-3.5 h-3.5" /> Add Customer
+                    <button type="button" onClick={addCustomerRow} className="btn btn-secondary" style={{ height: '32px', padding: '0 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px', border: '1px solid #cbd5e1', color: '#0f172a', fontWeight: '600' }}>
+                      <UserPlus className="w-3.5 h-3.5 text-blue-600" /> Add Customer
                     </button>
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {customers.map((cu, idx) => (
-                      <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '14px', position: 'relative' }}>
-                        <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--accent-blue)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px' }}>
+                      <div key={idx} style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '16px', position: 'relative' }}>
+                        <div style={{ fontSize: '12px', fontWeight: '800', color: '#0369a1', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '12px' }}>
                           Customer #{idx + 1}
                         </div>
 
                         {/* Consumer No */}
-                        <div className="form-group" style={{ marginBottom: '10px' }}>
-                          <label className="form-label" style={{ fontSize: '12px' }}>Consumer No. (Account ID)</label>
+                        <div className="form-group" style={{ marginBottom: '12px' }}>
+                          <label className="form-label" style={{ fontSize: '12px', color: '#1e293b', fontWeight: '700' }}>Consumer No. (Account ID)</label>
                           <input
                             type="text"
                             className="form-input"
                             placeholder="e.g. 5018951232"
+                            style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
                             value={cu.consumer_no}
                             onChange={e => updateCustomer(idx, 'consumer_no', e.target.value)}
                             required
@@ -508,11 +584,12 @@ export default function SalesComplaintsPage() {
                         </div>
 
                         {/* Name & Address */}
-                        <div className="form-group" style={{ marginBottom: '10px' }}>
-                          <label className="form-label" style={{ fontSize: '12px' }}>Name &amp; Address</label>
+                        <div className="form-group" style={{ marginBottom: '12px' }}>
+                          <label className="form-label" style={{ fontSize: '12px', color: '#1e293b', fontWeight: '700' }}>Name &amp; Address</label>
                           <textarea
                             className="form-textarea"
                             placeholder={"e.g. Ghulam Mustafa\nChak No. 277/JB, Gojra"}
+                            style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
                             rows={2}
                             value={cu.customer_details}
                             onChange={e => updateCustomer(idx, 'customer_details', e.target.value)}
@@ -522,11 +599,12 @@ export default function SalesComplaintsPage() {
 
                         {/* Anomalies */}
                         <div className="form-group" style={{ marginBottom: '0' }}>
-                          <label className="form-label" style={{ fontSize: '12px' }}>Anomalies / Remarks</label>
+                          <label className="form-label" style={{ fontSize: '12px', color: '#1e293b', fontWeight: '700' }}>Anomalies / Remarks</label>
                           <input
                             type="text"
                             className="form-input"
                             placeholder="e.g. Wrong Installation, DIS, Stay Case..."
+                            style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
                             value={cu.anomalies || ''}
                             onChange={e => updateCustomer(idx, 'anomalies', e.target.value)}
                           />
@@ -537,7 +615,7 @@ export default function SalesComplaintsPage() {
                             type="button"
                             onClick={() => removeCustomerRow(idx)}
                             title="Remove this customer"
-                            style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171', borderRadius: '5px', padding: '3px 6px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                            style={{ position: 'absolute', top: '12px', right: '12px', background: '#fee2e2', border: '1px solid #fca5a5', color: '#b91c1c', borderRadius: '5px', padding: '4px 7px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                           >
                             <X className="w-3.5 h-3.5" />
                           </button>
@@ -549,7 +627,7 @@ export default function SalesComplaintsPage() {
               </div>
 
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setIsInModalOpen(false)}>Cancel</button>
+                <button type="button" className="btn btn-secondary" onClick={() => setIsInModalOpen(false)} style={{ border: '1px solid #cbd5e1', color: '#0f172a' }}>Cancel</button>
                 <button type="submit" className="btn btn-primary">{editingComplaint ? 'Save Changes' : 'Create Entry'}</button>
               </div>
             </form>
@@ -560,14 +638,14 @@ export default function SalesComplaintsPage() {
       {/* ===================== OUT PORTION MODAL ===================== */}
       {isOutModalOpen && selectedComplaint && (
         <div className="modal-overlay animate-fade-in">
-          <div className="glass-panel modal-content" style={{ maxWidth: '680px', maxHeight: '90vh', overflowY: 'auto' }}>
-            <button className="modal-close" onClick={() => setIsOutModalOpen(false)}><X className="w-5 h-5" /></button>
+          <div className="glass-panel modal-content" style={{ background: '#ffffff', border: '1px solid #cbd5e1' }}>
+            <button className="modal-close" onClick={() => setIsOutModalOpen(false)} style={{ color: '#334155' }}><X className="w-5 h-5" /></button>
             <div className="modal-header">
-              <h2>Action Taken (Out Portion)</h2>
+              <h2 style={{ color: '#0f172a', fontWeight: '800' }}>Action Taken (Out Portion)</h2>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
-                <span style={{ color: 'var(--accent-blue)', fontFamily: 'monospace', fontWeight: 'bold' }}>{selectedComplaint.serial_id}</span>
-                <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>•</span>
-                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Ref: {selectedComplaint.reference} • {selectedComplaint.complaint_date}</span>
+                <span style={{ color: '#0369a1', fontFamily: 'monospace', fontWeight: '800', fontSize: '13.5px' }}>{selectedComplaint.serial_id}</span>
+                <span style={{ color: '#94a3b8', fontSize: '12px' }}>•</span>
+                <span style={{ fontSize: '12.5px', color: '#334155', fontWeight: '600' }}>Ref: {selectedComplaint.reference} • {selectedComplaint.complaint_date}</span>
               </div>
             </div>
 
@@ -579,41 +657,57 @@ export default function SalesComplaintsPage() {
                   {(() => {
                     const ct = selectedComplaint.complaint_type as ComplaintType;
                     const tc = COMPLAINT_TYPE_COLORS[ct] || COMPLAINT_TYPE_COLORS.violation_of_contract;
-                    return <span style={{ display: 'inline-block', fontSize: '11px', fontWeight: '600', padding: '3px 10px', borderRadius: '5px', background: tc.bg, color: tc.color, border: `1px solid ${tc.border}` }}>{COMPLAINT_TYPE_LABELS[ct] || ct}</span>;
+                    return (
+                      <span style={{ display: 'inline-block', fontSize: '11.5px', fontWeight: '700', padding: '4px 10px', borderRadius: '6px', background: tc.bg, color: tc.color, border: `1px solid ${tc.border}` }}>
+                        {COMPLAINT_TYPE_LABELS[ct] || ct}
+                      </span>
+                    );
                   })()}
                 </div>
 
                 {/* Customers list (read-only) */}
-                <div style={{ background: 'rgba(255,255,255,0.02)', padding: '14px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                  <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--accent-blue)', textTransform: 'uppercase', marginBottom: '10px', letterSpacing: '0.04em' }}>
+                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
+                  <div style={{ fontSize: '12px', fontWeight: '800', color: '#0369a1', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.04em' }}>
                     Customers ({(selectedComplaint.customers || []).length})
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {(selectedComplaint.customers || []).map((cu, idx) => {
                       const custReplies = (selectedComplaint.replies || []).filter(r => r.consumer_no === cu.consumer_no);
                       return (
-                        <div key={idx} style={{ background: 'rgba(0,0,0,0.1)', borderRadius: '6px', padding: '10px 12px', borderLeft: `3px solid ${custReplies.length > 0 ? '#34d399' : 'var(--border-color)'}` }}>
+                        <div key={idx} style={{ background: '#ffffff', borderRadius: '6px', padding: '12px 14px', border: '1px solid #cbd5e1', borderLeft: `4px solid ${custReplies.length > 0 ? '#059669' : '#cbd5e1'}` }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                             <div>
-                              <span style={{ fontFamily: 'monospace', fontSize: '12px', fontWeight: '700', color: 'var(--accent-blue)' }}>{cu.consumer_no}</span>
-                              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px', lineHeight: '1.4', whiteSpace: 'pre-line' }}>{cu.customer_details}</div>
+                              <span style={{ fontFamily: 'monospace', fontSize: '13px', fontWeight: '800', color: '#0369a1' }}>{cu.consumer_no}</span>
+                              <div style={{ fontSize: '12.5px', color: '#0f172a', marginTop: '3px', lineHeight: '1.45', whiteSpace: 'pre-line', fontWeight: '500' }}>{cu.customer_details}</div>
                               {cu.anomalies && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
-                                  <AlertTriangle className="w-3 h-3" style={{ color: '#f59e0b' }} />
-                                  <span style={{ fontSize: '11px', color: '#f59e0b' }}>{cu.anomalies}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '6px', background: '#fef3c7', border: '1px solid #fde68a', borderRadius: '4px', padding: '3px 7px' }}>
+                                  <AlertTriangle className="w-3.5 h-3.5" style={{ color: '#92400e' }} />
+                                  <span style={{ fontSize: '11px', color: '#92400e', fontWeight: '700' }}>{cu.anomalies}</span>
                                 </div>
                               )}
                             </div>
-                            <span style={{ fontSize: '10px', fontWeight: '700', padding: '2px 6px', borderRadius: '4px', flexShrink: 0, marginLeft: '8px', ...(custReplies.length > 0 ? { background: 'rgba(16,185,129,0.1)', color: '#34d399', border: '1px solid rgba(16,185,129,0.2)' } : { background: 'rgba(249,115,22,0.1)', color: '#fb923c', border: '1px solid rgba(249,115,22,0.2)' }) }}>
+                            <span style={{
+                              fontSize: '11px',
+                              fontWeight: '800',
+                              padding: '3px 8px',
+                              borderRadius: '4px',
+                              flexShrink: 0,
+                              marginLeft: '8px',
+                              ...(custReplies.length > 0
+                                ? { background: '#d1fae5', color: '#065f46', border: '1px solid #6ee7b7' }
+                                : { background: '#ffedd5', color: '#9a3412', border: '1px solid #fdba74' })
+                            }}>
                               {custReplies.length > 0 ? `${custReplies.length} action(s)` : 'No action'}
                             </span>
                           </div>
                           {custReplies.length > 0 && (
-                            <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                            <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                               {custReplies.map((r, ri) => (
-                                <div key={ri} style={{ background: 'rgba(2,132,199,0.05)', borderRadius: '4px', padding: '6px 8px' }}>
-                                  <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontStyle: 'italic' }}>"{r.reply_text}"</span>
-                                  <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '3px' }}>By {r.replier_name} • {r.reply_date}</div>
+                                <div key={ri} style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '5px', padding: '8px 10px' }}>
+                                  <span style={{ fontSize: '12.5px', color: '#0f172a', fontStyle: 'italic', fontWeight: '500' }}>"{r.reply_text}"</span>
+                                  <div style={{ fontSize: '11px', color: '#475569', marginTop: '4px', fontWeight: '500' }}>
+                                    By <strong style={{ color: '#1e293b' }}>{r.replier_name}</strong> • {r.reply_date}
+                                  </div>
                                 </div>
                               ))}
                             </div>
@@ -626,16 +720,17 @@ export default function SalesComplaintsPage() {
 
                 {/* Add New Action */}
                 {user?.role !== 'lawyer' && (
-                  <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
-                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--accent-teal)', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.04em' }}>
+                  <div style={{ borderTop: '1px solid #cbd5e1', paddingTop: '16px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: '800', color: '#0f172a', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.04em' }}>
                       Add Action Taken
                     </div>
 
                     {/* Select Customer */}
                     <div className="form-group">
-                      <label className="form-label">Select Customer (Consumer No.)</label>
+                      <label className="form-label" style={{ color: '#0f172a', fontWeight: '700' }}>Select Customer (Consumer No.)</label>
                       <select
                         className="form-select"
+                        style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
                         value={selectedConsumerNo}
                         onChange={e => setSelectedConsumerNo(e.target.value)}
                         required
@@ -651,10 +746,11 @@ export default function SalesComplaintsPage() {
 
                     {/* Action Taken text */}
                     <div className="form-group">
-                      <label className="form-label">Action Taken</label>
+                      <label className="form-label" style={{ color: '#0f172a', fontWeight: '700' }}>Action Taken</label>
                       <textarea
                         className="form-textarea"
                         placeholder="Describe the action taken for this customer (e.g. Disconnected, Stay Case issued, Reconnection applied...)"
+                        style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
                         rows={3}
                         value={replyText}
                         onChange={e => setReplyText(e.target.value)}
@@ -664,15 +760,22 @@ export default function SalesComplaintsPage() {
 
                     {/* Date */}
                     <div className="form-group">
-                      <label className="form-label">Date of Action</label>
-                      <input type="date" className="form-input" value={replyDate} onChange={e => setReplyDate(e.target.value)} required />
+                      <label className="form-label" style={{ color: '#0f172a', fontWeight: '700' }}>Date of Action</label>
+                      <input
+                        type="date"
+                        className="form-input"
+                        style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
+                        value={replyDate}
+                        onChange={e => setReplyDate(e.target.value)}
+                        required
+                      />
                     </div>
                   </div>
                 )}
               </div>
 
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setIsOutModalOpen(false)}>
+                <button type="button" className="btn btn-secondary" onClick={() => setIsOutModalOpen(false)} style={{ border: '1px solid #cbd5e1', color: '#0f172a' }}>
                   {user?.role === 'lawyer' ? 'Close' : 'Cancel'}
                 </button>
                 {user?.role !== 'lawyer' && <button type="submit" className="btn btn-primary">Save Action</button>}
@@ -684,3 +787,4 @@ export default function SalesComplaintsPage() {
     </div>
   );
 }
+

@@ -17,7 +17,9 @@ import {
   ChevronRight,
   DollarSign,
   ReceiptText,
-  Layers
+  Layers,
+  Menu,
+  X
 } from 'lucide-react';
 
 // User context for dashboard pages
@@ -33,7 +35,7 @@ const UserContext = createContext<UserContextType>({
 
 export const useUser = () => useContext(UserContext);
 
-function SidebarLinks({ user }: { user: Profile }) {
+function SidebarLinks({ user, onLinkClick }: { user: Profile; onLinkClick?: () => void }) {
   const pathname = usePathname();
   const isDeptActive = pathname.startsWith('/dashboard/sales-complaints') || pathname.startsWith('/dashboard/billing-complaints');
   const [deptOpen, setDeptOpen] = useState(isDeptActive);
@@ -50,6 +52,7 @@ function SidebarLinks({ user }: { user: Profile }) {
     <nav className="sidebar-nav">
       <Link 
         href="/dashboard" 
+        onClick={onLinkClick}
         className={`sidebar-link ${isLinkActive('/dashboard') ? 'active' : ''}`}
       >
         <LayoutDashboard className="w-4 h-4" />
@@ -58,6 +61,7 @@ function SidebarLinks({ user }: { user: Profile }) {
 
       <Link 
         href="/dashboard/complaints" 
+        onClick={onLinkClick}
         className={`sidebar-link ${isLinkActive('/dashboard/complaints') ? 'active' : ''}`}
       >
         <ClipboardList className="w-4 h-4" />
@@ -85,6 +89,7 @@ function SidebarLinks({ user }: { user: Profile }) {
           <div className="sidebar-subnav">
             <Link 
               href="/dashboard/sales-complaints" 
+              onClick={onLinkClick}
               className={`sidebar-link sub-link ${isLinkActive('/dashboard/sales-complaints') ? 'active' : ''}`}
             >
               <DollarSign className="w-3.5 h-3.5" />
@@ -92,6 +97,7 @@ function SidebarLinks({ user }: { user: Profile }) {
             </Link>
             <Link 
               href="/dashboard/billing-complaints" 
+              onClick={onLinkClick}
               className={`sidebar-link sub-link ${isLinkActive('/dashboard/billing-complaints') ? 'active' : ''}`}
             >
               <ReceiptText className="w-3.5 h-3.5" />
@@ -105,6 +111,7 @@ function SidebarLinks({ user }: { user: Profile }) {
       {user.role === 'executive' && (
         <Link 
           href="/dashboard/approvals" 
+          onClick={onLinkClick}
           className={`sidebar-link ${isLinkActive('/dashboard/approvals') ? 'active' : ''}`}
         >
           <UserCheck className="w-4 h-4" />
@@ -116,6 +123,7 @@ function SidebarLinks({ user }: { user: Profile }) {
       {user.role === 'executive' && (
         <Link 
           href="/dashboard/users" 
+          onClick={onLinkClick}
           className={`sidebar-link ${isLinkActive('/dashboard/users') ? 'active' : ''}`}
         >
           <Users className="w-4 h-4" />
@@ -125,6 +133,7 @@ function SidebarLinks({ user }: { user: Profile }) {
 
       <Link 
         href="/dashboard/profile" 
+        onClick={onLinkClick}
         className={`sidebar-link ${isLinkActive('/dashboard/profile') ? 'active' : ''}`}
       >
         <Settings className="w-4 h-4" />
@@ -136,8 +145,10 @@ function SidebarLinks({ user }: { user: Profile }) {
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const checkUser = async () => {
     try {
@@ -159,6 +170,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     checkUser();
   }, []);
 
+  // Close mobile menu whenever pathname changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
   const handleSignOut = async () => {
     await dbClient.signOut();
     router.push('/login');
@@ -178,12 +194,59 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <UserContext.Provider value={{ user, refreshUser: checkUser }}>
       <div className="dashboard-container">
-        {/* SIDEBAR NAVIGATION */}
-        <aside className="sidebar">
-          <Link href="/dashboard" className="sidebar-logo">
-            <Flame className="w-6 h-6" style={{ color: 'var(--accent-blue)' }} />
-            <span>SUI GAS</span>
-          </Link>
+        
+        {/* MOBILE TOPBAR (Visible only on <= 768px screens) */}
+        <header className="mobile-topbar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button 
+              type="button" 
+              className="mobile-menu-btn" 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle navigation menu"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+            <Link href="/dashboard" className="mobile-topbar-logo" onClick={() => setMobileMenuOpen(false)}>
+              <Flame className="w-5 h-5" style={{ color: 'var(--accent-blue)' }} />
+              <span>SUI GAS</span>
+            </Link>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="sidebar-user-avatar" style={{ width: '32px', height: '32px', fontSize: '13px' }}>
+              {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+            </div>
+            <span style={{ fontSize: '12px', fontWeight: '700', textTransform: 'capitalize', color: 'var(--text-secondary)' }}>
+              {user.role}
+            </span>
+          </div>
+        </header>
+
+        {/* MOBILE BACKDROP OVERLAY */}
+        {mobileMenuOpen && (
+          <div 
+            className="sidebar-backdrop animate-fade-in" 
+            onClick={() => setMobileMenuOpen(false)} 
+            aria-hidden="true"
+          />
+        )}
+
+        {/* SIDEBAR NAVIGATION (Desktop Fixed & Mobile Slide-Out Drawer) */}
+        <aside className={`sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+            <Link href="/dashboard" className="sidebar-logo" style={{ marginBottom: 0 }} onClick={() => setMobileMenuOpen(false)}>
+              <Flame className="w-6 h-6" style={{ color: 'var(--accent-blue)' }} />
+              <span>SUI GAS</span>
+            </Link>
+            <button 
+              type="button"
+              className="sidebar-mobile-close-btn"
+              onClick={() => setMobileMenuOpen(false)}
+              aria-label="Close navigation"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
 
           <Suspense fallback={
             <nav className="sidebar-nav">
@@ -192,7 +255,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
             </nav>
           }>
-            <SidebarLinks user={user} />
+            <SidebarLinks user={user} onLinkClick={() => setMobileMenuOpen(false)} />
           </Suspense>
 
           <div className="sidebar-footer">
@@ -225,3 +288,4 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     </UserContext.Provider>
   );
 }
+

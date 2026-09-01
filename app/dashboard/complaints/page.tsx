@@ -708,20 +708,20 @@ export default function ComplaintsPage() {
       {/* CREATE & EDIT COMPLAINT DETAILS MODAL */}
       {isModalOpen && (
         <div className="modal-overlay animate-fade-in">
-          <div className="glass-panel modal-content">
-            <button className="modal-close" onClick={() => setIsModalOpen(false)}>
+          <div className="glass-panel modal-content" style={{ background: '#ffffff', border: '1px solid #cbd5e1', color: '#0f172a' }}>
+            <button className="modal-close" onClick={() => setIsModalOpen(false)} style={{ color: '#334155' }}>
               <X className="w-5 h-5" />
             </button>
             
             <div className="modal-header">
-              <h2>
+              <h2 style={{ color: '#0f172a', fontWeight: '800' }}>
                 {user?.role === 'lawyer' 
                   ? 'View FIR Complaint Details' 
                   : editingComplaint 
                     ? 'Edit FIR Complaint Record' 
                     : 'Register Pipeline FIR Complaint'}
               </h2>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '4px' }}>
+              <p style={{ color: '#334155', fontSize: '13px', marginTop: '4px', fontWeight: '500' }}>
                 {user?.role === 'lawyer' 
                   ? 'Compliance audit view of attachments and logs'
                   : 'Specify FIR complaint metadata and upload diagnostic documents'}
@@ -730,11 +730,12 @@ export default function ComplaintsPage() {
 
             <form onSubmit={handleSaveComplaint}>
               <div className="form-group">
-                <label className="form-label">Subject / Pipeline Segment Name</label>
+                <label className="form-label" style={{ color: '#0f172a', fontWeight: '700' }}>Subject / Pipeline Segment Name</label>
                 <input 
                   type="text" 
                   className="form-input" 
                   placeholder="e.g. Pipeline Leakage Sector G-11 Islamabad"
+                  style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
                   value={compName} 
                   onChange={(e) => setCompName(e.target.value)} 
                   required
@@ -743,10 +744,11 @@ export default function ComplaintsPage() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Date of Registration</label>
+                <label className="form-label" style={{ color: '#0f172a', fontWeight: '700' }}>Date of Registration</label>
                 <input 
                   type="date" 
                   className="form-input" 
+                  style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
                   value={compDate} 
                   onChange={(e) => setCompDate(e.target.value)} 
                   required
@@ -755,10 +757,11 @@ export default function ComplaintsPage() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Technical Description (Optional)</label>
+                <label className="form-label" style={{ color: '#0f172a', fontWeight: '700' }}>Technical Description (Optional)</label>
                 <textarea 
                   className="form-textarea" 
                   placeholder="Describe pipeline pressure drop, joint damage, leakage severity, and actions needed..."
+                  style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
                   rows={4}
                   value={compDesc} 
                   onChange={(e) => setCompDesc(e.target.value)}
@@ -767,19 +770,20 @@ export default function ComplaintsPage() {
               </div>
 
               {/* FIR INVESTIGATION DETAILS */}
-              <div style={{ marginBottom: '24px' }}>
-                <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.08em', paddingBottom: '8px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ marginBottom: '24px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '16px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '800', color: '#0369a1', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.06em', paddingBottom: '8px', borderBottom: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ width: '4px', height: '14px', background: 'var(--accent-blue)', borderRadius: '2px', display: 'inline-block' }}></span>
-                  FIR Investigation Details <span style={{ fontSize: '10px', fontWeight: '400', color: 'var(--text-muted)', textTransform: 'none', letterSpacing: '0' }}>(All fields optional)</span>
+                  FIR Investigation Details <span style={{ fontSize: '11px', fontWeight: '500', color: '#64748b', textTransform: 'none', letterSpacing: '0' }}>(All fields optional)</span>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-                  
+                
+                <div className="modal-grid-2">
                   <div>
-                    <label className="form-label" style={{ fontSize: '12px' }}>Police Station</label>
+                    <label className="form-label" style={{ fontSize: '12px', color: '#1e293b', fontWeight: '700' }}>Police Station</label>
                     <input
                       type="text"
                       className="form-input"
                       placeholder="e.g. PS Sector I-10"
+                      style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
                       value={policeStation}
                       onChange={(e) => setPoliceStation(e.target.value)}
                       disabled={user?.role === 'lawyer'}
@@ -787,11 +791,12 @@ export default function ComplaintsPage() {
                   </div>
 
                   <div>
-                    <label className="form-label" style={{ fontSize: '12px' }}>Mode of Theft</label>
+                    <label className="form-label" style={{ fontSize: '12px', color: '#1e293b', fontWeight: '700' }}>Mode of Theft</label>
                     <input
                       type="text"
                       className="form-input"
                       placeholder="e.g. Direct Bypass, Meter Tampering"
+                      style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
                       value={modeOfTheft}
                       onChange={(e) => setModeOfTheft(e.target.value)}
                       disabled={user?.role === 'lawyer'}
@@ -799,11 +804,12 @@ export default function ComplaintsPage() {
                   </div>
 
                   <div>
-                    <label className="form-label" style={{ fontSize: '12px' }}>Volume Booked (HM³)</label>
+                    <label className="form-label" style={{ fontSize: '12px', color: '#1e293b', fontWeight: '700' }}>Volume Booked (HM³)</label>
                     <input
                       type="text"
                       className="form-input"
                       placeholder="e.g. 1250"
+                      style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
                       value={volumeHm3}
                       onChange={(e) => setVolumeHm3(e.target.value)}
                       disabled={user?.role === 'lawyer'}
@@ -811,11 +817,12 @@ export default function ComplaintsPage() {
                   </div>
 
                   <div>
-                    <label className="form-label" style={{ fontSize: '12px' }}>Volume Booked (MMCF)</label>
+                    <label className="form-label" style={{ fontSize: '12px', color: '#1e293b', fontWeight: '700' }}>Volume Booked (MMCF)</label>
                     <input
                       type="text"
                       className="form-input"
                       placeholder="e.g. 0.044"
+                      style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
                       value={volumeMmcf}
                       onChange={(e) => setVolumeMmcf(e.target.value)}
                       disabled={user?.role === 'lawyer'}
@@ -823,11 +830,12 @@ export default function ComplaintsPage() {
                   </div>
 
                   <div>
-                    <label className="form-label" style={{ fontSize: '12px' }}>Amount Booked (PKR)</label>
+                    <label className="form-label" style={{ fontSize: '12px', color: '#1e293b', fontWeight: '700' }}>Amount Booked (PKR)</label>
                     <input
                       type="text"
                       className="form-input"
                       placeholder="e.g. 485,000"
+                      style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
                       value={amountBooked}
                       onChange={(e) => setAmountBooked(e.target.value)}
                       disabled={user?.role === 'lawyer'}
@@ -835,11 +843,12 @@ export default function ComplaintsPage() {
                   </div>
 
                   <div>
-                    <label className="form-label" style={{ fontSize: '12px' }}>Complainant</label>
+                    <label className="form-label" style={{ fontSize: '12px', color: '#1e293b', fontWeight: '700' }}>Complainant</label>
                     <input
                       type="text"
                       className="form-input"
                       placeholder="e.g. SUI Gas Company / Complainant Name"
+                      style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
                       value={complainant}
                       onChange={(e) => setComplainant(e.target.value)}
                       disabled={user?.role === 'lawyer'}
@@ -847,20 +856,20 @@ export default function ComplaintsPage() {
                   </div>
 
                   {/* WITNESSES SECTION */}
-                  <div style={{ gridColumn: '1 / -1', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '14px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: witnesses.length > 0 ? '12px' : '0' }}>
+                  <div style={{ gridColumn: '1 / -1', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: witnesses.length > 0 ? '12px' : '0', flexWrap: 'wrap', gap: '8px' }}>
                       <div>
-                        <label className="form-label" style={{ fontSize: '12px', marginBottom: '2px' }}>Witnesses (Optional)</label>
-                        <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Add names of case witnesses or inspecting officers</span>
+                        <label className="form-label" style={{ fontSize: '12px', marginBottom: '2px', color: '#0f172a', fontWeight: '700' }}>Witnesses (Optional)</label>
+                        <span style={{ fontSize: '11px', color: '#64748b' }}>Add names of case witnesses or inspecting officers</span>
                       </div>
                       {user?.role !== 'lawyer' && (
                         <button
                           type="button"
                           onClick={handleAddWitness}
                           className="btn btn-secondary"
-                          style={{ padding: '4px 10px', fontSize: '12px', height: '28px', display: 'flex', alignItems: 'center', gap: '5px' }}
+                          style={{ padding: '4px 10px', fontSize: '12px', height: '30px', display: 'flex', alignItems: 'center', gap: '5px', border: '1px solid #cbd5e1', color: '#0f172a' }}
                         >
-                          <Plus className="w-3.5 h-3.5" />
+                          <Plus className="w-3.5 h-3.5 text-blue-600" />
                           Add Witness
                         </button>
                       )}
@@ -870,7 +879,7 @@ export default function ComplaintsPage() {
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {witnesses.map((w, index) => (
                           <div key={index} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                            <span style={{ fontSize: '12px', color: 'var(--text-muted)', width: '22px', textAlign: 'center', flexShrink: 0 }}>
+                            <span style={{ fontSize: '12px', color: '#64748b', fontWeight: '700', width: '22px', textAlign: 'center', flexShrink: 0 }}>
                               {index + 1}.
                             </span>
                             <input
@@ -880,7 +889,7 @@ export default function ComplaintsPage() {
                               value={w}
                               onChange={(e) => handleUpdateWitness(index, e.target.value)}
                               disabled={user?.role === 'lawyer'}
-                              style={{ height: '36px', fontSize: '13px' }}
+                              style={{ height: '38px', fontSize: '13px', color: '#0f172a', border: '1px solid #cbd5e1', flex: 1 }}
                             />
                             {user?.role !== 'lawyer' && (
                               <button
@@ -888,12 +897,12 @@ export default function ComplaintsPage() {
                                 onClick={() => handleRemoveWitness(index)}
                                 title="Remove Witness"
                                 style={{
-                                  background: 'rgba(239, 68, 68, 0.1)',
-                                  border: '1px solid rgba(239, 68, 68, 0.2)',
-                                  color: '#f87171',
+                                  background: '#fee2e2',
+                                  border: '1px solid #fca5a5',
+                                  color: '#b91c1c',
                                   borderRadius: '6px',
-                                  width: '36px',
-                                  height: '36px',
+                                  width: '38px',
+                                  height: '38px',
                                   display: 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'center',
@@ -910,18 +919,19 @@ export default function ComplaintsPage() {
                     )}
 
                     {witnesses.length === 0 && (
-                      <div style={{ textAlign: 'center', padding: '8px 0', color: 'var(--text-muted)', fontSize: '12px' }}>
-                        No witnesses added yet. Click <strong>+ Add Witness</strong> to add witness names.
+                      <div style={{ textAlign: 'center', padding: '8px 0', color: '#64748b', fontSize: '12px' }}>
+                        No witnesses added yet. Click <strong>+ Add Witness</strong> to record witnesses.
                       </div>
                     )}
                   </div>
 
                   <div style={{ gridColumn: '1 / -1' }}>
-                    <label className="form-label" style={{ fontSize: '12px' }}>Status of Accused</label>
+                    <label className="form-label" style={{ fontSize: '12px', color: '#1e293b', fontWeight: '700' }}>Status of Accused</label>
                     <input
                       type="text"
                       className="form-input"
                       placeholder="e.g. Arrested, On Bail, Under Investigation, Absconding..."
+                      style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
                       value={statusOfAccused}
                       onChange={(e) => setStatusOfAccused(e.target.value)}
                       disabled={user?.role === 'lawyer'}
@@ -929,11 +939,12 @@ export default function ComplaintsPage() {
                   </div>
 
                   <div style={{ gridColumn: '1 / -1' }}>
-                    <label className="form-label" style={{ fontSize: '12px' }}>Lawyer Name</label>
+                    <label className="form-label" style={{ fontSize: '12px', color: '#1e293b', fontWeight: '700' }}>Lawyer Name</label>
                     <input
                       type="text"
                       className="form-input"
                       placeholder="e.g. Barrister Ahmed Raza, Adv. Muhammad Ali"
+                      style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
                       value={lawyerName}
                       onChange={(e) => setLawyerName(e.target.value)}
                       disabled={user?.role === 'lawyer'}
@@ -941,11 +952,12 @@ export default function ComplaintsPage() {
                   </div>
 
                   <div style={{ gridColumn: '1 / -1' }}>
-                    <label className="form-label" style={{ fontSize: '12px' }}>Court Name</label>
+                    <label className="form-label" style={{ fontSize: '12px', color: '#1e293b', fontWeight: '700' }}>Court Name</label>
                     <input
                       type="text"
                       className="form-input"
                       placeholder="e.g. Sessions Court Lahore, Anti-Corruption Court Islamabad"
+                      style={{ color: '#0f172a', border: '1px solid #cbd5e1', fontWeight: '500' }}
                       value={courtName}
                       onChange={(e) => setCourtName(e.target.value)}
                       disabled={user?.role === 'lawyer'}
@@ -957,11 +969,11 @@ export default function ComplaintsPage() {
 
               {/* ATTACHMENT MANAGER */}
               <div className="form-group" style={{ marginBottom: '24px' }}>
-                <label className="form-label">Document Attachments (Images & PDFs)</label>
+                <label className="form-label" style={{ color: '#0f172a', fontWeight: '700' }}>Document Attachments (Images, PDFs, Excel, CSV)</label>
                 
                 {/* File picker - hidden for lawyers */}
                 {user?.role !== 'lawyer' && (
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
                     <input 
                       type="file" 
                       ref={fileInputRef} 
@@ -975,7 +987,7 @@ export default function ComplaintsPage() {
                     <button 
                       type="button" 
                       className="btn btn-secondary" 
-                      style={{ padding: '8px 16px', fontSize: '13px' }}
+                      style={{ padding: '8px 16px', fontSize: '13px', border: '1px solid #cbd5e1', color: '#0f172a', fontWeight: '600' }}
                       onClick={() => fileInputRef.current?.click()}
                       disabled={uploadingFiles}
                     >
@@ -985,11 +997,11 @@ export default function ComplaintsPage() {
                         </>
                       ) : (
                         <>
-                          <Plus className="w-4 h-4" /> Upload Files
+                          <Plus className="w-4 h-4 text-blue-600" /> Upload Files
                         </>
                       )}
                     </button>
-                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Supported: PNG, JPG, PDF, XLSX, CSV</span>
+                    <span style={{ fontSize: '11.5px', color: '#64748b', fontWeight: '500' }}>Supported: PNG, JPG, PDF, XLSX, CSV</span>
                   </div>
                 )}
 
@@ -1000,10 +1012,10 @@ export default function ComplaintsPage() {
                     {/* Images list */}
                     {images.length > 0 && (
                       <div style={{ marginBottom: '14px' }}>
-                        <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '8px' }}>Images:</div>
+                        <div style={{ fontSize: '12px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }}>Images ({images.length}):</div>
                         <div className="attachment-grid">
                           {images.map((imgUrl, idx) => (
-                            <div key={idx} className="attachment-preview">
+                            <div key={idx} className="attachment-preview" style={{ border: '1px solid #cbd5e1' }}>
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img src={imgUrl} alt={`Attachment ${idx}`} />
                               {user?.role !== 'lawyer' && (
@@ -1016,8 +1028,8 @@ export default function ComplaintsPage() {
                                 </button>
                               )}
                               {/* Option to view */}
-                              <a href={imgUrl} target="_blank" rel="noopener noreferrer" style={{ position: 'absolute', bottom: '4px', left: '4px', background: 'rgba(0,0,0,0.7)', borderRadius: '4px', padding: '2px', display: 'flex', color: 'white' }} title="Open Image">
-                                <Eye className="w-3 h-3" />
+                              <a href={imgUrl} target="_blank" rel="noopener noreferrer" style={{ position: 'absolute', bottom: '4px', left: '4px', background: 'rgba(15,23,42,0.8)', borderRadius: '4px', padding: '4px', display: 'flex', color: 'white' }} title="Open Image">
+                                <Eye className="w-3.5 h-3.5" />
                               </a>
                             </div>
                           ))}
@@ -1028,7 +1040,7 @@ export default function ComplaintsPage() {
                     {/* PDFs list */}
                     {pdfs.length > 0 && (
                       <div style={{ marginBottom: '14px' }}>
-                        <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '8px' }}>PDF Documents:</div>
+                        <div style={{ fontSize: '12px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }}>PDF Documents ({pdfs.length}):</div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                           {pdfs.map((pdfUrl, idx) => {
                             let filename = `document-${idx + 1}.pdf`;
@@ -1047,22 +1059,22 @@ export default function ComplaintsPage() {
                             }
                             
                             return (
-                              <div key={idx} className="glass-panel" style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.02)', borderRadius: '8px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
-                                  <FileText className="w-4 h-4 text-red-400" style={{ flexShrink: 0 }} />
-                                  <span style={{ fontSize: '12px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              <div key={idx} className="attachment-item-card">
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', minWidth: 0 }}>
+                                  <FileText className="w-4 h-4 text-red-600" style={{ flexShrink: 0 }} />
+                                  <span style={{ fontSize: '12.5px', color: '#0f172a', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                     {filename}
                                   </span>
                                 </div>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                  <a href={pdfUrl.startsWith('data:') ? pdfUrl : `/api/download?url=${encodeURIComponent(pdfUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '10px', height: '24px' }}>
+                                <div className="attachment-item-card-actions">
+                                  <a href={pdfUrl.startsWith('data:') ? pdfUrl : `/api/download?url=${encodeURIComponent(pdfUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '4px 10px', fontSize: '11px', height: '28px', border: '1px solid #cbd5e1', color: '#0f172a', fontWeight: '600' }}>
                                     <Download className="w-3.5 h-3.5" /> Download PDF
                                   </a>
                                   {user?.role !== 'lawyer' && (
                                     <button 
                                       type="button" 
                                       className="btn btn-danger" 
-                                      style={{ padding: '4px 8px', fontSize: '10px', height: '24px', background: 'none' }}
+                                      style={{ padding: '4px 8px', fontSize: '11px', height: '28px', background: '#fee2e2', border: '1px solid #fca5a5', color: '#b91c1c' }}
                                       onClick={() => handleRemoveAttachment('pdf', idx)}
                                     >
                                       × Remove
@@ -1079,8 +1091,8 @@ export default function ComplaintsPage() {
                     {/* XLSX files list */}
                     {xlsxs.length > 0 && (
                       <div style={{ marginBottom: '14px' }}>
-                        <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Sheet className="w-3.5 h-3.5 text-emerald-400" /> Excel Spreadsheets (.xlsx):
+                        <div style={{ fontSize: '12px', fontWeight: '800', color: '#0f172a', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Sheet className="w-3.5 h-3.5 text-emerald-600" /> Excel Spreadsheets (.xlsx) ({xlsxs.length}):
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                           {xlsxs.map((xlsxUrl, idx) => {
@@ -1090,19 +1102,19 @@ export default function ComplaintsPage() {
                               filename = decodeURIComponent(urlParts[urlParts.length - 1]);
                             } catch (e) {}
                             return (
-                              <div key={idx} className="glass-panel" style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(16,185,129,0.04)', borderRadius: '8px', border: '1px solid rgba(16,185,129,0.15)' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
-                                  <Sheet className="w-4 h-4" style={{ color: '#10b981', flexShrink: 0 }} />
-                                  <span style={{ fontSize: '12px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              <div key={idx} className="attachment-item-card" style={{ background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', minWidth: 0 }}>
+                                  <Sheet className="w-4 h-4 text-emerald-700" style={{ flexShrink: 0 }} />
+                                  <span style={{ fontSize: '12.5px', color: '#0f172a', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                     {filename}
                                   </span>
                                 </div>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                  <a href={`/api/download?url=${encodeURIComponent(xlsxUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '10px', height: '24px', borderColor: 'rgba(16,185,129,0.3)' }}>
+                                <div className="attachment-item-card-actions">
+                                  <a href={`/api/download?url=${encodeURIComponent(xlsxUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '4px 10px', fontSize: '11px', height: '28px', borderColor: '#86efac', background: '#ffffff', color: '#047857', fontWeight: '600' }}>
                                     <Download className="w-3.5 h-3.5" /> Download XLSX
                                   </a>
                                   {user?.role !== 'lawyer' && (
-                                    <button type="button" className="btn btn-danger" style={{ padding: '4px 8px', fontSize: '10px', height: '24px', background: 'none' }} onClick={() => handleRemoveAttachment('xlsx', idx)}>
+                                    <button type="button" className="btn btn-danger" style={{ padding: '4px 8px', fontSize: '11px', height: '28px', background: '#fee2e2', border: '1px solid #fca5a5', color: '#b91c1c' }} onClick={() => handleRemoveAttachment('xlsx', idx)}>
                                       × Remove
                                     </button>
                                   )}
@@ -1117,8 +1129,8 @@ export default function ComplaintsPage() {
                     {/* CSV files list */}
                     {csvs.length > 0 && (
                       <div>
-                        <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Sheet className="w-3.5 h-3.5 text-yellow-400" /> CSV Data Files:
+                        <div style={{ fontSize: '12px', fontWeight: '800', color: '#0f172a', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Sheet className="w-3.5 h-3.5 text-amber-600" /> CSV Data Files ({csvs.length}):
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                           {csvs.map((csvUrl, idx) => {
@@ -1128,19 +1140,19 @@ export default function ComplaintsPage() {
                               filename = decodeURIComponent(urlParts[urlParts.length - 1]);
                             } catch (e) {}
                             return (
-                              <div key={idx} className="glass-panel" style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(234,179,8,0.04)', borderRadius: '8px', border: '1px solid rgba(234,179,8,0.15)' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
-                                  <Sheet className="w-4 h-4" style={{ color: '#eab308', flexShrink: 0 }} />
-                                  <span style={{ fontSize: '12px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              <div key={idx} className="attachment-item-card" style={{ background: '#fefce8', border: '1px solid #fef08a' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', minWidth: 0 }}>
+                                  <Sheet className="w-4 h-4 text-amber-700" style={{ flexShrink: 0 }} />
+                                  <span style={{ fontSize: '12.5px', color: '#0f172a', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                     {filename}
                                   </span>
                                 </div>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                  <a href={`/api/download?url=${encodeURIComponent(csvUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '10px', height: '24px', borderColor: 'rgba(234,179,8,0.3)' }}>
+                                <div className="attachment-item-card-actions">
+                                  <a href={`/api/download?url=${encodeURIComponent(csvUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '4px 10px', fontSize: '11px', height: '28px', borderColor: '#fde047', background: '#ffffff', color: '#92400e', fontWeight: '600' }}>
                                     <Download className="w-3.5 h-3.5" /> Download CSV
                                   </a>
                                   {user?.role !== 'lawyer' && (
-                                    <button type="button" className="btn btn-danger" style={{ padding: '4px 8px', fontSize: '10px', height: '24px', background: 'none' }} onClick={() => handleRemoveAttachment('csv', idx)}>
+                                    <button type="button" className="btn btn-danger" style={{ padding: '4px 8px', fontSize: '11px', height: '28px', background: '#fee2e2', border: '1px solid #fca5a5', color: '#b91c1c' }} onClick={() => handleRemoveAttachment('csv', idx)}>
                                       × Remove
                                     </button>
                                   )}
@@ -1172,21 +1184,21 @@ export default function ComplaintsPage() {
       {/* DEDICATED PREVIEW COMPLAINT MODAL */}
       {isPreviewOpen && previewComplaint && (
         <div className="modal-overlay animate-fade-in">
-          <div className="glass-panel modal-content" style={{ maxWidth: '780px', maxHeight: '90vh', overflowY: 'auto' }}>
-            <button className="modal-close" onClick={() => setIsPreviewOpen(false)}>
+          <div className="glass-panel modal-content" style={{ background: '#ffffff', border: '1px solid #cbd5e1' }}>
+            <button className="modal-close" onClick={() => setIsPreviewOpen(false)} style={{ color: '#334155' }}>
               <X className="w-5 h-5" />
             </button>
 
-            <div className="modal-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '16px' }}>
+            <div className="modal-header" style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '11px', fontWeight: '800', background: 'rgba(0, 242, 254, 0.1)', color: 'var(--accent-blue)', border: '1px solid rgba(0, 242, 254, 0.25)', padding: '2px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <span style={{ fontSize: '11px', fontWeight: '800', background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   FIR Preview
                 </span>
-                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                  Registered on <strong>{previewComplaint.register_date}</strong> by <strong>{previewComplaint.creator_name}</strong>
+                <span style={{ fontSize: '12px', color: '#475569' }}>
+                  Registered on <strong style={{ color: '#0f172a' }}>{previewComplaint.register_date}</strong> by <strong style={{ color: '#0f172a' }}>{previewComplaint.creator_name}</strong>
                 </span>
               </div>
-              <h2 style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)', marginTop: '8px' }}>
+              <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#0f172a', marginTop: '8px' }}>
                 {previewComplaint.name}
               </h2>
             </div>
@@ -1194,122 +1206,122 @@ export default function ComplaintsPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '20px 0' }}>
               {/* Technical Description */}
               <div>
-                <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '800', color: '#0369a1', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
                   Technical Description
                 </div>
-                <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '14px 16px', color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.6' }}>
-                  {previewComplaint.description || <em style={{ color: 'var(--text-muted)' }}>No technical description provided.</em>}
+                <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '14px 16px', color: '#0f172a', fontSize: '14px', lineHeight: '1.6', fontWeight: '500' }}>
+                  {previewComplaint.description || <em style={{ color: '#64748b' }}>No technical description provided.</em>}
                 </div>
               </div>
 
               {/* FIR Investigation Details Grid */}
               <div>
-                <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '800', color: '#0369a1', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{ width: '4px', height: '14px', background: 'var(--accent-blue)', borderRadius: '2px', display: 'inline-block' }}></span>
                   FIR Investigation Details
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '16px' }}>
+                <div className="modal-grid-2" style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '16px' }}>
                   <div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Police Station</div>
-                    <div style={{ fontSize: '14px', color: 'var(--text-primary)', marginTop: '3px', fontWeight: '500' }}>{previewComplaint.police_station || '—'}</div>
+                    <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', fontWeight: '700' }}>Police Station</div>
+                    <div style={{ fontSize: '14px', color: '#0f172a', marginTop: '3px', fontWeight: '600' }}>{previewComplaint.police_station || '—'}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Mode of Theft</div>
-                    <div style={{ fontSize: '14px', color: '#fb923c', marginTop: '3px', fontWeight: '600' }}>{previewComplaint.mode_of_theft || '—'}</div>
+                    <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', fontWeight: '700' }}>Mode of Theft</div>
+                    <div style={{ fontSize: '14px', color: '#c2410c', marginTop: '3px', fontWeight: '700' }}>{previewComplaint.mode_of_theft || '—'}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Volume Booked (HM³)</div>
-                    <div style={{ fontSize: '14px', color: 'var(--text-primary)', marginTop: '3px', fontWeight: '500' }}>{previewComplaint.volume_booked_hm3 || '—'}</div>
+                    <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', fontWeight: '700' }}>Volume Booked (HM³)</div>
+                    <div style={{ fontSize: '14px', color: '#0369a1', marginTop: '3px', fontWeight: '700' }}>{previewComplaint.volume_booked_hm3 || '—'}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Volume Booked (MMCF)</div>
-                    <div style={{ fontSize: '14px', color: 'var(--text-primary)', marginTop: '3px', fontWeight: '500' }}>{previewComplaint.volume_booked_mmcf || '—'}</div>
+                    <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', fontWeight: '700' }}>Volume Booked (MMCF)</div>
+                    <div style={{ fontSize: '14px', color: '#0369a1', marginTop: '3px', fontWeight: '700' }}>{previewComplaint.volume_booked_mmcf || '—'}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Amount Booked (PKR)</div>
-                    <div style={{ fontSize: '14px', color: '#4ade80', marginTop: '3px', fontWeight: '700' }}>{previewComplaint.amount_booked ? `PKR ${previewComplaint.amount_booked}` : '—'}</div>
+                    <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', fontWeight: '700' }}>Amount Booked (PKR)</div>
+                    <div style={{ fontSize: '14px', color: '#047857', marginTop: '3px', fontWeight: '800' }}>{previewComplaint.amount_booked ? `PKR ${previewComplaint.amount_booked}` : '—'}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Complainant</div>
-                    <div style={{ fontSize: '14px', color: 'var(--text-primary)', marginTop: '3px', fontWeight: '500' }}>{previewComplaint.complainant || previewComplaint.plaintiff || '—'}</div>
+                    <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', fontWeight: '700' }}>Complainant</div>
+                    <div style={{ fontSize: '14px', color: '#0f172a', marginTop: '3px', fontWeight: '600' }}>{previewComplaint.complainant || previewComplaint.plaintiff || '—'}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Status of Accused</div>
+                    <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', fontWeight: '700' }}>Status of Accused</div>
                     <div style={{ marginTop: '4px' }}>
                       {previewComplaint.status_of_accused ? (
                         <span style={{
                           fontSize: '11px',
-                          fontWeight: '700',
+                          fontWeight: '800',
                           letterSpacing: '0.04em',
                           textTransform: 'uppercase',
                           padding: '3px 8px',
                           borderRadius: '4px',
                           display: 'inline-block',
                           ...(previewComplaint.status_of_accused.toLowerCase().includes('arrest') ? {
-                            background: 'rgba(239,68,68,0.15)', color: '#f87171', border: '1px solid rgba(239,68,68,0.3)',
+                            background: '#fee2e2', color: '#991b1b', border: '1px solid #fecaca',
                           } : previewComplaint.status_of_accused.toLowerCase().includes('bail') ? {
-                            background: 'rgba(234,179,8,0.15)', color: '#facc15', border: '1px solid rgba(234,179,8,0.3)',
+                            background: '#fef3c7', color: '#92400e', border: '1px solid #fde68a',
                           } : previewComplaint.status_of_accused.toLowerCase().includes('acquit') || previewComplaint.status_of_accused.toLowerCase().includes('release') ? {
-                            background: 'rgba(16,185,129,0.15)', color: '#34d399', border: '1px solid rgba(16,185,129,0.3)',
+                            background: '#d1fae5', color: '#065f46', border: '1px solid #a7f3d0',
                           } : {
-                            background: 'rgba(16,185,129,0.15)', color: '#34d399', border: '1px solid rgba(16,185,129,0.3)',
+                            background: '#d1fae5', color: '#065f46', border: '1px solid #a7f3d0',
                           })
                         }}>
                           {previewComplaint.status_of_accused}
                         </span>
                       ) : (
-                        <span style={{ fontSize: '14px', color: 'var(--text-primary)' }}>—</span>
+                        <span style={{ fontSize: '14px', color: '#0f172a' }}>—</span>
                       )}
                     </div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Lawyer Name</div>
-                    <div style={{ fontSize: '14px', color: '#a5b4fc', marginTop: '3px', fontWeight: '600' }}>{previewComplaint.lawyer_name ? `⚖️ ${previewComplaint.lawyer_name}` : '—'}</div>
+                    <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', fontWeight: '700' }}>Lawyer Name</div>
+                    <div style={{ fontSize: '14px', color: '#4338ca', marginTop: '3px', fontWeight: '700' }}>{previewComplaint.lawyer_name ? `⚖️ ${previewComplaint.lawyer_name}` : '—'}</div>
                   </div>
                   <div style={{ gridColumn: '1 / -1' }}>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>Court Name</div>
-                    <div style={{ fontSize: '14px', color: '#2dd4bf', marginTop: '3px', fontWeight: '600' }}>{previewComplaint.court_name ? `🏛️ ${previewComplaint.court_name}` : '—'}</div>
+                    <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', fontWeight: '700' }}>Court Name</div>
+                    <div style={{ fontSize: '14px', color: '#0f766e', marginTop: '3px', fontWeight: '700' }}>{previewComplaint.court_name ? `🏛️ ${previewComplaint.court_name}` : '—'}</div>
                   </div>
                 </div>
               </div>
 
               {/* Witnesses List */}
               <div>
-                <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '800', color: '#0369a1', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
                   Witnesses {previewComplaint.witnesses && previewComplaint.witnesses.length > 0 ? `(${previewComplaint.witnesses.length})` : ''}
                 </div>
                 {previewComplaint.witnesses && previewComplaint.witnesses.length > 0 ? (
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                     {previewComplaint.witnesses.map((w, idx) => (
-                      <span key={idx} style={{ fontSize: '13px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', padding: '6px 12px', borderRadius: '6px', color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                        <span style={{ color: 'var(--accent-teal)', fontWeight: '700' }}>{idx + 1}.</span> {w}
+                      <span key={idx} style={{ fontSize: '12.5px', background: '#f8fafc', border: '1px solid #cbd5e1', padding: '6px 12px', borderRadius: '6px', color: '#0f172a', display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
+                        <span style={{ color: '#0284c7', fontWeight: '800' }}>{idx + 1}.</span> {w}
                       </span>
                     ))}
                   </div>
                 ) : (
-                  <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontStyle: 'italic', padding: '10px 14px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px dashed var(--border-color)' }}>
+                  <div style={{ fontSize: '13px', color: '#64748b', fontStyle: 'italic', padding: '10px 14px', background: '#f8fafc', borderRadius: '6px', border: '1px dashed #cbd5e1' }}>
                     No witnesses recorded for this complaint.
                   </div>
                 )}
               </div>
 
-              {/* Attachments Section */}
+              {/* Case Attachments Preview */}
               <div>
-                <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '800', color: '#0369a1', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
                   Case Attachments
                 </div>
                 
                 {/* Images */}
                 {previewComplaint.images && previewComplaint.images.length > 0 && (
-                  <div style={{ marginBottom: '14px' }}>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>Images ({previewComplaint.images.length})</div>
+                  <div style={{ marginBottom: '16px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: '700', color: '#0f172a', marginBottom: '8px' }}>Images ({previewComplaint.images.length}):</div>
                     <div className="attachment-grid">
                       {previewComplaint.images.map((imgUrl, idx) => (
-                        <div key={idx} className="attachment-preview">
+                        <div key={idx} className="attachment-preview" style={{ border: '1px solid #cbd5e1' }}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={imgUrl} alt={`Attachment ${idx}`} />
-                          <a href={imgUrl} target="_blank" rel="noopener noreferrer" style={{ position: 'absolute', bottom: '4px', left: '4px', background: 'rgba(0,0,0,0.7)', borderRadius: '4px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: '4px', color: 'white', fontSize: '10px' }} title="Open Image Fullscreen">
-                            <Eye className="w-3 h-3" /> View
+                          <a href={imgUrl} target="_blank" rel="noopener noreferrer" style={{ position: 'absolute', bottom: '4px', left: '4px', background: 'rgba(15,23,42,0.8)', borderRadius: '4px', padding: '4px', display: 'flex', color: 'white' }} title="Open Full Image">
+                            <Eye className="w-3.5 h-3.5" />
                           </a>
                         </div>
                       ))}
@@ -1319,8 +1331,8 @@ export default function ComplaintsPage() {
 
                 {/* PDFs */}
                 {previewComplaint.pdfs && previewComplaint.pdfs.length > 0 && (
-                  <div style={{ marginBottom: '14px' }}>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>PDF Documents ({previewComplaint.pdfs.length})</div>
+                  <div style={{ marginBottom: '16px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: '700', color: '#0f172a', marginBottom: '8px' }}>PDF Documents ({previewComplaint.pdfs.length}):</div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       {previewComplaint.pdfs.map((pdfUrl, idx) => {
                         let filename = `document-${idx + 1}.pdf`;
@@ -1329,16 +1341,18 @@ export default function ComplaintsPage() {
                           filename = decodeURIComponent(urlParts[urlParts.length - 1]);
                         } catch (e) {}
                         return (
-                          <div key={idx} className="glass-panel" style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.02)', borderRadius: '8px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
-                              <FileText className="w-4 h-4 text-red-400" style={{ flexShrink: 0 }} />
-                              <span style={{ fontSize: '12px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div key={idx} className="attachment-item-card">
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', minWidth: 0 }}>
+                              <FileText className="w-4 h-4 text-red-600" style={{ flexShrink: 0 }} />
+                              <span style={{ fontSize: '12.5px', color: '#0f172a', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {filename}
                               </span>
                             </div>
-                            <a href={pdfUrl.startsWith('data:') ? pdfUrl : `/api/download?url=${encodeURIComponent(pdfUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '11px', height: '26px' }}>
-                              <Download className="w-3.5 h-3.5" /> Download
-                            </a>
+                            <div className="attachment-item-card-actions">
+                              <a href={pdfUrl.startsWith('data:') ? pdfUrl : `/api/download?url=${encodeURIComponent(pdfUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '4px 10px', fontSize: '11px', height: '28px', border: '1px solid #cbd5e1', color: '#0f172a', fontWeight: '600' }}>
+                                <Download className="w-3.5 h-3.5" /> Download PDF
+                              </a>
+                            </div>
                           </div>
                         );
                       })}
@@ -1346,10 +1360,12 @@ export default function ComplaintsPage() {
                   </div>
                 )}
 
-                {/* XLSX */}
+                {/* Spreadsheets (XLSX) */}
                 {previewComplaint.xlsxs && previewComplaint.xlsxs.length > 0 && (
-                  <div style={{ marginBottom: '14px' }}>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>Excel Sheets ({previewComplaint.xlsxs.length})</div>
+                  <div style={{ marginBottom: '16px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: '700', color: '#0f172a', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Sheet className="w-3.5 h-3.5 text-emerald-600" /> Excel Spreadsheets (.xlsx) ({previewComplaint.xlsxs.length}):
+                    </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       {previewComplaint.xlsxs.map((xlsxUrl, idx) => {
                         let filename = `spreadsheet-${idx + 1}.xlsx`;
@@ -1358,16 +1374,18 @@ export default function ComplaintsPage() {
                           filename = decodeURIComponent(urlParts[urlParts.length - 1]);
                         } catch (e) {}
                         return (
-                          <div key={idx} className="glass-panel" style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(16,185,129,0.04)', borderRadius: '8px', border: '1px solid rgba(16,185,129,0.15)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
-                              <Sheet className="w-4 h-4 text-emerald-400" style={{ flexShrink: 0 }} />
-                              <span style={{ fontSize: '12px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div key={idx} className="attachment-item-card" style={{ background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', minWidth: 0 }}>
+                              <Sheet className="w-4 h-4 text-emerald-700" style={{ flexShrink: 0 }} />
+                              <span style={{ fontSize: '12.5px', color: '#0f172a', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {filename}
                               </span>
                             </div>
-                            <a href={`/api/download?url=${encodeURIComponent(xlsxUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '11px', height: '26px', borderColor: 'rgba(16,185,129,0.3)' }}>
-                              <Download className="w-3.5 h-3.5" /> Download
-                            </a>
+                            <div className="attachment-item-card-actions">
+                              <a href={`/api/download?url=${encodeURIComponent(xlsxUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '4px 10px', fontSize: '11px', height: '28px', borderColor: '#86efac', background: '#ffffff', color: '#047857', fontWeight: '600' }}>
+                                <Download className="w-3.5 h-3.5" /> Download XLSX
+                              </a>
+                            </div>
                           </div>
                         );
                       })}
@@ -1377,8 +1395,10 @@ export default function ComplaintsPage() {
 
                 {/* CSV */}
                 {previewComplaint.csvs && previewComplaint.csvs.length > 0 && (
-                  <div style={{ marginBottom: '14px' }}>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>CSV Files ({previewComplaint.csvs.length})</div>
+                  <div>
+                    <div style={{ fontSize: '12px', fontWeight: '700', color: '#0f172a', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Sheet className="w-3.5 h-3.5 text-amber-600" /> CSV Data Files ({previewComplaint.csvs.length}):
+                    </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       {previewComplaint.csvs.map((csvUrl, idx) => {
                         let filename = `data-${idx + 1}.csv`;
@@ -1387,16 +1407,18 @@ export default function ComplaintsPage() {
                           filename = decodeURIComponent(urlParts[urlParts.length - 1]);
                         } catch (e) {}
                         return (
-                          <div key={idx} className="glass-panel" style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(234,179,8,0.04)', borderRadius: '8px', border: '1px solid rgba(234,179,8,0.15)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
-                              <Sheet className="w-4 h-4 text-yellow-400" style={{ flexShrink: 0 }} />
-                              <span style={{ fontSize: '12px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div key={idx} className="attachment-item-card" style={{ background: '#fefce8', border: '1px solid #fef08a' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', minWidth: 0 }}>
+                              <Sheet className="w-4 h-4 text-amber-700" style={{ flexShrink: 0 }} />
+                              <span style={{ fontSize: '12.5px', color: '#0f172a', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {filename}
                               </span>
                             </div>
-                            <a href={`/api/download?url=${encodeURIComponent(csvUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '11px', height: '26px', borderColor: 'rgba(234,179,8,0.3)' }}>
-                              <Download className="w-3.5 h-3.5" /> Download
-                            </a>
+                            <div className="attachment-item-card-actions">
+                              <a href={`/api/download?url=${encodeURIComponent(csvUrl)}&filename=${encodeURIComponent(filename)}`} download target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '4px 10px', fontSize: '11px', height: '28px', borderColor: '#fde047', background: '#ffffff', color: '#92400e', fontWeight: '600' }}>
+                                <Download className="w-3.5 h-3.5" /> Download CSV
+                              </a>
+                            </div>
                           </div>
                         );
                       })}
@@ -1408,31 +1430,28 @@ export default function ComplaintsPage() {
                  (!previewComplaint.pdfs || previewComplaint.pdfs.length === 0) &&
                  (!previewComplaint.xlsxs || previewComplaint.xlsxs.length === 0) &&
                  (!previewComplaint.csvs || previewComplaint.csvs.length === 0) && (
-                  <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontStyle: 'italic', padding: '10px 14px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px dashed var(--border-color)' }}>
-                    No files or documents attached.
+                  <div style={{ fontSize: '13px', color: '#64748b', fontStyle: 'italic', padding: '10px 14px', background: '#f8fafc', borderRadius: '6px', border: '1px dashed #cbd5e1' }}>
+                    No file attachments uploaded for this complaint.
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="modal-footer" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                {/* Edit button: Available to both Executives and Employees */}
-                {(user?.role === 'executive' || user?.role === 'employee') && (
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                    onClick={() => {
-                      setIsPreviewOpen(false);
-                      handleOpenEditModal(previewComplaint);
-                    }}
-                  >
-                    <Edit3 className="w-4 h-4 text-amber-400" />
-                    Update Details
-                  </button>
-                )}
-              </div>
+            <div className="modal-footer" style={{ borderTop: '1px solid #cbd5e1', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
+              {user?.role !== 'lawyer' && (user?.role === 'executive' || (user?.role === 'employee' && previewComplaint.created_by === user?.id)) && (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', border: '1px solid #cbd5e1', color: '#0f172a' }}
+                  onClick={() => {
+                    setIsPreviewOpen(false);
+                    handleOpenEditModal(previewComplaint);
+                  }}
+                >
+                  <Edit3 className="w-4 h-4 text-amber-500" />
+                  Update Details
+                </button>
+              )}
               <button type="button" className="btn btn-primary" onClick={() => setIsPreviewOpen(false)}>
                 Close Preview
               </button>
