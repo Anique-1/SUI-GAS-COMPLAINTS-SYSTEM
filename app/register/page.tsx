@@ -2,8 +2,25 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { dbClient } from '@/lib/db';
-import { Flame, CheckCircle, ArrowLeft } from 'lucide-react';
+import { 
+  CheckCircle, 
+  ArrowLeft, 
+  User, 
+  Mail, 
+  Phone, 
+  Hash, 
+  Lock, 
+  Eye, 
+  EyeOff, 
+  Loader2, 
+  Briefcase, 
+  Scale, 
+  ShieldAlert 
+} from 'lucide-react';
+import SngplHeader from '@/components/SngplHeader';
+import SngplFooter from '@/components/SngplFooter';
 
 export default function Register() {
   const [role, setRole] = useState<'employee' | 'lawyer'>('employee');
@@ -13,7 +30,9 @@ export default function Register() {
   const [roleId, setRoleId] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -59,156 +78,316 @@ export default function Register() {
 
   const getIdLabel = () => {
     switch (role) {
-      case 'employee': return 'Employee ID';
-      case 'lawyer': return 'Lawyer ID';
+      case 'employee': return 'Employee ID Number';
+      case 'lawyer': return 'Legal / Bar Council ID';
     }
   };
 
   const getIdPlaceholder = () => {
     switch (role) {
-      case 'employee': return 'e.g., EMP-1249';
-      case 'lawyer': return 'e.g., LAW-9981';
+      case 'employee': return 'e.g. EMP-1249';
+      case 'lawyer': return 'e.g. LAW-9981';
     }
   };
 
   return (
-    <div className="auth-container">
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)' }}>
+      <SngplHeader activePage="register" />
+
+      <main className="auth-container" style={{ flex: '1 0 auto', padding: '36px 16px' }}>
       {success ? (
-        <div className="glass-panel auth-card glass-panel-hover" style={{ textAlign: 'center' }}>
-          <CheckCircle className="w-16 h-16 text-emerald-400" style={{ color: 'var(--status-approved)', margin: '0 auto 24px auto' }} />
-          <h2 style={{ marginBottom: '16px' }}>Registration Submitted</h2>
-          
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', lineHeight: '1.6' }}>
-            Your registration request has been successfully created. In accordance with security protocols, an Executive must approve your account before you can log in.
+        <div className="glass-panel auth-card" style={{ textAlign: 'center', maxWidth: '480px', padding: '36px 24px' }}>
+          <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#ecfdf5', border: '1px solid #a7f3d0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px auto' }}>
+            <CheckCircle className="w-8 h-8 text-emerald-600" />
+          </div>
+          <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#0f172a', marginBottom: '12px' }}>
+            Registration Submitted
+          </h2>
+
+          <p style={{ color: '#475569', marginBottom: '28px', lineHeight: '1.6', fontSize: '13.5px' }}>
+            Your registration request has been submitted to the SNGPL Administration. An authorized Executive must review and approve your account before you can log in.
           </p>
 
-          <Link href="/login" className="btn btn-primary" style={{ width: '100%' }}>
-            Go to Login
+          <Link href="/login" className="btn btn-primary" style={{ width: '100%', padding: '12px', fontSize: '14.5px', fontWeight: '700' }}>
+            Proceed to Login
           </Link>
         </div>
       ) : (
-        <div className="glass-panel auth-card">
-          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', marginBottom: '24px' }}>
-            <ArrowLeft className="w-4 h-4" /> Back to Home
+        <div className="glass-panel auth-card" style={{ maxWidth: '500px', width: '100%' }}>
+          
+          {/* Back navigation */}
+          <Link 
+            href="/" 
+            style={{ 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              gap: '6px', 
+              color: '#475569', 
+              textDecoration: 'none', 
+              fontSize: '13px', 
+              fontWeight: '600',
+              marginBottom: '20px',
+              background: '#f1f5f9',
+              padding: '6px 12px',
+              borderRadius: '6px',
+              border: '1px solid #e2e8f0',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <ArrowLeft className="w-3.5 h-3.5" /> <span>Back to Home</span>
           </Link>
 
-          <div className="auth-header">
-            <div className="auth-logo">
-              <Flame className="w-7 h-7" style={{ color: 'var(--accent-blue)' }} />
-              <span>SUI GAS</span>
+          {/* SNGPL Corporate Logo Header */}
+          <div className="auth-header" style={{ marginBottom: '22px' }}>
+            <div className="sngpl-logo-badge">
+              <Image
+                src="/sngpl-logo.png"
+                alt="SNGPL Official Logo"
+                width={56}
+                height={56}
+                priority
+                style={{ objectFit: 'contain' }}
+              />
             </div>
-            <h2>Register Profile</h2>
-            <p className="auth-subtitle">SUI Gas Pipeline Pakistan Management</p>
+            <div>
+              <div className="sngpl-brand-title">
+                SUI NORTHERN
+              </div>
+              <div className="sngpl-brand-subtitle">
+                Gas Pipelines Limited (SNGPL)
+              </div>
+            </div>
+            <h1 style={{ fontSize: '20px', fontWeight: '800', marginTop: '10px', color: '#0f172a' }}>
+              Register Staff Profile
+            </h1>
+            <p className="auth-subtitle" style={{ fontSize: '13px' }}>
+              Create an account for official complaint management and tracking
+            </p>
           </div>
 
+          {/* Error Alert */}
           {error && (
-            <div className="glass-panel" style={{ padding: '12px 16px', background: 'rgba(239, 68, 68, 0.08)', borderColor: 'rgba(239, 68, 68, 0.3)', color: '#ef4444', fontSize: '13px', marginBottom: '20px', borderRadius: '8px' }}>
-              {error}
+            <div 
+              style={{ 
+                padding: '12px 14px', 
+                background: '#fef2f2', 
+                border: '1px solid #fecaca', 
+                color: '#b91c1c', 
+                fontSize: '13px', 
+                marginBottom: '18px', 
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px'
+              }}
+            >
+              <ShieldAlert className="w-4 h-4 flex-shrink-0 text-rose-600" />
+              <span>{error}</span>
             </div>
           )}
 
           <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label">Account Role</label>
-              <select 
-                className="form-select" 
-                value={role} 
-                onChange={(e) => {
-                  setRole(e.target.value as any);
-                  setRoleId('');
-                }}
-              >
-                <option value="employee">Employee</option>
-                <option value="lawyer">Lawyer</option>
-              </select>
+            
+            {/* Role Selection Segment Tabs */}
+            <div className="form-group" style={{ marginBottom: '16px' }}>
+              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Briefcase className="w-3.5 h-3.5 text-sky-600" />
+                <span>Select Account Role</span>
+              </label>
+              <div className="sngpl-role-segment">
+                <button
+                  type="button"
+                  className={`sngpl-role-btn ${role === 'employee' ? 'active' : ''}`}
+                  onClick={() => {
+                    setRole('employee');
+                    setRoleId('');
+                  }}
+                >
+                  <Briefcase className="w-4 h-4" />
+                  <span>SNGPL Employee</span>
+                </button>
+                <button
+                  type="button"
+                  className={`sngpl-role-btn ${role === 'lawyer' ? 'active' : ''}`}
+                  onClick={() => {
+                    setRole('lawyer');
+                    setRoleId('');
+                  }}
+                >
+                  <Scale className="w-4 h-4" />
+                  <span>Legal Counsel</span>
+                </button>
+              </div>
             </div>
 
+            {/* Full Name */}
             <div className="form-group">
-              <label className="form-label">Full Name</label>
-              <input 
-                type="text" 
-                className="form-input" 
+              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <User className="w-3.5 h-3.5 text-sky-600" />
+                <span>Full Name</span>
+              </label>
+              <input
+                type="text"
+                className="form-input"
                 placeholder="Enter your full name"
-                value={name} 
-                onChange={(e) => setName(e.target.value)} 
-                required 
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                autoComplete="name"
               />
             </div>
 
+            {/* Official Email */}
             <div className="form-group">
-              <label className="form-label">Official Email</label>
-              <input 
-                type="email" 
-                className="form-input" 
+              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Mail className="w-3.5 h-3.5 text-sky-600" />
+                <span>Official Email Address</span>
+              </label>
+              <input
+                type="email"
+                className="form-input"
                 placeholder="e.g. name@sui.gov.pk"
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-                required 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+                inputMode="email"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
               />
             </div>
 
+            {/* Phone Number */}
             <div className="form-group">
-              <label className="form-label">Phone Number</label>
-              <input 
-                type="tel" 
-                className="form-input" 
-                placeholder="e.g. +92 300 1234567"
-                value={phone} 
-                onChange={(e) => setPhone(e.target.value)} 
-                required 
+              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Phone className="w-3.5 h-3.5 text-sky-600" />
+                <span>Mobile Contact Number</span>
+              </label>
+              <input
+                type="tel"
+                className="form-input"
+                placeholder="e.g. 03001234567"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+                autoComplete="tel"
+                inputMode="tel"
               />
             </div>
 
+            {/* Role ID */}
             <div className="form-group">
-              <label className="form-label">{getIdLabel()}</label>
-              <input 
-                type="text" 
-                className="form-input" 
+              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Hash className="w-3.5 h-3.5 text-sky-600" />
+                <span>{getIdLabel()}</span>
+              </label>
+              <input
+                type="text"
+                className="form-input"
                 placeholder={getIdPlaceholder()}
-                value={roleId} 
-                onChange={(e) => setRoleId(e.target.value)} 
-                required 
+                value={roleId}
+                onChange={(e) => setRoleId(e.target.value)}
+                required
+                autoCapitalize="characters"
               />
             </div>
 
+            {/* Password */}
             <div className="form-group">
-              <label className="form-label">Password</label>
-              <input 
-                type="password" 
-                className="form-input" 
-                placeholder="••••••••"
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                required 
-              />
+              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Lock className="w-3.5 h-3.5 text-sky-600" />
+                <span>Password</span>
+              </label>
+              <div className="sngpl-pwd-wrapper">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  className="form-input"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="new-password"
+                  style={{ paddingRight: '42px' }}
+                />
+                <button
+                  type="button"
+                  className="sngpl-pwd-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
-            <div className="form-group" style={{ marginBottom: '28px' }}>
-              <label className="form-label">Confirm Password</label>
-              <input 
-                type="password" 
-                className="form-input" 
-                placeholder="••••••••"
-                value={confirmPassword} 
-                onChange={(e) => setConfirmPassword(e.target.value)} 
-                required 
-              />
+            {/* Confirm Password */}
+            <div className="form-group" style={{ marginBottom: '24px' }}>
+              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Lock className="w-3.5 h-3.5 text-sky-600" />
+                <span>Confirm Password</span>
+              </label>
+              <div className="sngpl-pwd-wrapper">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  className="form-input"
+                  placeholder="••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  autoComplete="new-password"
+                  style={{ paddingRight: '42px' }}
+                />
+                <button
+                  type="button"
+                  className="sngpl-pwd-toggle"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '20px' }} disabled={loading}>
-              {loading ? 'Creating Account...' : 'Register Profile'}
+            {/* Submit Button */}
+            <button 
+              type="submit" 
+              className="btn btn-primary" 
+              style={{ width: '100%', marginBottom: '18px', padding: '12px', fontSize: '14.5px', fontWeight: '700' }} 
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Creating Account...</span>
+                </>
+              ) : (
+                <span>Register Profile</span>
+              )}
             </button>
           </form>
 
-          <div style={{ textShadow: 'none', textAlign: 'center', fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>
-            Already have an account? <Link href="/login" style={{ color: 'var(--accent-blue)', textDecoration: 'none', fontWeight: '600' }}>Login Here</Link>
+          {/* Login Link */}
+          <div style={{ textAlign: 'center', fontSize: '13px', color: '#475569', marginBottom: '14px' }}>
+            Already registered?{' '}
+            <Link href="/login" style={{ color: 'var(--accent-blue)', textDecoration: 'none', fontWeight: '700' }}>
+              Login Here
+            </Link>
           </div>
-          
-          <div style={{ textShadow: 'none', textAlign: 'center', fontSize: '12px', color: 'var(--text-secondary)' }}>
-            Executive Register <Link href="/register/executive" style={{ color: 'red', textDecoration: 'none', fontWeight: '500' }}>Register Here</Link>
+
+          {/* Executive Passkey Registration Notice */}
+          <div style={{ padding: '12px 14px', background: '#f0fdfa', border: '1px solid #99f6e4', borderRadius: '8px', textAlign: 'center', fontSize: '12.5px' }}>
+            <span style={{ color: '#0f766e', fontWeight: '600' }}>Executive Administrator? </span>
+            <Link href="/register/executive" style={{ color: '#0d9488', textDecoration: 'none', fontWeight: '700' }}>
+              Register with Passkey →
+            </Link>
           </div>
+
         </div>
       )}
+      </main>
+
+      <SngplFooter />
     </div>
   );
 }

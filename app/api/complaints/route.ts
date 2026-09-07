@@ -46,6 +46,18 @@ export async function GET(req: NextRequest) {
       court_name: c.court_name || '',
       public_link_token: c.public_link_token || null,
       public_link_active: !!c.public_link_active,
+      complaint_category: c.complaint_category || (c.police_station ? 'fir_theft' : undefined),
+      consumer_no: c.consumer_no,
+      consumer_name: c.consumer_name,
+      meter_no: c.meter_no,
+      billing_month: c.billing_month,
+      disputed_amount: c.disputed_amount,
+      dispute_type: c.dispute_type,
+      phone: c.phone,
+      location_coords: c.location_coords,
+      urgency: c.urgency,
+      status: c.status || 'pending',
+      resolution_notes: c.resolution_notes,
       created_at: c.created_at,
     }));
 

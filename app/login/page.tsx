@@ -2,14 +2,18 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { dbClient } from '@/lib/db';
-import { Flame, ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Lock, Mail, ShieldAlert, Eye, EyeOff, Loader2 } from 'lucide-react';
+import SngplHeader from '@/components/SngplHeader';
+import SngplFooter from '@/components/SngplFooter';
 
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,30 +39,90 @@ export default function Login() {
   };
 
   return (
-    <div className="auth-container">
-      <div className="glass-panel auth-card">
-        <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', marginBottom: '24px' }}>
-          <ArrowLeft className="w-4 h-4" /> Back to Home
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)' }}>
+      <SngplHeader activePage="login" />
+
+      <main className="auth-container" style={{ flex: '1 0 auto', padding: '36px 16px' }}>
+        <div className="glass-panel auth-card" style={{ maxWidth: '460px', width: '100%' }}>
+        
+        {/* Back navigation */}
+        <Link 
+          href="/" 
+          style={{ 
+            display: 'inline-flex', 
+            alignItems: 'center', 
+            gap: '6px', 
+            color: '#475569', 
+            textDecoration: 'none', 
+            fontSize: '13px', 
+            fontWeight: '600',
+            marginBottom: '20px',
+            background: '#f1f5f9',
+            padding: '6px 12px',
+            borderRadius: '6px',
+            border: '1px solid #e2e8f0',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <ArrowLeft className="w-3.5 h-3.5" /> <span>Back to Home</span>
         </Link>
 
-        <div className="auth-header">
-          <div className="auth-logo">
-            <Flame className="w-7 h-7" style={{ color: 'var(--accent-blue)' }} />
-            <span>SUI GAS</span>
+        {/* SNGPL Official Logo Header */}
+        <div className="auth-header" style={{ marginBottom: '24px' }}>
+          <div className="sngpl-logo-badge">
+            <Image
+              src="/sngpl-logo.png"
+              alt="SNGPL Official Logo"
+              width={56}
+              height={56}
+              priority
+              style={{ objectFit: 'contain' }}
+            />
           </div>
-          <h2>Portal Access</h2>
-          <p className="auth-subtitle">SUI Gas Pipeline Pakistan Management</p>
+          <div>
+            <div className="sngpl-brand-title">
+              SUI NORTHERN
+            </div>
+            <div className="sngpl-brand-subtitle">
+              Gas Pipelines Limited (SNGPL)
+            </div>
+          </div>
+          <h1 style={{ fontSize: '20px', fontWeight: '800', marginTop: '10px', color: '#0f172a' }}>
+            Portal Authentication
+          </h1>
+          <p className="auth-subtitle" style={{ fontSize: '13px' }}>
+            Sign in with your verified credentials to access the management system
+          </p>
         </div>
 
+        {/* Error Alert */}
         {error && (
-          <div className="glass-panel" style={{ padding: '12px 16px', background: 'rgba(239, 68, 68, 0.08)', borderColor: 'rgba(239, 68, 68, 0.3)', color: '#ef4444', fontSize: '13px', marginBottom: '20px', borderRadius: '8px' }}>
-            {error}
+          <div 
+            style={{ 
+              padding: '12px 14px', 
+              background: '#fef2f2', 
+              border: '1px solid #fecaca', 
+              color: '#b91c1c', 
+              fontSize: '13px', 
+              marginBottom: '20px', 
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px'
+            }}
+          >
+            <ShieldAlert className="w-4 h-4 flex-shrink-0 text-rose-600" />
+            <span>{error}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
+          {/* Email Input */}
           <div className="form-group">
-            <label className="form-label">Email Address</label>
+            <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Mail className="w-3.5 h-3.5 text-sky-600" />
+              <span>Official Email Address</span>
+            </label>
             <input 
               type="email" 
               className="form-input" 
@@ -66,30 +130,72 @@ export default function Login() {
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
               required 
+              autoComplete="email"
+              inputMode="email"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
             />
           </div>
 
-          <div className="form-group" style={{ marginBottom: '28px' }}>
-            <label className="form-label">Password</label>
-            <input 
-              type="password" 
-              className="form-input" 
-              placeholder="••••••••"
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-              required 
-            />
+          {/* Password Input with Visibility Toggle */}
+          <div className="form-group" style={{ marginBottom: '24px' }}>
+            <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Lock className="w-3.5 h-3.5 text-sky-600" />
+              <span>Password</span>
+            </label>
+            <div className="sngpl-pwd-wrapper">
+              <input 
+                type={showPassword ? 'text' : 'password'} 
+                className="form-input" 
+                placeholder="••••••••"
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                required 
+                autoComplete="current-password"
+                style={{ paddingRight: '42px' }}
+              />
+              <button
+                type="button"
+                className="sngpl-pwd-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
 
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '20px' }} disabled={loading}>
-            {loading ? 'Authenticating...' : 'Sign In to Portal'}
+          {/* Submit Button */}
+          <button 
+            type="submit" 
+            className="btn btn-primary" 
+            style={{ width: '100%', marginBottom: '20px', padding: '12px', fontSize: '14.5px', fontWeight: '700' }} 
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Authenticating...</span>
+              </>
+            ) : (
+              <span>Sign In to Portal</span>
+            )}
           </button>
         </form>
 
-        <div style={{ textShadow: 'none', textAlign: 'center', fontSize: '13px', color: 'var(--text-secondary)' }}>
-          Don&apos;t have an account? <Link href="/register" style={{ color: 'var(--accent-blue)', textDecoration: 'none', fontWeight: '600' }}>Register Here</Link>
+        {/* Footer Link */}
+        <div style={{ textAlign: 'center', fontSize: '13px', color: '#475569' }}>
+          Don&apos;t have an account?{' '}
+          <Link href="/register" style={{ color: 'var(--accent-blue)', textDecoration: 'none', fontWeight: '700' }}>
+            Register Profile
+          </Link>
         </div>
+
       </div>
+      </main>
+
+      <SngplFooter />
     </div>
   );
 }

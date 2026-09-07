@@ -3,14 +3,14 @@
 import { useEffect, useState, createContext, useContext, Suspense } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { dbClient, Profile } from '@/lib/db';
-import { 
-  Flame, 
-  LayoutDashboard, 
-  ClipboardList, 
-  UserCheck, 
-  Settings, 
-  LogOut, 
+import {
+  LayoutDashboard,
+  ClipboardList,
+  UserCheck,
+  Settings,
+  LogOut,
   Loader2,
   Users,
   ChevronDown,
@@ -19,7 +19,9 @@ import {
   ReceiptText,
   Layers,
   Menu,
-  X
+  X,
+  Flame,
+  Scale
 } from 'lucide-react';
 
 // User context for dashboard pages
@@ -30,7 +32,7 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType>({
   user: null,
-  refreshUser: async () => {},
+  refreshUser: async () => { },
 });
 
 export const useUser = () => useContext(UserContext);
@@ -50,8 +52,8 @@ function SidebarLinks({ user, onLinkClick }: { user: Profile; onLinkClick?: () =
 
   return (
     <nav className="sidebar-nav">
-      <Link 
-        href="/dashboard" 
+      <Link
+        href="/dashboard"
         onClick={onLinkClick}
         className={`sidebar-link ${isLinkActive('/dashboard') ? 'active' : ''}`}
       >
@@ -59,8 +61,8 @@ function SidebarLinks({ user, onLinkClick }: { user: Profile; onLinkClick?: () =
         <span>Overview</span>
       </Link>
 
-      <Link 
-        href="/dashboard/complaints" 
+      <Link
+        href="/dashboard/complaints"
         onClick={onLinkClick}
         className={`sidebar-link ${isLinkActive('/dashboard/complaints') ? 'active' : ''}`}
       >
@@ -68,8 +70,60 @@ function SidebarLinks({ user, onLinkClick }: { user: Profile; onLinkClick?: () =
         <span>FIR Complaints</span>
       </Link>
 
+      {/* Bill Disputes - Dedicated Employee Section (NOT in FIR or Department) */}
+      <Link
+        href="/dashboard/bill-disputes"
+        onClick={onLinkClick}
+        className={`sidebar-link ${isLinkActive('/dashboard/bill-disputes') ? 'active' : ''}`}
+        style={{
+          color: isLinkActive('/dashboard/bill-disputes') ? '#0284c7' : undefined,
+        }}
+      >
+        <Scale className="w-4 h-4 text-sky-600 flex-shrink-0" />
+        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <span>Bill Disputes</span>
+          <span style={{
+            background: '#e0f2fe',
+            color: '#0369a1',
+            fontSize: '10px',
+            fontWeight: '800',
+            padding: '1px 6px',
+            borderRadius: '10px',
+            border: '1px solid #bae6fd'
+          }}>
+            Audit
+          </span>
+        </span>
+      </Link>
+
+      {/* Gas Leak Emergencies - Dedicated Employee Section (NOT in FIR or Department) */}
+      <Link
+        href="/dashboard/gas-leaks"
+        onClick={onLinkClick}
+        className={`sidebar-link ${isLinkActive('/dashboard/gas-leaks') ? 'active' : ''}`}
+        style={{
+          color: isLinkActive('/dashboard/gas-leaks') ? '#dc2626' : undefined,
+        }}
+      >
+        <Flame className="w-4 h-4 text-red-500 flex-shrink-0" />
+        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <span>Gas Leak Emergencies</span>
+          <span style={{
+            background: '#fee2e2',
+            color: '#dc2626',
+            fontSize: '10px',
+            fontWeight: '800',
+            padding: '1px 6px',
+            borderRadius: '10px',
+            border: '1px solid #fca5a5'
+          }}>
+            1199
+          </span>
+        </span>
+      </Link>
+
       <div className="sidebar-group">
-        <button 
+        <button
           onClick={() => setDeptOpen(!deptOpen)}
           className={`sidebar-link ${isDeptActive ? 'active' : ''}`}
           style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
@@ -87,16 +141,16 @@ function SidebarLinks({ user, onLinkClick }: { user: Profile; onLinkClick?: () =
 
         {deptOpen && (
           <div className="sidebar-subnav">
-            <Link 
-              href="/dashboard/sales-complaints" 
+            <Link
+              href="/dashboard/sales-complaints"
               onClick={onLinkClick}
               className={`sidebar-link sub-link ${isLinkActive('/dashboard/sales-complaints') ? 'active' : ''}`}
             >
               <DollarSign className="w-3.5 h-3.5" />
               <span>Sales Complaints</span>
             </Link>
-            <Link 
-              href="/dashboard/billing-complaints" 
+            <Link
+              href="/dashboard/billing-complaints"
               onClick={onLinkClick}
               className={`sidebar-link sub-link ${isLinkActive('/dashboard/billing-complaints') ? 'active' : ''}`}
             >
@@ -109,8 +163,8 @@ function SidebarLinks({ user, onLinkClick }: { user: Profile; onLinkClick?: () =
 
       {/* Admin/Executive Only Approvals View */}
       {user.role === 'executive' && (
-        <Link 
-          href="/dashboard/approvals" 
+        <Link
+          href="/dashboard/approvals"
           onClick={onLinkClick}
           className={`sidebar-link ${isLinkActive('/dashboard/approvals') ? 'active' : ''}`}
         >
@@ -121,8 +175,8 @@ function SidebarLinks({ user, onLinkClick }: { user: Profile; onLinkClick?: () =
 
       {/* Admin/Executive Only User Accounts View */}
       {user.role === 'executive' && (
-        <Link 
-          href="/dashboard/users" 
+        <Link
+          href="/dashboard/users"
           onClick={onLinkClick}
           className={`sidebar-link ${isLinkActive('/dashboard/users') ? 'active' : ''}`}
         >
@@ -131,8 +185,8 @@ function SidebarLinks({ user, onLinkClick }: { user: Profile; onLinkClick?: () =
         </Link>
       )}
 
-      <Link 
-        href="/dashboard/profile" 
+      <Link
+        href="/dashboard/profile"
         onClick={onLinkClick}
         className={`sidebar-link ${isLinkActive('/dashboard/profile') ? 'active' : ''}`}
       >
@@ -194,21 +248,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <UserContext.Provider value={{ user, refreshUser: checkUser }}>
       <div className="dashboard-container">
-        
+
         {/* MOBILE TOPBAR (Visible only on <= 768px screens) */}
         <header className="mobile-topbar">
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <button 
-              type="button" 
-              className="mobile-menu-btn" 
+            <button
+              type="button"
+              className="mobile-menu-btn"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
             <Link href="/dashboard" className="mobile-topbar-logo" onClick={() => setMobileMenuOpen(false)}>
-              <Flame className="w-5 h-5" style={{ color: 'var(--accent-blue)' }} />
-              <span>SUI GAS</span>
+              <div className="sngpl-logo-badge" style={{ width: '34px', height: '34px', padding: '2px' }}>
+                <Image
+                  src="/sngpl-logo.png"
+                  alt="SNGPL Logo"
+                  width={28}
+                  height={28}
+                  priority
+                  className="sngpl-logo-img"
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div style={{ fontSize: '15px', fontWeight: '800', lineHeight: '1.1', color: 'var(--text-primary)' }}>SNGPL</div>
+                <div style={{ fontSize: '9px', fontWeight: '700', letterSpacing: '0.08em', color: 'var(--accent-blue)', textTransform: 'uppercase' }}>Gas Portal</div>
+              </div>
             </Link>
           </div>
 
@@ -224,21 +290,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* MOBILE BACKDROP OVERLAY */}
         {mobileMenuOpen && (
-          <div 
-            className="sidebar-backdrop animate-fade-in" 
-            onClick={() => setMobileMenuOpen(false)} 
+          <div
+            className="sidebar-backdrop animate-fade-in"
+            onClick={() => setMobileMenuOpen(false)}
             aria-hidden="true"
           />
         )}
 
         {/* SIDEBAR NAVIGATION (Desktop Fixed & Mobile Slide-Out Drawer) */}
         <aside className={`sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
             <Link href="/dashboard" className="sidebar-logo" style={{ marginBottom: 0 }} onClick={() => setMobileMenuOpen(false)}>
-              <Flame className="w-6 h-6" style={{ color: 'var(--accent-blue)' }} />
-              <span>SUI GAS</span>
+              <div className="sngpl-logo-badge" style={{ width: '42px', height: '42px', padding: '3px', flexShrink: 0 }}>
+                <Image
+                  src="/sngpl-logo.png"
+                  alt="SNGPL Logo"
+                  width={34}
+                  height={34}
+                  priority
+                  className="sngpl-logo-img"
+                />
+              </div>
+              <div className="sidebar-logo-text">
+                <div className="sidebar-logo-title">SUI NORTHERN</div>
+                <div className="sidebar-logo-sub">Pipelines Limited</div>
+              </div>
             </Link>
-            <button 
+            <button
               type="button"
               className="sidebar-mobile-close-btn"
               onClick={() => setMobileMenuOpen(false)}
@@ -268,10 +346,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <div className="sidebar-user-role">{user.role}</div>
               </div>
             </div>
-            
-            <button 
-              onClick={handleSignOut} 
-              className="btn btn-secondary" 
+
+            <button
+              onClick={handleSignOut}
+              className="btn btn-secondary"
               style={{ width: '100%', display: 'flex', gap: '8px', padding: '10px' }}
             >
               <LogOut className="w-4 h-4" />

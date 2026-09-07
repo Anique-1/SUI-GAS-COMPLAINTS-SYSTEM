@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import Image from 'next/image';
 import { dbClient, Complaint } from '@/lib/db';
 import { 
-  Flame, 
   FileText, 
   Image as ImageIcon, 
   Download, 
@@ -14,8 +14,17 @@ import {
   Loader2,
   Lock,
   Eye,
-  Sheet
+  Sheet,
+  ShieldCheck,
+  MapPin,
+  Navigation,
+  ExternalLink,
+  PhoneCall,
+  AlertTriangle,
+  AlertOctagon,
+  CheckCircle2
 } from 'lucide-react';
+import EmergencyAlertDetails from '@/components/EmergencyAlertDetails';
 
 export default function PublicComplaintView() {
   const { token } = useParams() as { token: string };
@@ -70,36 +79,286 @@ export default function PublicComplaintView() {
     <div className="auth-container" style={{ padding: '60px 24px' }}>
       <main className="glass-panel public-view-container glass-panel-hover" style={{ width: '100%' }}>
         
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-color)', paddingBottom: '24px', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
-          <div>
-            <div className="auth-logo" style={{ justifyContent: 'flex-start', fontSize: '20px', marginBottom: '8px' }}>
-              <Flame className="w-6 h-6" style={{ color: 'var(--accent-blue)' }} />
-              <span>SUI GAS PAKISTAN</span>
+        {/* SNGPL Corporate Official Letterhead */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid var(--border-color)', paddingBottom: '20px', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <div className="sngpl-logo-badge" style={{ width: '56px', height: '56px', padding: '3px', flexShrink: 0 }}>
+              <Image
+                src="/sngpl-logo.png"
+                alt="SNGPL Official Logo"
+                width={48}
+                height={48}
+                priority
+                className="sngpl-logo-img"
+              />
             </div>
-            <h1 style={{ fontSize: '26px', lineHeight: '1.2' }}>{complaint.name}</h1>
-            <span style={{ fontSize: '11px', color: 'var(--accent-teal)', background: 'rgba(79, 172, 254, 0.1)', padding: '2px 8px', borderRadius: '4px', border: '1px solid rgba(79, 172, 254, 0.2)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'inline-block', marginTop: '8px' }}>
-              Official Public Document
-            </span>
+            <div>
+              <div className="sngpl-brand-title" style={{ fontSize: '18px' }}>
+                SUI NORTHERN GAS PIPELINES LIMITED
+              </div>
+              <div className="sngpl-brand-subtitle" style={{ fontSize: '10px' }}>
+                Official Pipeline Technical & Legal Document Record
+              </div>
+            </div>
           </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Calendar className="w-4 h-4 text-slate-500" />
-              <span>Filed: <strong>{complaint.register_date}</strong></span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <User className="w-4 h-4 text-slate-500" />
-              <span>Operator: <strong>{complaint.creator_name}</strong></span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(2, 132, 199, 0.04)', border: '1px solid rgba(2, 132, 199, 0.15)', padding: '8px 14px', borderRadius: '8px' }}>
+            <ShieldCheck className="w-5 h-5 text-emerald-600" />
+            <div style={{ fontSize: '12px', lineHeight: '1.3' }}>
+              <div style={{ fontWeight: '700', color: 'var(--text-primary)' }}>Verified Document</div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '10.5px' }}>Official Token Security</div>
             </div>
           </div>
         </div>
 
+        {/* Document Title & Meta Bar */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-color)', paddingBottom: '20px', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
+          <div>
+            {complaint.complaint_category === 'gas_leak_emergency' ? (
+              <span style={{ fontSize: '11px', fontWeight: '800', color: '#dc2626', background: 'rgba(220, 38, 38, 0.1)', padding: '4px 12px', borderRadius: '4px', border: '1px solid rgba(220, 38, 38, 0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'inline-block', marginBottom: '8px' }}>
+                🚨 1199 Gas Leak Emergency Dispatch
+              </span>
+            ) : complaint.complaint_category === 'bill_dispute' ? (
+              <span style={{ fontSize: '11px', fontWeight: '800', color: '#0284c7', background: 'rgba(2, 132, 199, 0.1)', padding: '4px 12px', borderRadius: '4px', border: '1px solid rgba(2, 132, 199, 0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'inline-block', marginBottom: '8px' }}>
+                ⚖️ 1-Click Consumer Bill Dispute
+              </span>
+            ) : (
+              <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--accent-teal)', background: 'rgba(13, 148, 136, 0.08)', padding: '3px 10px', borderRadius: '4px', border: '1px solid rgba(13, 148, 136, 0.2)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'inline-block', marginBottom: '8px' }}>
+                FIR Incident Record
+              </span>
+            )}
+            <h1 style={{ fontSize: '24px', lineHeight: '1.25', fontWeight: '800' }}>{complaint.name}</h1>
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Calendar className="w-4 h-4 text-slate-500" />
+              <span>Registered: <strong style={{ color: 'var(--text-primary)' }}>{complaint.register_date}</strong></span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <User className="w-4 h-4 text-slate-500" />
+              <span>Investigating Unit / Source: <strong style={{ color: 'var(--text-primary)' }}>{complaint.creator_name}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        {/* SPECIALIZED VIEW 1: GAS LEAK EMERGENCY WITH LIVE GPS MAP PLOTTING */}
+        {complaint.complaint_category === 'gas_leak_emergency' && (
+          <section style={{ marginBottom: '36px' }}>
+            <div style={{
+              background: '#fef2f2',
+              border: '2px solid #ef4444',
+              borderRadius: '12px',
+              padding: '24px',
+              boxShadow: '0 4px 20px rgba(239, 68, 68, 0.12)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '18px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: '#dc2626', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <AlertTriangle className="w-5 h-5 animate-pulse" />
+                  </div>
+                  <div>
+                    <h2 style={{ fontSize: '18px', fontWeight: '900', color: '#991b1b', margin: 0 }}>
+                      Rapid Emergency Field Dispatch Plotted
+                    </h2>
+                    <div style={{ fontSize: '12px', color: '#b91c1c' }}>
+                      Priority Level: Immediate Action (Helpline 1199 Priority Response)
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <a
+                    href="tel:1199"
+                    style={{
+                      background: '#dc2626',
+                      color: '#ffffff',
+                      padding: '8px 16px',
+                      borderRadius: '6px',
+                      fontSize: '13px',
+                      fontWeight: '800',
+                      textDecoration: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <PhoneCall className="w-4 h-4" />
+                    <span>Helpline 1199</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* GPS Coordinates and Map */}
+              {complaint.location_coords && (
+                <div style={{ marginBottom: '18px' }}>
+                  <div style={{
+                    background: '#ffffff',
+                    border: '1px solid #fca5a5',
+                    borderRadius: '8px',
+                    padding: '12px 16px',
+                    marginBottom: '14px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '8px'
+                  }}>
+                    <div style={{ fontSize: '13px', color: '#7f1d1d' }}>
+                      <span style={{ fontWeight: '700' }}>GPS Coordinates:</span> {complaint.location_coords.latitude.toFixed(6)}° N, {complaint.location_coords.longitude.toFixed(6)}° E
+                      {complaint.location_coords.accuracy && (
+                        <span style={{ fontSize: '11.5px', marginLeft: '8px', color: '#991b1b', background: '#fee2e2', padding: '2px 8px', borderRadius: '4px' }}>
+                          Accuracy: ±{Math.round(complaint.location_coords.accuracy)}m
+                        </span>
+                      )}
+                      {complaint.location_coords.address && (
+                        <div style={{ fontSize: '12px', color: '#991b1b', marginTop: '4px' }}>
+                          📍 <strong>Reported Address / Sector:</strong> {complaint.location_coords.address}
+                        </div>
+                      )}
+                    </div>
+
+                    <a
+                      href={`https://www.google.com/maps?q=${complaint.location_coords.latitude},${complaint.location_coords.longitude}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-primary"
+                      style={{
+                        background: '#dc2626',
+                        borderColor: '#b91c1c',
+                        padding: '6px 14px',
+                        fontSize: '12px',
+                        fontWeight: '700',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        textDecoration: 'none'
+                      }}
+                    >
+                      <MapPin className="w-3.5 h-3.5" />
+                      <span>View in Google Maps</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+
+                  {/* OpenStreetMap Iframe */}
+                  <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #fca5a5', height: '240px' }}>
+                    <iframe
+                      width="100%"
+                      height="240"
+                      frameBorder="0"
+                      scrolling="no"
+                      marginHeight={0}
+                      marginWidth={0}
+                      src={`https://www.openstreetmap.org/export/embed.html?bbox=${complaint.location_coords.longitude - 0.005}%2C${complaint.location_coords.latitude - 0.003}%2C${complaint.location_coords.longitude + 0.005}%2C${complaint.location_coords.latitude + 0.003}&layer=mapnik&marker=${complaint.location_coords.latitude}%2C${complaint.location_coords.longitude}`}
+                      style={{ border: 'none' }}
+                      title="OpenStreetMap Live Leak Location"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* SPECIALIZED VIEW 2: 1-CLICK BILL DISPUTE RECORD */}
+        {complaint.complaint_category === 'bill_dispute' && (
+          <section style={{ marginBottom: '36px' }}>
+            <div style={{
+              background: '#f0f9ff',
+              border: '2px solid #0284c7',
+              borderRadius: '12px',
+              padding: '24px',
+              boxShadow: '0 4px 20px rgba(2, 132, 199, 0.08)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#0284c7', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <AlertOctagon className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 style={{ fontSize: '18px', fontWeight: '800', color: '#0369a1', margin: 0 }}>
+                    Official Gas Bill Dispute Details
+                  </h2>
+                  <div style={{ fontSize: '12px', color: '#0284c7' }}>
+                    Logged directly via SNGPL 1-Click Consumer Bill Portal
+                  </div>
+                </div>
+              </div>
+
+              {/* Dispute Metadata Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', background: '#ffffff', border: '1px solid #bae6fd', borderRadius: '8px', padding: '16px', marginBottom: '16px' }}>
+                {complaint.consumer_no && (
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Consumer Number</div>
+                    <div style={{ fontSize: '15px', fontWeight: '800', color: '#0f172a' }}>{complaint.consumer_no}</div>
+                  </div>
+                )}
+                {complaint.consumer_name && (
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Consumer Name</div>
+                    <div style={{ fontSize: '14px', fontWeight: '700', color: '#0f172a' }}>{complaint.consumer_name}</div>
+                  </div>
+                )}
+                {complaint.meter_no && (
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Meter Number</div>
+                    <div style={{ fontSize: '14px', fontWeight: '700', color: '#0f172a' }}>{complaint.meter_no}</div>
+                  </div>
+                )}
+                {complaint.billing_month && (
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Disputed Month</div>
+                    <div style={{ fontSize: '14px', fontWeight: '700', color: '#0f172a' }}>{complaint.billing_month}</div>
+                  </div>
+                )}
+                {complaint.disputed_amount && (
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Disputed Bill Amount</div>
+                    <div style={{ fontSize: '16px', fontWeight: '800', color: '#dc2626' }}>Rs. {complaint.disputed_amount}</div>
+                  </div>
+                )}
+                {complaint.dispute_type && (
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Dispute Category</div>
+                    <div style={{ fontSize: '13px', fontWeight: '700', color: '#0369a1' }}>{complaint.dispute_type}</div>
+                  </div>
+                )}
+              </div>
+
+              {/* Status Step Indicator */}
+              <div style={{ background: '#ffffff', border: '1px solid #bae6fd', borderRadius: '8px', padding: '16px' }}>
+                <div style={{ fontSize: '11.5px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', marginBottom: '10px' }}>
+                  Dispute Resolution Progress:
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', fontSize: '12.5px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#059669', fontWeight: '700' }}>
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>1. Dispute Filed</span>
+                  </div>
+                  <span style={{ color: '#cbd5e1' }}>→</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#0284c7', fontWeight: '700' }}>
+                    <CheckCircle2 className="w-4 h-4 text-sky-600" />
+                    <span>2. Billing Audit Review</span>
+                  </div>
+                  <span style={{ color: '#cbd5e1' }}>→</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b' }}>
+                    <span>3. Physical Verification</span>
+                  </div>
+                  <span style={{ color: '#cbd5e1' }}>→</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b' }}>
+                    <span>4. Adjustment / Credit</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Technical Description */}
         <section style={{ marginBottom: '40px' }}>
-          <h2 style={{ fontSize: '18px', marginBottom: '12px', color: 'var(--text-primary)' }}>Technical Description</h2>
-          <div className="glass-panel" style={{ padding: '20px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-color)', lineHeight: '1.6', color: 'var(--text-secondary)', fontSize: '15px' }}>
-            {complaint.description || <em>No technical descriptions were submitted for this complaint entry.</em>}
+          <h2 style={{ fontSize: '18px', marginBottom: '12px', color: 'var(--text-primary)' }}>Technical Description / Consumer Statement</h2>
+          <div className="glass-panel" style={{ padding: '20px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-color)' }}>
+            <EmergencyAlertDetails description={complaint.description} />
           </div>
         </section>
 

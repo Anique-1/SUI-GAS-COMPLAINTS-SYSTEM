@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -8,7 +9,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "SUI Gas Pipeline Pakistan - Gas Complaint System",
+  title: "Sui Northern Gas Pipelines Limited",
   description: "Official portal for recording, tracking, approving, and reviewing pipeline complaints for SUI Gas Pakistan.",
   icons: {
     icon: "/favicon.png",

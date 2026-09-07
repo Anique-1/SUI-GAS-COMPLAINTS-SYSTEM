@@ -57,6 +57,10 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     if (updates.status_of_accused !== undefined) allowedUpdates.status_of_accused = updates.status_of_accused;
     if (updates.lawyer_name !== undefined) allowedUpdates.lawyer_name = updates.lawyer_name;
     if (updates.court_name !== undefined) allowedUpdates.court_name = updates.court_name;
+    if (updates.status !== undefined) allowedUpdates.status = updates.status;
+    if (updates.resolution_notes !== undefined) allowedUpdates.resolution_notes = updates.resolution_notes;
+    if (updates.urgency !== undefined) allowedUpdates.urgency = updates.urgency;
+    if (updates.adjusted_credit !== undefined) allowedUpdates.adjusted_credit = updates.adjusted_credit;
 
     await db.collection('complaints').updateOne(
       { id },

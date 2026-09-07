@@ -57,6 +57,17 @@ export async function GET(req: NextRequest, context: RouteContext) {
       court_name: complaint.court_name || '',
       public_link_token: complaint.public_link_token,
       public_link_active: complaint.public_link_active,
+      complaint_category: complaint.complaint_category || (complaint.police_station ? 'fir_theft' : undefined),
+      consumer_no: complaint.consumer_no || '',
+      consumer_name: complaint.consumer_name || '',
+      meter_no: complaint.meter_no || '',
+      billing_month: complaint.billing_month || '',
+      disputed_amount: complaint.disputed_amount || '',
+      dispute_type: complaint.dispute_type || '',
+      phone: complaint.phone || '',
+      location_coords: complaint.location_coords || null,
+      urgency: complaint.urgency || 'normal',
+      status: complaint.status || 'pending',
       created_at: complaint.created_at,
     };
 

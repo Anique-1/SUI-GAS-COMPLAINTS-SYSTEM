@@ -35,6 +35,25 @@ export interface Complaint {
   court_name?: string;
   public_link_token: string | null;
   public_link_active: boolean;
+  complaint_category?: 'fir_theft' | 'bill_dispute' | 'gas_leak_emergency';
+  consumer_no?: string;
+  consumer_name?: string;
+  meter_no?: string;
+  billing_month?: string;
+  disputed_amount?: string;
+  dispute_type?: string;
+  phone?: string;
+  location_coords?: {
+    latitude: number;
+    longitude: number;
+    accuracy?: number;
+    address?: string;
+  };
+  urgency?: 'normal' | 'high' | 'critical_1199';
+  status?: 'pending' | 'in_progress' | 'investigating' | 'under_review' | 'resolved' | 'rejected';
+  actual_reading?: string;
+  adjusted_credit?: string;
+  resolution_notes?: string;
   created_at: string;
 }
 

@@ -22,6 +22,7 @@ import {
   Check,
   Sheet
 } from 'lucide-react';
+import EmergencyAlertDetails from '@/components/EmergencyAlertDetails';
 
 const normalizeText = (str: string | undefined | null) => {
   if (!str) return '';
@@ -100,7 +101,9 @@ export default function ComplaintsPage() {
     try {
       setLoading(true);
       const data = await dbClient.getComplaints();
-      setComplaints(data);
+      // Only include FIR complaints; exclude gas leak emergencies and bill disputes which have their own dedicated sections
+      const firOnly = data.filter(c => c.complaint_category !== 'gas_leak_emergency' && c.complaint_category !== 'bill_dispute');
+      setComplaints(firOnly);
     } catch (err) {
       console.error('Failed to fetch complaints', err);
     } finally {
@@ -1209,9 +1212,7 @@ export default function ComplaintsPage() {
                 <div style={{ fontSize: '12px', fontWeight: '800', color: '#0369a1', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
                   Technical Description
                 </div>
-                <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '14px 16px', color: '#0f172a', fontSize: '14px', lineHeight: '1.6', fontWeight: '500' }}>
-                  {previewComplaint.description || <em style={{ color: '#64748b' }}>No technical description provided.</em>}
-                </div>
+                <EmergencyAlertDetails description={previewComplaint.description} />
               </div>
 
               {/* FIR Investigation Details Grid */}
