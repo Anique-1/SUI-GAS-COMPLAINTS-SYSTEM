@@ -3,6 +3,27 @@ import https from 'https';
 import querystring from 'querystring';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60; // Max allowable duration for serverless functions on Vercel & Render
+
+// Shared HTTPS Agent with keepAlive and SSL certificate flexibility
+const sharedAgent = new https.Agent({
+  rejectUnauthorized: false,
+  keepAlive: true,
+  maxSockets: 20,
+  timeout: 30000,
+});
+
+const DEFAULT_USER_AGENT =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+
+function getBackendUrl(): string | null {
+  const url =
+    process.env.RENDER_BACKEND_URL ||
+    process.env.SNGPL_BACKEND_URL ||
+    process.env.NEXT_PUBLIC_RENDER_URL;
+  if (!url) return null;
+  return url.replace(/\/+$/, '');
+}
 
 function mergeCookies(existing: string[], incoming: string[]): string {
   const cookieMap = new Map<string, string>();
@@ -31,11 +52,15 @@ function fetchSngplSessionAndCaptcha(): Promise<{
       'https://www.sngpl.com.pk/login.jsp?mdids=85',
       {
         method: 'GET',
+        agent: sharedAgent,
+        timeout: 25000,
         headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'User-Agent': DEFAULT_USER_AGENT,
           Accept:
             'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Cache-Control': 'no-cache',
+          Connection: 'keep-alive',
         },
       },
       (sessionRes) => {
@@ -57,11 +82,14 @@ function fetchSngplSessionAndCaptcha(): Promise<{
             `https://www.sngpl.com.pk/captcha-image.jpg?rand=${Date.now()}`,
             {
               method: 'GET',
+              agent: sharedAgent,
+              timeout: 25000,
               headers: {
-                'User-Agent':
-                  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'User-Agent': DEFAULT_USER_AGENT,
                 Cookie: cookieHeader1,
                 Referer: 'https://www.sngpl.com.pk/login.jsp?mdids=85',
+                Accept: 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
+                Connection: 'keep-alive',
               },
             },
             (captchaRes) => {
@@ -95,12 +123,18 @@ function fetchSngplSessionAndCaptcha(): Promise<{
             }
           );
 
+          captchaReq.setTimeout(25000, () => {
+            captchaReq.destroy(new Error('SNGPL Captcha request timed out.'));
+          });
           captchaReq.on('error', reject);
           captchaReq.end();
         });
       }
     );
 
+    sessionReq.setTimeout(25000, () => {
+      sessionReq.destroy(new Error('SNGPL Login session request timed out.'));
+    });
     sessionReq.on('error', reject);
     sessionReq.end();
   });
@@ -149,14 +183,17 @@ function submitSngplBillQuery(
         port: 443,
         path: parsedUrl.pathname + parsedUrl.search,
         method: method,
+        agent: sharedAgent,
+        timeout: 30000,
         headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'User-Agent': DEFAULT_USER_AGENT,
           Cookie: rawCookie,
           Referer: 'https://www.sngpl.com.pk/login.jsp?mdids=85',
           Origin: 'https://www.sngpl.com.pk',
           Accept:
             'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
+          Connection: 'keep-alive',
         },
       };
 
@@ -197,6 +234,9 @@ function submitSngplBillQuery(
         });
       });
 
+      req.setTimeout(30000, () => {
+        req.destroy(new Error('SNGPL Bill Query request timed out.'));
+      });
       req.on('error', reject);
       if (method === 'POST' && data) {
         req.write(data);
@@ -219,7 +259,6 @@ function cleanHtmlText(str: string): string {
 
 function findTableValue(html: string, labels: string[]): string | null {
   for (const label of labels) {
-    // Pattern 1: <td>Label</td><td...>Value</td>
     const regex1 = new RegExp(
       `(?:<td|<th)[^>]*>(?:<[^>]+>)*\\s*${label}\\s*[:=-]?(?:<[^>]+>)*\\s*<\\/(?:td|th)>\\s*<(?:td|th)[^>]*>([\\s\\S]*?)<\\/(?:td|th)>`,
       'i'
@@ -229,7 +268,6 @@ function findTableValue(html: string, labels: string[]): string | null {
       return cleanHtmlText(m1[1]);
     }
 
-    // Pattern 2: Label : Value in text
     const regex2 = new RegExp(
       `${label}\\s*[:=-]\\s*([^<\\n\\r]+?)(?=<|\\n|\\r|$)`,
       'i'
@@ -256,10 +294,8 @@ function sanitizeAndFixSngplHtml(html: string): string {
     <style>
       *, *::before, *::after { box-sizing: border-box; }
       html, body { margin: 0 !important; padding: 0 !important; background: #ffffff; }
-      /* Scale the bill to fit the iframe width */
       body { zoom: 1; }
       img { max-width: 100%; }
-      /* Remove frame-busting redirects */
       @media print {
         .no-print, .no-print * { display: none !important; }
       }
@@ -326,11 +362,9 @@ function parseDateToTime(dStr: string | null | undefined): number {
 }
 
 function parseSngplBillHtml(rawHtml: string, fallbackConsumer: string) {
-  // 1. Strip HTML comments to prevent stray arrows and comment markers from polluting values
   const html = rawHtml.replace(/<!--[\s\S]*?-->/g, '');
   const cleanFullText = cleanHtmlText(html);
 
-  // 2. Extract structured table rows and cells
   const rows: string[][] = [];
   const trMatches = [...html.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)];
   for (const tr of trMatches) {
@@ -341,13 +375,11 @@ function parseSngplBillHtml(rawHtml: string, fallbackConsumer: string) {
     }
   }
 
-  // Helper to find a numeric or monetary value in a row containing specific labels
   const findValueInRow = (keywords: string[]): string | null => {
     for (const cells of rows) {
       const rowStr = cells.join(' ').toLowerCase();
       const matchesKeyword = keywords.some((k) => rowStr.includes(k.toLowerCase()));
       if (matchesKeyword) {
-        // Search backwards for the numeric cell to skip English and Urdu labels
         for (let i = cells.length - 1; i >= 0; i--) {
           const c = cells[i];
           if (/^-?[\d,]+(?:\.\d{1,2})?$/.test(c.replace(/\s/g, ''))) {
@@ -356,7 +388,6 @@ function parseSngplBillHtml(rawHtml: string, fallbackConsumer: string) {
         }
         if (cells.length > 1) {
           const lastCell = cells[cells.length - 1];
-          // Ensure it's not another label
           if (!keywords.some((k) => lastCell.toLowerCase().includes(k.toLowerCase()))) {
             return lastCell;
           }
@@ -366,7 +397,6 @@ function parseSngplBillHtml(rawHtml: string, fallbackConsumer: string) {
     return null;
   };
 
-  // Helper to find value by regex on clean plain text
   const findValueInText = (labels: string[]): string | null => {
     for (const label of labels) {
       const re = new RegExp(`${label}\\s*[:=]\\s*([^\\n\\r|;]+?)(?=\\s{2,}|\\n|\\r|$|Tariff|Meter|Consumer|Bill|Address)`, 'i');
@@ -403,7 +433,6 @@ function parseSngplBillHtml(rawHtml: string, fallbackConsumer: string) {
   let consumerName: string | null = null;
   for (const cells of rows) {
     if (cells.some((c) => /^\s*Name\s*:?\s*$/i.test(c))) {
-      // In SNGPL bill, cell format is [Name:, Urdu Name, Consumer Name]
       consumerName = cells[cells.length - 1];
       break;
     }
@@ -489,18 +518,14 @@ function parseSngplBillHtml(rawHtml: string, fallbackConsumer: string) {
 
   // 7. Due Date
   let dueDate: string | null = null;
-
-  // A. Check explicit "Due Date: <date>"
   const explicitDue = html.match(/Due\s*Date\s*[:\s]*(\d{1,2}[-\/\.][A-Za-z0-9]{2,4}[-\/\.]\d{2,4})/i);
   if (explicitDue && isValidDate(explicitDue[1])) {
     dueDate = explicitDue[1];
   }
 
-  // B. Check Payment Slip row: typically 3 cells: [amountWithin, amountAfter, dueDate]
   if (!dueDate) {
     for (const cells of rows) {
       const rowStr = cells.join(' ').toLowerCase();
-      // Exclude meter reading dates row (which has 'Dates:', 'Reading:', etc.)
       if (rowStr.includes('dates:') || rowStr.includes('reading:') || rowStr.includes('difference')) {
         continue;
       }
@@ -517,7 +542,6 @@ function parseSngplBillHtml(rawHtml: string, fallbackConsumer: string) {
     }
   }
 
-  // C. Find all candidate dates in the document
   if (!dueDate) {
     const candidateDates: string[] = [];
     for (const cells of rows) {
@@ -531,9 +555,7 @@ function parseSngplBillHtml(rawHtml: string, fallbackConsumer: string) {
         }
       }
     }
-    // Filter out issueDate and previous years
     const nonIssueDates = candidateDates.filter((d) => d !== issueDate && !d.includes('2024') && !d.includes('2025'));
-    // Filter dates on or after issueDate
     const afterIssueDates = nonIssueDates.filter((d) => {
       const t = parseDateToTime(d);
       return issueTime === 0 || t >= issueTime;
@@ -548,7 +570,6 @@ function parseSngplBillHtml(rawHtml: string, fallbackConsumer: string) {
     }
   }
 
-  // D. Fallback check from barcode text (DDMMYY)
   if (!dueDate) {
     const barcodeMatch = html.match(/([0-9]{45,60})/);
     if (barcodeMatch) {
@@ -608,7 +629,6 @@ function parseSngplBillHtml(rawHtml: string, fallbackConsumer: string) {
   let totalWithinDue = findValueInRow(['Total Amount Due', 'Total Payable Within Due Date', 'Payable Within Due Date']) || findValueInText(['Payable Within Due Date', 'Total Amount Due']);
   let totalAfterDue = findValueInRow(['Payable After Due Date', 'Total Payable After Due Date', 'Gross Amount Payable']) || findValueInText(['Payable After Due Date']);
 
-  // Payment slip row fallback: [totalWithin, totalAfter, dueDate]
   if (!totalWithinDue || totalWithinDue === '—' || !totalAfterDue || totalAfterDue === '—') {
     for (const cells of rows) {
       if (cells.length >= 3 && isValidDate(cells[cells.length - 1])) {
@@ -649,8 +669,10 @@ function parseSngplBillHtml(rawHtml: string, fallbackConsumer: string) {
   };
 }
 
-
 export async function GET() {
+  const backendUrl = getBackendUrl();
+
+  // Try direct SNGPL communication first
   try {
     const sessionData = await fetchSngplSessionAndCaptcha();
     return NextResponse.json({
@@ -660,13 +682,31 @@ export async function GET() {
       as_sfid: sessionData.as_sfid,
       as_fid: sessionData.as_fid,
     });
-  } catch (error: any) {
+  } catch (directError: any) {
+    console.warn('[SNGPL API] Direct connection attempt error:', directError?.message);
+
+    // If backend proxy URL is configured (e.g. on Vercel pointing to Render), fallback to it
+    if (backendUrl) {
+      try {
+        console.log(`[SNGPL API] Falling back to proxy backend: ${backendUrl}/api/sngpl-bill`);
+        const proxyRes = await fetch(`${backendUrl}/api/sngpl-bill`, {
+          method: 'GET',
+          headers: { 'User-Agent': DEFAULT_USER_AGENT },
+          cache: 'no-store',
+        });
+        const proxyData = await proxyRes.json();
+        return NextResponse.json(proxyData);
+      } catch (proxyError: any) {
+        console.error('[SNGPL API] Backend proxy fallback error:', proxyError?.message);
+      }
+    }
+
     return NextResponse.json(
       {
         success: false,
         error:
           'Unable to establish live connection to SNGPL Billing Server. Please verify internet connectivity.',
-        details: error?.message,
+        details: directError?.message,
       },
       { status: 200 }
     );
@@ -674,6 +714,8 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  const backendUrl = getBackendUrl();
+
   try {
     const body = await request.json().catch(() => ({}));
     const consumer = (body.consumer || '').replace(/\D/g, '');
@@ -705,13 +747,37 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Submit live bill request to SNGPL server
-    const sngplResponseHtml = await submitSngplBillQuery(
-      consumer,
-      captcha,
-      sessionId,
-      contype
-    );
+    let sngplResponseHtml = '';
+
+    try {
+      // Submit live bill request directly to SNGPL server
+      sngplResponseHtml = await submitSngplBillQuery(
+        consumer,
+        captcha,
+        sessionId,
+        contype
+      );
+    } catch (directQueryError: any) {
+      console.warn('[SNGPL API] Direct bill query error:', directQueryError?.message);
+
+      // If backend URL is available, fallback to proxy
+      if (backendUrl) {
+        try {
+          console.log(`[SNGPL API] POST fallback to proxy: ${backendUrl}/api/sngpl-bill`);
+          const proxyRes = await fetch(`${backendUrl}/api/sngpl-bill`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ consumer, captcha, sessionId, contype }),
+          });
+          const proxyData = await proxyRes.json();
+          return NextResponse.json(proxyData);
+        } catch (proxyError: any) {
+          console.error('[SNGPL API] Proxy POST failed:', proxyError?.message);
+        }
+      }
+
+      throw directQueryError;
+    }
 
     const trimmed = sngplResponseHtml.trim();
 
