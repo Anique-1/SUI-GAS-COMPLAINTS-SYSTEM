@@ -130,6 +130,31 @@ export interface BillingComplaint {
   status: 'pending' | 'resolved';
 }
 
+export interface Dept1199Complaint {
+  id: string;
+  complaint_date: string;
+  acct_id: string;
+  case_id: string;
+  name: string;
+  address: string;
+  contact_no: string;
+  case_remarks: string;
+  nature: string;
+  final_status: string;
+  region?: string;
+  fa_id?: string;
+  management_group?: string;
+  category?: string;
+  postal?: string;
+  priority?: string;
+  gps?: string;
+  logged_by?: string;
+  closed_by?: string;
+  created_by?: string;
+  creator_name?: string;
+  created_at?: string;
+}
+
 
 
 
@@ -558,6 +583,67 @@ export const dbClient = {
       const data = await res.json();
       if (!res.ok) {
         return { error: data.error || 'Failed to delete user account.' };
+      }
+      return { error: null };
+    } catch (e: any) {
+      return { error: e.message || 'Network connection failed.' };
+    }
+  },
+
+  // --- Department 1199 Complaints Methods ---
+  async getDept1199Complaints(): Promise<Dept1199Complaint[]> {
+    try {
+      const res = await fetch('/api/dept-1199-complaints');
+      if (!res.ok) return [];
+      return await res.json();
+    } catch (e) {
+      console.error('getDept1199Complaints error:', e);
+      return [];
+    }
+  },
+
+  async createDept1199Complaint(complaint: Omit<Dept1199Complaint, 'id' | 'created_by' | 'creator_name' | 'created_at'>): Promise<{ data: Dept1199Complaint | null; error: string | null }> {
+    try {
+      const res = await fetch('/api/dept-1199-complaints', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(complaint),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { data: null, error: data.error || 'Failed to record 1199 complaint.' };
+      }
+      return { data: data.data, error: null };
+    } catch (e: any) {
+      return { data: null, error: e.message || 'Network connection failed.' };
+    }
+  },
+
+  async updateDept1199Complaint(complaintId: string, updates: Partial<Dept1199Complaint>): Promise<{ error: string | null }> {
+    try {
+      const res = await fetch(`/api/dept-1199-complaints/${complaintId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { error: data.error || 'Failed to update 1199 complaint.' };
+      }
+      return { error: null };
+    } catch (e: any) {
+      return { error: e.message || 'Network connection failed.' };
+    }
+  },
+
+  async deleteDept1199Complaint(complaintId: string): Promise<{ error: string | null }> {
+    try {
+      const res = await fetch(`/api/dept-1199-complaints/${complaintId}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { error: data.error || 'Failed to delete 1199 complaint.' };
       }
       return { error: null };
     } catch (e: any) {

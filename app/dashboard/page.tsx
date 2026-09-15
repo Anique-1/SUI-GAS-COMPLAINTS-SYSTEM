@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useUser } from './layout';
-import { dbClient, Complaint, SalesComplaint, BillingComplaint } from '@/lib/db';
+import { dbClient, Complaint, SalesComplaint, BillingComplaint, Dept1199Complaint } from '@/lib/db';
 import {
   ClipboardList,
   Users,
@@ -19,7 +19,8 @@ import {
   ShieldCheck,
   CheckCircle2,
   Lock,
-  Flame
+  Flame,
+  PhoneCall
 } from 'lucide-react';
 
 export default function DashboardOverview() {
@@ -27,21 +28,24 @@ export default function DashboardOverview() {
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [salesComplaints, setSalesComplaints] = useState<SalesComplaint[]>([]);
   const [billingComplaints, setBillingComplaints] = useState<BillingComplaint[]>([]);
+  const [dept1199Complaints, setDept1199Complaints] = useState<Dept1199Complaint[]>([]);
   const [pendingCount, setPendingCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchOverviewData = async () => {
       try {
-        const [firList, salesList, billingList] = await Promise.all([
+        const [firList, salesList, billingList, dept1199List] = await Promise.all([
           dbClient.getComplaints().catch(() => []),
           dbClient.getSalesComplaints().catch(() => []),
-          dbClient.getBillingComplaints().catch(() => [])
+          dbClient.getBillingComplaints().catch(() => []),
+          dbClient.getDept1199Complaints().catch(() => [])
         ]);
 
         setComplaints(firList);
         setSalesComplaints(salesList);
         setBillingComplaints(billingList);
+        setDept1199Complaints(dept1199List);
 
         if (user?.role === 'executive') {
           const pending = await dbClient.getPendingUsers().catch(() => []);
@@ -122,6 +126,10 @@ export default function DashboardOverview() {
             <Flame className="w-4 h-4" />
             <span>Gas Leaks (1199)</span>
           </Link>
+          <Link href="/dashboard/dept-1199-complaints" className="btn btn-secondary" style={{ padding: '9px 16px', fontSize: '13px', background: 'rgba(2, 132, 199, 0.08)', color: '#0369a1', borderColor: 'rgba(2, 132, 199, 0.3)', fontWeight: '700' }}>
+            <PhoneCall className="w-4 h-4" />
+            <span>1199 Complaints</span>
+          </Link>
           <Link href="/dashboard/bill-disputes" className="btn btn-secondary" style={{ padding: '9px 16px', fontSize: '13px', background: 'rgba(168, 85, 247, 0.08)', color: '#7e22ce', borderColor: 'rgba(168, 85, 247, 0.3)', fontWeight: '700' }}>
             <Scale className="w-4 h-4" />
             <span>Bill Disputes</span>
@@ -139,6 +147,20 @@ export default function DashboardOverview() {
 
       {/* METRIC CARDS GRID */}
       <div className="metrics-grid">
+        {/* Dedicated 1199 Department Complaints Metric Card */}
+        <div className="glass-panel metric-card glass-panel-hover" style={{ borderLeft: '3px solid #0284c7' }}>
+          <div className="metric-header">
+            <span className="metric-title" style={{ color: '#0369a1', fontWeight: '800' }}>1199 Dept Complaints</span>
+            <div className="metric-icon" style={{ background: 'rgba(2, 132, 199, 0.1)', color: '#0284c7' }}>
+              <PhoneCall className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="metric-value" style={{ color: '#0284c7' }}>{dept1199Complaints.length}</div>
+          <Link href="/dashboard/dept-1199-complaints" style={{ fontSize: '12px', color: '#0284c7', display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', fontWeight: '700', marginTop: '8px' }}>
+            Manage 1199 complaints <ArrowUpRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
         {/* Dedicated Gas Leak Emergencies Metric Card */}
         <div className="glass-panel metric-card glass-panel-hover" style={{ borderLeft: '3px solid #dc2626' }}>
           <div className="metric-header">

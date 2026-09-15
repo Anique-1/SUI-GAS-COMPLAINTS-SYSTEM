@@ -21,7 +21,8 @@ import {
   Menu,
   X,
   Flame,
-  Scale
+  Scale,
+  PhoneCall
 } from 'lucide-react';
 
 // User context for dashboard pages
@@ -39,7 +40,7 @@ export const useUser = () => useContext(UserContext);
 
 function SidebarLinks({ user, onLinkClick }: { user: Profile; onLinkClick?: () => void }) {
   const pathname = usePathname();
-  const isDeptActive = pathname.startsWith('/dashboard/sales-complaints') || pathname.startsWith('/dashboard/billing-complaints');
+  const isDeptActive = pathname.startsWith('/dashboard/sales-complaints') || pathname.startsWith('/dashboard/billing-complaints') || pathname.startsWith('/dashboard/dept-1199-complaints');
   const [deptOpen, setDeptOpen] = useState(isDeptActive);
 
   useEffect(() => {
@@ -156,6 +157,14 @@ function SidebarLinks({ user, onLinkClick }: { user: Profile; onLinkClick?: () =
             >
               <ReceiptText className="w-3.5 h-3.5" />
               <span>Billing Complaints</span>
+            </Link>
+            <Link
+              href="/dashboard/dept-1199-complaints"
+              onClick={onLinkClick}
+              className={`sidebar-link sub-link ${isLinkActive('/dashboard/dept-1199-complaints') ? 'active' : ''}`}
+            >
+              <PhoneCall className="w-3.5 h-3.5" />
+              <span>1199 Complaints</span>
             </Link>
           </div>
         )}
