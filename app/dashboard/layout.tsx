@@ -22,7 +22,8 @@ import {
   X,
   Flame,
   Scale,
-  PhoneCall
+  PhoneCall,
+  Landmark
 } from 'lucide-react';
 
 // User context for dashboard pages
@@ -40,7 +41,11 @@ export const useUser = () => useContext(UserContext);
 
 function SidebarLinks({ user, onLinkClick }: { user: Profile; onLinkClick?: () => void }) {
   const pathname = usePathname();
-  const isDeptActive = pathname.startsWith('/dashboard/sales-complaints') || pathname.startsWith('/dashboard/billing-complaints') || pathname.startsWith('/dashboard/dept-1199-complaints');
+  const isDeptActive =
+    pathname.startsWith('/dashboard/sales-complaints') ||
+    pathname.startsWith('/dashboard/billing-complaints') ||
+    pathname.startsWith('/dashboard/dept-1199-complaints') ||
+    pathname.startsWith('/dashboard/pmdu-complaints');
   const [deptOpen, setDeptOpen] = useState(isDeptActive);
 
   useEffect(() => {
@@ -165,6 +170,27 @@ function SidebarLinks({ user, onLinkClick }: { user: Profile; onLinkClick?: () =
             >
               <PhoneCall className="w-3.5 h-3.5" />
               <span>1199 Complaints</span>
+            </Link>
+            <Link
+              href="/dashboard/pmdu-complaints"
+              onClick={onLinkClick}
+              className={`sidebar-link sub-link ${isLinkActive('/dashboard/pmdu-complaints') ? 'active' : ''}`}
+            >
+              <Landmark className="w-3.5 h-3.5 text-emerald-600" />
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <span>PMDU Complaints</span>
+                <span style={{
+                  background: '#dcfce7',
+                  color: '#15803d',
+                  fontSize: '9px',
+                  fontWeight: '800',
+                  padding: '1px 5px',
+                  borderRadius: '6px',
+                  border: '1px solid #bbf7d0'
+                }}>
+                  PCP
+                </span>
+              </span>
             </Link>
           </div>
         )}

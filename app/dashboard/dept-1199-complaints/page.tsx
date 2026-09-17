@@ -403,7 +403,7 @@ export default function Dept1199ComplaintsPage() {
             title="Reload data from database"
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-sky-600' : ''}`} />
-            <span>{refreshing ? 'Syncing...' : 'Sync'}</span>
+            <span>{refreshing ? 'Refreshing...' : 'Refresh'}</span>
           </button>
 
           <button

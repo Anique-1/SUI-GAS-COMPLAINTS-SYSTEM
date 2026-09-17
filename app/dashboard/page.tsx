@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useUser } from './layout';
-import { dbClient, Complaint, SalesComplaint, BillingComplaint, Dept1199Complaint } from '@/lib/db';
+import { dbClient, Complaint, SalesComplaint, BillingComplaint, Dept1199Complaint, PmduComplaint } from '@/lib/db';
 import {
   ClipboardList,
   Users,
@@ -20,7 +20,8 @@ import {
   CheckCircle2,
   Lock,
   Flame,
-  PhoneCall
+  PhoneCall,
+  Landmark
 } from 'lucide-react';
 
 export default function DashboardOverview() {
@@ -29,23 +30,26 @@ export default function DashboardOverview() {
   const [salesComplaints, setSalesComplaints] = useState<SalesComplaint[]>([]);
   const [billingComplaints, setBillingComplaints] = useState<BillingComplaint[]>([]);
   const [dept1199Complaints, setDept1199Complaints] = useState<Dept1199Complaint[]>([]);
+  const [pmduComplaints, setPmduComplaints] = useState<PmduComplaint[]>([]);
   const [pendingCount, setPendingCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchOverviewData = async () => {
       try {
-        const [firList, salesList, billingList, dept1199List] = await Promise.all([
+        const [firList, salesList, billingList, dept1199List, pmduList] = await Promise.all([
           dbClient.getComplaints().catch(() => []),
           dbClient.getSalesComplaints().catch(() => []),
           dbClient.getBillingComplaints().catch(() => []),
-          dbClient.getDept1199Complaints().catch(() => [])
+          dbClient.getDept1199Complaints().catch(() => []),
+          dbClient.getPmduComplaints().catch(() => [])
         ]);
 
         setComplaints(firList);
         setSalesComplaints(salesList);
         setBillingComplaints(billingList);
         setDept1199Complaints(dept1199List);
+        setPmduComplaints(pmduList);
 
         if (user?.role === 'executive') {
           const pending = await dbClient.getPendingUsers().catch(() => []);
@@ -122,6 +126,10 @@ export default function DashboardOverview() {
         </div>
 
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <Link href="/dashboard/pmdu-complaints" className="btn btn-secondary" style={{ padding: '9px 16px', fontSize: '13px', background: 'rgba(16, 185, 129, 0.08)', color: '#047857', borderColor: 'rgba(16, 185, 129, 0.3)', fontWeight: '700' }}>
+            <Landmark className="w-4 h-4" />
+            <span>PMDU Portal</span>
+          </Link>
           <Link href="/dashboard/gas-leaks" className="btn btn-primary" style={{ background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)', borderColor: '#991b1b', padding: '9px 16px', fontSize: '13px', fontWeight: '700' }}>
             <Flame className="w-4 h-4" />
             <span>Gas Leaks (1199)</span>
@@ -147,6 +155,20 @@ export default function DashboardOverview() {
 
       {/* METRIC CARDS GRID */}
       <div className="metrics-grid">
+        {/* Dedicated PMDU Citizen Portal Complaints Metric Card */}
+        <div className="glass-panel metric-card glass-panel-hover" style={{ borderLeft: '3px solid #059669' }}>
+          <div className="metric-header">
+            <span className="metric-title" style={{ color: '#047857', fontWeight: '800' }}>PMDU Complaints</span>
+            <div className="metric-icon" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#059669' }}>
+              <Landmark className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="metric-value" style={{ color: '#047857' }}>{pmduComplaints.length}</div>
+          <Link href="/dashboard/pmdu-complaints" style={{ fontSize: '12px', color: '#047857', display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', fontWeight: '700', marginTop: '8px' }}>
+            Citizen portal console <ArrowUpRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
         {/* Dedicated 1199 Department Complaints Metric Card */}
         <div className="glass-panel metric-card glass-panel-hover" style={{ borderLeft: '3px solid #0284c7' }}>
           <div className="metric-header">

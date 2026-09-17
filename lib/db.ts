@@ -155,8 +155,23 @@ export interface Dept1199Complaint {
   created_at?: string;
 }
 
-
-
+export interface PmduComplaint {
+  id: string;
+  complaint_id: string;          // Official PCP / PMDU ID e.g. PU290119-1244234
+  comp_date: string;             // Date e.g. 29/01/2019
+  close_option: string;          // Relief Granted | Partial relief Granted | Relief cannot be Granted | Pending | In Progress
+  details: string;               // Citizen grievance / issue description
+  feedback_statement: string;    // Official SNGPL resolution statement & guidelines link
+  region: string;                // e.g. FAISALABAD
+  department: string;            // e.g. Distribution-(UFGC)
+  complainant_name: string;      // Citizen name or Hidden
+  complainant_phone: string;     // Phone or Hidden
+  address: string;               // Citizen address / location
+  created_by?: string;
+  creator_name?: string;
+  created_at?: string;
+  updated_at?: string;
+}
 
 export const dbClient = {
   isMock: false,
@@ -644,6 +659,67 @@ export const dbClient = {
       const data = await res.json();
       if (!res.ok) {
         return { error: data.error || 'Failed to delete 1199 complaint.' };
+      }
+      return { error: null };
+    } catch (e: any) {
+      return { error: e.message || 'Network connection failed.' };
+    }
+  },
+
+  // --- PMDU Complaints Methods ---
+  async getPmduComplaints(): Promise<PmduComplaint[]> {
+    try {
+      const res = await fetch('/api/pmdu-complaints');
+      if (!res.ok) return [];
+      return await res.json();
+    } catch (e) {
+      console.error('getPmduComplaints error:', e);
+      return [];
+    }
+  },
+
+  async createPmduComplaint(complaint: Omit<PmduComplaint, 'id' | 'created_by' | 'creator_name' | 'created_at'>): Promise<{ data: PmduComplaint | null; error: string | null }> {
+    try {
+      const res = await fetch('/api/pmdu-complaints', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(complaint),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { data: null, error: data.error || 'Failed to record PMDU complaint.' };
+      }
+      return { data: data.data, error: null };
+    } catch (e: any) {
+      return { data: null, error: e.message || 'Network connection failed.' };
+    }
+  },
+
+  async updatePmduComplaint(complaintId: string, updates: Partial<PmduComplaint>): Promise<{ error: string | null }> {
+    try {
+      const res = await fetch(`/api/pmdu-complaints/${complaintId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { error: data.error || 'Failed to update PMDU complaint.' };
+      }
+      return { error: null };
+    } catch (e: any) {
+      return { error: e.message || 'Network connection failed.' };
+    }
+  },
+
+  async deletePmduComplaint(complaintId: string): Promise<{ error: string | null }> {
+    try {
+      const res = await fetch(`/api/pmdu-complaints/${complaintId}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { error: data.error || 'Failed to delete PMDU complaint.' };
       }
       return { error: null };
     } catch (e: any) {
